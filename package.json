@@ -4,10 +4,10 @@
   "description": "Arquitetura Hexagonal",
   "main": "build/server.js",
   "scripts": {
-    "dev": "tsx watch src/main/server.ts",
+    "dev": "tsx watch src/shared/infra/http/server.ts",
     "build": "tsc",
     "start": "npm run build && node build/main/server.js",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/data-source.ts",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/shared/infra/db/data-source.ts",
     "migrate": "npm run typeorm migration:run",
     "migrate:rollback": "npm run typeorm migration:revert"
   },

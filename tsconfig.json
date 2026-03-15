@@ -14,7 +14,8 @@
     "moduleResolution": "node",
     "target": "es5",
     "paths": {
-      "@catalogo/*": ["modules/catalogo/*"]
+      "@modules/*": ["modules/*"],
+      "@shared/*": ["shared/*"]
     }
   }
 }
