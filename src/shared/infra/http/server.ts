@@ -1,6 +1,6 @@
 import express from 'express';
 import { AppDataSource } from '@shared/infra/db/data-source';
-import categoryRoutes from '@modules/catalogo/infra/http/routes';
+import categoryRoutes from '@modules/catalogo/infrastructure/http/routes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;

@@ -28,7 +28,7 @@ export class CategoriaNome {
         return true;
     }
 
-    getVal(): string {
+    val(): string {
         return this._value;
     }
 }

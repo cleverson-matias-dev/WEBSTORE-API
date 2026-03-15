@@ -1,6 +1,6 @@
 import { CategoriaNome } from "../value-objects/categoria.nome.vo";
 
-export interface CategoriaDomainProps {
+export interface ICategoria {
     id?:string, 
     nome: CategoriaNome, 
     slug?: string, 
@@ -9,17 +9,17 @@ export interface CategoriaDomainProps {
     updated_at?: Date
 }
 
-export class CategoriaDomain {
+export class Categoria {
     
-    private props: CategoriaDomainProps;
+    private props: ICategoria;
 
-    constructor(props: CategoriaDomainProps) {
+    constructor(props: ICategoria) {
         this.props = props;
         this.props.slug = this.props.slug ||this.generateSlug();
     }
 
     private generateSlug(): string {
-         return this.props.nome.getVal()
+         return this.props.nome.val()
         .toString()
         .toLowerCase()
         .trim()
@@ -30,7 +30,7 @@ export class CategoriaDomain {
         .replace(/-+/g, '-');
     }
 
-    getProps(): CategoriaDomainProps {
+    getProps(): ICategoria {
         return this.props;
     }
 }

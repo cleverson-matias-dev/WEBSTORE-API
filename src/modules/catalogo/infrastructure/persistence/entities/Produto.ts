@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, OneToMany, UpdateDateColumn } from "typeorm"
-import { Categoria } from "./Categoria"
+import { CategoriaEntity } from "./CategoriaEntity"
 import { Sku } from "./Sku"
 import { Imagem } from "./Imagem"
 
@@ -28,9 +28,9 @@ export class Produto {
     @OneToMany(()=>Sku, (sku) => sku.produto)
     skus: Sku[]
 
-    @OneToOne(()=>Categoria)
+    @OneToOne(()=>CategoriaEntity)
     @JoinColumn()
-    categoria_id: Categoria
+    categoria_id: CategoriaEntity
 
     @OneToMany(()=>Imagem, (imagem)=> imagem.produto)
     imagens: Imagem[]

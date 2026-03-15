@@ -10,5 +10,5 @@ export const AppDataSource = new DataSource({
     username: 'root',
     password: '',
     database: 'webstore_catalogo',
-    entities:[path.join(__dirname, "./../../../modules/catalogo/infra/persistence/entities/**/*.{ts,js}")]
+    entities:[path.join(__dirname, "../../../modules/catalogo/infrastructure/persistence/entities/**/*.{ts,js}")]
 })
