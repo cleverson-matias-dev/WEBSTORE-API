@@ -1,24 +1,30 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from "typeorm"
 
 @Entity()
 export class CategoriaEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column({
-        type: 'varchar',
-        length: '100'
-    })
+    @Column({ type: 'varchar', length: '100' })
     nome: string
 
-    @Column({
-        type: 'varchar',
-        length: '100'
-    })
+    @Column({ type: 'varchar', length: '100' })
     slug: string
 
-    @Column('varchar')
-    parent_id?: string | undefined
+    // 1. Defina a coluna física como opcional (nullable)
+    @Column({ type: 'uuid', nullable: true })
+    parent_id?: string | null
+
+    // 2. Garante que a relação aceite nulo (nullable: true)
+    @ManyToOne(() => CategoriaEntity, (categoria) => categoria.children, { 
+        onDelete: 'CASCADE', 
+        nullable: true 
+    })
+    @JoinColumn({ name: 'parent_id' })
+    parent?: CategoriaEntity | null
+
+    @OneToMany(() => CategoriaEntity, (categoria) => categoria.parent)
+    children: CategoriaEntity[]
 
     @CreateDateColumn()
     created_at: Date

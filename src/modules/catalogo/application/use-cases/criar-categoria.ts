@@ -7,7 +7,8 @@ export class CriarCategoria {
 
     async executar(data: any) {
         const nome = new CategoriaNome(data.nome);
+        data.parent_id = (data.parent_id === "") ? null : data.parent_id;
         const categoria = new Categoria({nome, parent_id: data.parent_id, slug: data.slug});
-        await this.repository.save(categoria);
+        return await this.repository.save(categoria);
     }
 }

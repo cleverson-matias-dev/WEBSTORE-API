@@ -1,0 +1,11 @@
+Validação de dados de entrada
+Excluir uma categoria por id
+
+Testes
+Documentação
+Segurança
+Padrão Restful
+Versionamento
+Respostas HTTP(200, 201, 400, 401, 404, 500)
+Tratamento de erros
+Rate Limit

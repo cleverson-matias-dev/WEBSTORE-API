@@ -1,8 +1,9 @@
-import { Categoria, ICategoria } from "@modules/catalogo/domain/entities/categoria.entity";
+import { Categoria } from "@modules/catalogo/domain/entities/categoria.entity";
 
 export interface ICategoryRepository {
-    save(categoria: Categoria): Promise<void>
-    //findAll(): Promise<Categoria[]>
-    //findById(id: string): Promise<Categoria | null>
-    //delete(id: string): Promise<void>
+    save(categoria: Categoria): Promise<Categoria>
+    findAll(): Promise<Categoria[]>
+    findById(id: string): Promise<Categoria | null>
+    update(id: string, nome: string): Promise<void>
+    delete(id: string): Promise<void>
 }

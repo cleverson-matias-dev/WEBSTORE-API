@@ -4,7 +4,7 @@ export interface ICategoria {
     id?:string, 
     nome: CategoriaNome, 
     slug?: string, 
-    parent_id?: string, 
+    parent_id?: string | null, 
     created_at?: Date, 
     updated_at?: Date
 }
