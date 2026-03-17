@@ -1,4 +1,5 @@
-Validação de dados de entrada
+get categorias por id validar quando não existir
+corrigir criar filho de pai inexistente
 
 Testes
 Documentação

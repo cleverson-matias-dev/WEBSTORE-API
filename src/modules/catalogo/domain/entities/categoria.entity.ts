@@ -15,19 +15,18 @@ export class Categoria {
 
     constructor(props: ICategoria) {
         this.props = props;
-        this.props.slug = this.props.slug ||this.generateSlug();
+        this.props.slug = this.props.slug ||this.generateSlug(this.props.nome);
     }
 
-    private generateSlug(): string {
-         return this.props.nome.val()
-        .toString()
-        .toLowerCase()
-        .trim()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9 -]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-');
+    private generateSlug(nome: CategoriaNome): string {
+        return nome.val()
+            .normalize('NFD')                
+            .replace(/[\u0300-\u036f]/g, '') 
+            .toLowerCase()                   
+            .trim()                          
+            .replace(/[^a-z0-9\s-]/g, '')    
+            .replace(/\s+/g, '-')            
+            .replace(/-+/g, '-');            
     }
 
     getProps(): ICategoria {

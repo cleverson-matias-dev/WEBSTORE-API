@@ -9,15 +9,19 @@
     "start": "npm run build && node build/main/server.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/shared/infra/db/data-source.ts",
     "migrate": "npm run typeorm migration:run",
-    "migrate:rollback": "npm run typeorm migration:revert"
+    "migrate:rollback": "npm run typeorm migration:revert",
+    "test": "jest"
   },
   "keywords": [],
   "author": "Cleverson Matias",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.3.3",
     "@types/sanitize-html": "^2.16.1",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.21.0",
