@@ -1,5 +1,4 @@
 Validação de dados de entrada
-Excluir uma categoria por id
 
 Testes
 Documentação

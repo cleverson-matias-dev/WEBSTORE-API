@@ -54,7 +54,7 @@ export class TypeORMCategoryRepository implements ICategoryRepository{
 
         const _val = await this.dataSource.findBy({id: Equal(id)});
         if(!_val) {
-            throw new Error('Categoria não encontrada!');
+            return null;
         }
 
         const val = _val[0];
@@ -89,8 +89,15 @@ export class TypeORMCategoryRepository implements ICategoryRepository{
 
     }
 
-    async delete(id: string): Promise<void> {
-        this.dataSource.delete(id);
+    async delete(id: string): Promise<number | null | undefined> {
+
+        try {
+            const result = await this.dataSource.delete(id);
+            return result.affected
+        } catch (error: any) {
+            throw new Error(error.message)
+        }
+       
     }
 
 }

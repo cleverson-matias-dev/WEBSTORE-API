@@ -17,7 +17,7 @@ export class CategoryController {
             return res.status(201).json(await useCase.executar(data));
 
         } catch (error: any) {
-            return res.status(400).json({error: error.message})
+            return res.status(400).json({status: 'error', errors: [error.message]})
         }
     }
 
@@ -26,17 +26,24 @@ export class CategoryController {
            const useCase = new listarCategorias(repo);
            return res.status(200).json(await useCase.executar());
         } catch (error: any){
-            return res.status(400).json({error: error.message});
+            return res.status(400).json({status: 'error', errors: [error.message]});
         }
     }
 
     async find(req: Request, res: Response) {
         try {
+
            const useCase = new BuscarCategoria(repo);
            const {id} = req.params;
+           const result = await useCase.executar(id);
+           if(!result) {
+                return res.status(404).json({status: 'error', errors: ['recuso não encontrado.']})
+           }
+
            return res.status(200).json(await useCase.executar(id));
+
         } catch (error: any){
-            return res.status(400).json({error: error.message});
+            return res.status(400).json({status: 'error', errors: [error.message]});
         }
     }
 
@@ -44,9 +51,13 @@ export class CategoryController {
         try {
            const useCase = new DeletarCategoria(repo);
            const {id} = req.params;
-           return res.status(200).json(await useCase.executar(id));
+           const response = await useCase.executar(id);
+           if(!response) {
+             return res.status(404).json({status: 'error', errors: ['Categoria não encontrada.']});
+           }
+           return res.status(204).json(response);
         } catch (error: any){
-            return res.status(400).json({error: error.message});
+            return res.status(400).json({status: 'error', errors: [error.message]});
         }
     }
 
@@ -58,9 +69,8 @@ export class CategoryController {
            return res.status(200).json(await useCase.executar(id, nome));
 
         } catch (error: any){
-           return res.status(400).json({error: error.message});
+           return res.status(400).json({status: 'error', errors: [error.message]});
         }
     }
-
 
 }
