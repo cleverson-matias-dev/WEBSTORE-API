@@ -1,4 +1,4 @@
-import { Categoria } from '../../modules/catalogo/domain/entities/categoria.entity';
+import { Categoria } from '@modules/catalogo/domain/entities/categoria.entity';
 import { CategoriaNome } from '../../modules/catalogo/domain/value-objects/categoria.nome.vo';
 
 describe('Categoria Entity', () => {
