@@ -50,11 +50,12 @@ export class TypeORMCategoryRepository implements ICategoryRepository{
         })
     }
 
-    async findById(id: string): Promise<Categoria | null> {
+    async findById(id: string): Promise<Categoria | []> {
 
         const _val = await this.dataSource.findBy({id: Equal(id)});
-        if(!_val) {
-            return null;
+
+        if(_val.length === 0) {
+            return [];
         }
 
         const val = _val[0];

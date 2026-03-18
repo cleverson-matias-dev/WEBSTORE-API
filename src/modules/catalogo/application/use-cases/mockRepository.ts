@@ -24,9 +24,9 @@ export class MockCategoryRepository implements ICategoryRepository {
         return [...this.items];
     }
 
-    async findById(id: string): Promise<Categoria | null> {
+    async findById(id: string): Promise<Categoria | []> {
         const item = this.items.find(cat => cat.getProps().id === id);
-        return item || null;
+        return item || [];
     }
 
     async update(id: string, nome: string): Promise<void> {
