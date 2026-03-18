@@ -34,8 +34,6 @@ export class CategoryController {
            const {id} = req.params;
            const result = await useCase.executar(id);
 
-            console.log(result);
-
            if(!(result instanceof Categoria)) {
                 return res.status(404).json({status: 'error', errors: ['recuso não encontrado.']})
            }
