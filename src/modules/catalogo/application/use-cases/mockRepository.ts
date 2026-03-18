@@ -46,10 +46,10 @@ export class MockCategoryRepository implements ICategoryRepository {
         }
     }
 
-    async delete(id: string): Promise<number | null | undefined> {
+    async delete(id: string): Promise<boolean> {
         const initialLength = this.items.length;
         this.items = this.items.filter(cat => cat.getProps().id !== id);
         
-        return initialLength > this.items.length ? 1 : 0;
+        return initialLength > this.items.length;
     }
 }

@@ -75,7 +75,7 @@ describe('Use Cases: Categoria (com Mock Repository Real)', () => {
             const resultado = await useCaseDeletar.executar(id);
 
             const itens = await repo.findAll();
-            expect(resultado).toBe(1);
+            expect(resultado).toBe(true);
             expect(itens).toHaveLength(0);
         });
     });
