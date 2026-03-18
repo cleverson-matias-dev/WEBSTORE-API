@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from "typeorm"
 
-@Entity()
+@Entity({name: 'categorias'})
 export class CategoriaEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string

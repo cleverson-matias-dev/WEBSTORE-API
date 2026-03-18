@@ -1,5 +1,5 @@
+[FIX] alterar nome da tabela categoria_entity para categorias
 
-jest não está interpretando paths do tsconfig
 
 Testes
 Documentação
