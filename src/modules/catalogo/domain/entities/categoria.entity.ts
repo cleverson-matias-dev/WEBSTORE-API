@@ -15,7 +15,7 @@ export class Categoria {
 
     constructor(props: ICategoria) {
         this.props = props;
-        this.props.slug = this.props.slug ||this.generateSlug(this.props.nome);
+        this.props.slug = this.props.slug || this.generateSlug(this.props.nome);
     }
 
     private generateSlug(nome: CategoriaNome): string {
