@@ -82,7 +82,6 @@ export class TypeORMCategoryRepository implements ICategoryRepository{
                 slug: newCat.getProps().slug
             })
 
-            console.log(categoria)
         } catch (error: any) {
             throw new Error(error.message)
         }

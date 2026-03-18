@@ -1,5 +1,6 @@
-get categorias por id validar quando não existir
+[FIX]: get categorias por id validar quando não existir
 corrigir criar filho de pai inexistente
+jest não está interpretando paths do tsconfig
 
 Testes
 Documentação
