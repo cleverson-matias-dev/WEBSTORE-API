@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { TypeORMCategoryRepository } from "../persistence/TypeORMCategoryRepository";
 import { CriarCategoria, ListarCategorias, BuscarCategoria, DeletarCategoria, AlterarCategoria } from "@modules/catalogo/application/use-cases/categoria-use-cases";
+import { Categoria } from "@modules/catalogo/domain/entities/categoria.entity";
 
 const repo = new TypeORMCategoryRepository();
 
@@ -32,11 +33,14 @@ export class CategoryController {
            const useCase = new BuscarCategoria(repo);
            const {id} = req.params;
            const result = await useCase.executar(id);
-           if(!result) {
+
+            console.log(result);
+
+           if(!(result instanceof Categoria)) {
                 return res.status(404).json({status: 'error', errors: ['recuso não encontrado.']})
            }
 
-           return res.status(200).json(await useCase.executar(id));
+           return res.status(200).json(result);
 
         } catch (error: any){
             return res.status(400).json({status: 'error', errors: [error.message]});
