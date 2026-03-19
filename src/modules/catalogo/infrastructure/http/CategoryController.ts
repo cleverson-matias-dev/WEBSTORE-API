@@ -31,10 +31,10 @@ export class CategoryController {
 
            const useCase = new BuscarCategoria(repo);
            const {id} = req.params;
-           const result = await useCase.executar(id);
+           const result = await useCase.executar(id as string);
 
-           if(!(result instanceof Categoria)) {
-                return res.status(404).json({status: 'error', errors: ['recuso não encontrado.']})
+           if(!result) {
+                return res.status(404).json({status: 'error', errors: ['recurso não encontrado.']})
            }
 
            return res.status(200).json(result);
@@ -48,11 +48,11 @@ export class CategoryController {
         try {
            const useCase = new DeletarCategoria(repo);
            const {id} = req.params;
-           const response = await useCase.executar(id);
+           const response = await useCase.executar(id as string);
            if(!response) {
              return res.status(404).json({status: 'error', errors: ['Categoria não encontrada.']});
            }
-           return res.status(204).json(response);
+           return res.status(204).json();
         } catch (error: any){
             return res.status(400).json({status: 'error', errors: [error.message]});
         }
@@ -62,8 +62,10 @@ export class CategoryController {
        
         try {
            const useCase = new AlterarCategoria(repo);
-           const {id, nome} = req.body;
-           return res.status(200).json(await useCase.executar(id, nome));
+           const {id} = req.params;
+           const { nome } = req.body;
+           await useCase.executar(id as string, { nome });
+           return res.status(204).json();
 
         } catch (error: any){
            return res.status(400).json({status: 'error', errors: [error.message]});

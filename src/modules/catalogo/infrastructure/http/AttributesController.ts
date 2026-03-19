@@ -29,10 +29,10 @@ export class AttributesController {
 
             const useCase = new BuscarAtributo(repo);
             const {id} = req.params;
-            const result = await useCase.executar(id);
+            const result = await useCase.executar(id as string);
 
-            if(!(result instanceof Atributo)) {
-                return res.status(404).json({status: 'error', errors: ['recuso não encontrado.']})
+            if(!result) {
+                return res.status(404).json({status: 'error', errors: ['recurso não encontrado.']})
             }
 
             return res.status(200).json(result);
@@ -46,11 +46,11 @@ export class AttributesController {
         try {
             const useCase = new DeletarAtributo(repo);
             const {id} = req.params;
-            const response = await useCase.executar(id);
+            const response = await useCase.executar(id as string);
             if(!response) {
                 return res.status(404).json({status: 'error', errors: ['Atributo não encontrado.']});
             }
-            return res.status(204).json(response);
+            return res.status(204).json();
         } catch (error: any){
             return res.status(400).json({status: 'error', errors: [error.message]});
         }
@@ -60,12 +60,9 @@ export class AttributesController {
            
         try {
             const useCase = new AlterarAtributo(repo);
-            const {id, nome} = req.body;
-            const result = await useCase.executar(id, nome);
-
-            if(!result) {
-                return res.status(404).json({status: 'error', errors: ['Atributo não encontrado.']})
-            }
+            const {id} = req.params;
+            const { nome } = req.body;
+            await useCase.executar(id as string, { nome });
 
             res.status(204).json()
         } catch (error: any){

@@ -18,8 +18,8 @@ describe('Use Cases: Categoria (com Mock Repository Real)', () => {
             const itens = await repo.findAll();
 
             expect(itens).toHaveLength(1);
-            expect(resultado.getProps().nome.val()).toBe('Eletrônicos');
-            expect(resultado.getProps().parent_id).toBeNull();
+            expect(resultado.nome).toBe('Eletrônicos');
+            expect(resultado.parent_id).toBeNull();
         });
     });
 
@@ -27,24 +27,20 @@ describe('Use Cases: Categoria (com Mock Repository Real)', () => {
         it('deve encontrar uma categoria existente pelo ID', async () => {
             const useCaseCriar = new CriarCategoria(repo);
             const categoriaCriada = await useCaseCriar.executar({ nome: 'Games', slug: 'games' });
-            const id = categoriaCriada.getProps().id;
+            const id = categoriaCriada.id;
 
             const useCaseBuscar = new BuscarCategoria(repo);
             const resultado = await useCaseBuscar.executar(id);
 
-            // Garante que não é false antes de acessar as propriedades
-            expect(resultado).not.toBe(false);
-            
-            if (resultado instanceof Categoria) {
-                expect(resultado.getProps().nome.val()).toBe('Games');
-            }
+            expect(resultado).toBeDefined();
+            expect(resultado?.nome).toBe('Games');
         });
 
 
         it('deve retornar null se a categoria não existir', async () => {
             const useCase = new BuscarCategoria(repo);
             const resultado = await useCase.executar('id-inexistente');
-            expect(resultado).toEqual([]);
+            expect(resultado).toBeNull();
         });
     });
 
@@ -52,12 +48,12 @@ describe('Use Cases: Categoria (com Mock Repository Real)', () => {
         it('deve atualizar o nome de uma categoria existente', async () => {
             const useCaseCriar = new CriarCategoria(repo);
             const categoria = await useCaseCriar.executar({ nome: 'Antigo', slug: 'antigo' });
-            const id = categoria.getProps().id;
+            const id = categoria.id;
 
             const useCaseAlterar = new AlterarCategoria(repo);
-            await useCaseAlterar.executar(id, 'Novo Nome');
+            await useCaseAlterar.executar(id, { nome: 'Novo Nome' });
 
-            const categoriaAtualizada = await repo.findById(id as string);
+            const categoriaAtualizada = await repo.findById(id);
 
             if(categoriaAtualizada instanceof Categoria) {
                 expect(categoriaAtualizada?.getProps().nome.val()).toBe('Novo Nome');
@@ -69,7 +65,7 @@ describe('Use Cases: Categoria (com Mock Repository Real)', () => {
         it('deve remover a categoria e retornar 1 se deletado com sucesso', async () => {
             const useCaseCriar = new CriarCategoria(repo);
             const categoria = await useCaseCriar.executar({ nome: 'Para Deletar', slug: 'delete' });
-            const id = categoria.getProps().id;
+            const id = categoria.id;
 
             const useCaseDeletar = new DeletarCategoria(repo);
             const resultado = await useCaseDeletar.executar(id);

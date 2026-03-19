@@ -14,23 +14,21 @@ describe('Casos de Uso: Atributo', () => {
         const casoDeUso = new CriarAtributo(repo);
         const resultado = await casoDeUso.executar({ nome: 'Cor Primária' });
 
-        expect(resultado).toBeInstanceOf(Atributo);
-        expect(resultado.getProps().nome.val()).toBe('Cor Primária');
-        expect(resultado.getProps().id).toBeDefined();
+        expect(resultado).toBeDefined();
+        expect(resultado.nome).toBe('Cor Primária');
+        expect(resultado.id).toBeDefined();
     });
 
     test('Deve buscar um atributo pelo ID', async () => {
         const criarUC = new CriarAtributo(repo);
         const atributoCriado = await criarUC.executar({ nome: 'Tamanho' });
-        const id = atributoCriado.getProps().id;
+        const id = atributoCriado.id;
 
         const buscarUC = new BuscarAtributo(repo);
         const resultado = await buscarUC.executar(id);
 
-        expect(resultado).toBeInstanceOf(Atributo);
-        if (resultado instanceof Atributo) {
-            expect(resultado.getProps().id).toBe(id);
-        }
+        expect(resultado).toBeDefined();
+        expect(resultado?.id).toBe(id);
     });
 
     test('Deve listar todos os atributos', async () => {
@@ -42,28 +40,27 @@ describe('Casos de Uso: Atributo', () => {
         const lista = await listarUC.executar();
 
         expect(lista).toHaveLength(2);
-        expect(lista[0].getProps().nome.val()).toBe('Atributo 1');
+        expect(lista[0].nome).toBe('Atributo 1');
     });
 
     test('Deve alterar o nome de um atributo', async () => {
         const criarUC = new CriarAtributo(repo);
         const atributo = await criarUC.executar({ nome: 'Nome Antigo' });
-        const id = atributo.getProps().id;
+        const id = atributo.id;
 
         const alterarUC = new AlterarAtributo(repo);
-        const sucesso = await alterarUC.executar(id, 'Nome Novo');
+        await alterarUC.executar(id, { nome: 'Nome Novo' });
 
         const buscarUC = new BuscarAtributo(repo);
-        const atualizado = await buscarUC.executar(id) as Atributo;
+        const atualizado = await buscarUC.executar(id);
 
-        expect(sucesso).toBe(true);
-        expect(atualizado.getProps().nome.val()).toBe('Nome Novo');
+        expect(atualizado?.nome).toBe('Nome Novo');
     });
 
     test('Deve deletar um atributo', async () => {
         const criarUC = new CriarAtributo(repo);
         const atributo = await criarUC.executar({ nome: 'Para Deletar' });
-        const id = atributo.getProps().id;
+        const id = atributo.id;
 
         const deletarUC = new DeletarAtributo(repo);
         const sucesso = await deletarUC.executar(id);

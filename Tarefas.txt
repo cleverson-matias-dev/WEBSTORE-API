@@ -2,6 +2,15 @@
 [FIX] Categoria update deve retornar confirmação
 [REFACTOR] Criar método statico create para entidades do domínio e refatorar os usos
 
+Validação Estrutural nos DTOs
+Tratamento de Erros Consistente:
+Paginação e Filtros:
+Logs e Observabilidade:
+Transações para Integridade: operações que modificam múltiplas entidades
+Documentação: JSDoc Dtos Mappers Casos de uso
+Testes Unitários: Dtos Mappers
+cache
+
 Testes
 Documentação
 Segurança
