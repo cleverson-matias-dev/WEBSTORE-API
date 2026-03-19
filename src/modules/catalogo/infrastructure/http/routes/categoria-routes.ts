@@ -27,6 +27,6 @@ categoryRoutes.delete(
 );
 
 categoryRoutes.patch(
-    '/', validate(editCategoriaSchema),
+    '/:id', validate(editCategoriaSchema),
     (req, res) => categoryController.update(req, res)
 );

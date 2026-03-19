@@ -27,6 +27,6 @@ attributeRoutes.delete(
 );
 
 attributeRoutes.patch(
-    '/', validate(editAtributoSchema),
+    '/:id', validate(editAtributoSchema),
     (req, res) => attributesController.update(req, res)
 );
