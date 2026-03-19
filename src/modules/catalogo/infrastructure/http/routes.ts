@@ -1,34 +1,10 @@
 import { Router } from "express";
-import { CategoryController } from "./CategoryController";
-import { validate } from "./middlewares/validate";
-import { createCategoriaSchema, editCategoriaSchema, getDeleteCategoriaSchema } from "./schemas/categoria-schema";
+import { attributeRoutes } from "./routes/atributo-routes";
+import { categoryRoutes } from "./routes/categoria-routes";
 
-const categoryRoutes = Router();
-const categoryController = new CategoryController();
+const routes = Router();
 
-categoryRoutes.get('/', (req, res) => categoryController.all(req, res));
+routes.use('/categorias', categoryRoutes);
+routes.use('/atributos', attributeRoutes)
 
-categoryRoutes.post(
-    '/', 
-    validate(createCategoriaSchema), 
-    (req, res) => categoryController.create(req, res)
-);
-
-categoryRoutes.get(
-    '/:id', 
-    validate(getDeleteCategoriaSchema), 
-    (req, res) => categoryController.find(req, res)
-);
-
-categoryRoutes.delete(
-    '/:id', 
-    validate(getDeleteCategoriaSchema),
-    (req, res) => categoryController.delete(req, res)
-);
-
-categoryRoutes.patch(
-    '/', validate(editCategoriaSchema),
-    (req, res) => categoryController.update(req, res)
-);
-
-export default categoryRoutes;
+export default routes;

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm"
 import { Sku } from "./Sku"
-import { Atributo } from "./Atributo"
+import { AtributoEntity } from "./AtributoEntity"
 
 @Entity('sku_atributo_valor')
 export class SkuAtributoValor {
@@ -28,9 +28,9 @@ export class SkuAtributoValor {
     @JoinColumn({name: 'sku_id'})
     sku: Sku
 
-    @ManyToOne(()=>Atributo)
+    @ManyToOne(()=>AtributoEntity)
     @JoinColumn({name: 'atributo_id'})
-    atributo: Atributo
+    atributo: AtributoEntity
 
     @CreateDateColumn()
     created_at: Date

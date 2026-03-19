@@ -1,13 +1,13 @@
 import express from 'express';
-import { AppDataSource } from '@shared/infra/db/data-source';
 import categoryRoutes from '@modules/catalogo/infrastructure/http/routes';
+import { AppDataSource } from '../db/data-source';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 
 app.use(express.json());
-app.use('/categorias', categoryRoutes);
+app.use('/api', categoryRoutes);
 
 AppDataSource.initialize().then(()=>{
     console.log("Banco de dados inicializado!");
@@ -21,5 +21,5 @@ AppDataSource.initialize().then(()=>{
     })
 
 }).catch(error => {
-    console.log(`falha ao iniciar banco de dados, erro: ${error.code}`);
+    console.log(`falha ao iniciar banco de dados, erro: ${error}`);
 })

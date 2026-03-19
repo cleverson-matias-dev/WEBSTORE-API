@@ -1,6 +1,6 @@
-import { Categoria } from "../../../catalogo/domain/entities/categoria.entity";
-import { AlterarCategoria, BuscarCategoria, CriarCategoria, DeletarCategoria, ListarCategorias } from "./categoria-use-cases";
-import { MockCategoryRepository } from "./mockRepository"
+import { Categoria } from "../../modules/catalogo/domain/entities/categoria.entity";
+import { AlterarCategoria, BuscarCategoria, CriarCategoria, DeletarCategoria, ListarCategorias } from "../../modules/catalogo/application/use-cases/categoria-use-cases";
+import { MockCategoryRepository } from "./mockCategoriaRepository"
 
 describe('Use Cases: Categoria (com Mock Repository Real)', () => {
     let repo: MockCategoryRepository;

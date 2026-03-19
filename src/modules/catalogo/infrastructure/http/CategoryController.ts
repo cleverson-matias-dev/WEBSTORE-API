@@ -8,7 +8,6 @@ const repo = new TypeORMCategoryRepository();
 export class CategoryController {
     async create(req: Request, res: Response) {
         try {
-            
             const data = req.body;
             const useCase = new CriarCategoria(repo);
             return res.status(201).json(await useCase.executar(data));

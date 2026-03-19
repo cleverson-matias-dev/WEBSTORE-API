@@ -1,6 +1,6 @@
-import { Categoria } from "../../domain/entities/categoria.entity";
-import { CategoriaNome } from "../../domain/value-objects/categoria.nome.vo";
-import { ICategoryRepository } from "../../application/repository/ICategoryRepository";
+import { Categoria } from "../../modules/catalogo/domain/entities/categoria.entity";
+import { CategoriaNome } from "../../modules/catalogo/domain/value-objects/categoria.nome.vo";
+import { ICategoryRepository } from "../../modules/catalogo/application/repository/ICategoryRepository";
 import { v4 as uuidv4 } from 'uuid';
 
 export class MockCategoryRepository implements ICategoryRepository {

@@ -1,5 +1,6 @@
-[FIX] alterar nome da tabela categoria_entity para categorias
-
+[FEATURE] Criar entidade atributo
+[FIX] Categoria update deve retornar confirmação
+[REFACTOR] Criar método statico create para entidades do domínio e refatorar os usos
 
 Testes
 Documentação
