@@ -51,15 +51,17 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
         return val ? this.toDomain(val) : [];
     }
 
-    async update(id: string, name: string): Promise<void> {
+    async update(id: string, name: string): Promise<boolean> {
         const voNome = new CategoryName(name);
         // O slug é gerado no domínio, por isso instanciamos a entidade de domínio
         const categoriaMock = new Category({ name: voNome });
 
-        await this.repository.update(id, {
+        const result =  await this.repository.update(id, {
             name: voNome.val(),
             slug: categoriaMock.getProps().slug
         });
+
+        return !!(result.affected && result.affected > 0);
     }
 
     async delete(id: string): Promise<boolean> {

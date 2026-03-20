@@ -8,9 +8,9 @@ import { CategoryMapper } from "../dtos/category-mapper";
 export class UpdateCategoryUC {
     constructor(private repo: ICategoryRepository) {}
 
-    async execute(id: string, dto: UpdateCategoryDTO): Promise<void> {
+    async execute(id: string, dto: UpdateCategoryDTO): Promise<boolean> {
         const name = new CategoryName(dto.name);
-        await this.repo.update(id, name.val());
+        return this.repo.update(id, name.val());
     }
 }
 

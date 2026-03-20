@@ -1,4 +1,3 @@
-[FIX] repositorio category update não deve retornar void
 [REFACTOR] Attribute use cases deve receber e enviar DTOs e não entidades
 
 

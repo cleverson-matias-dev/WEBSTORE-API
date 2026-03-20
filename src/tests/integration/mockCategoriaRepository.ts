@@ -29,13 +29,12 @@ export class MockCategoryRepository implements ICategoryRepository {
         return item || [];
     }
 
-    async update(id: string, name: string): Promise<void> {
+    async update(id: string, name: string): Promise<boolean> {
         const index = this.items.findIndex(cat => cat.getProps().id === id);
         
         if (index !== -1) {
             const propsAntigas = this.items[index].getProps();
             
-            // Criamos uma nova instância para disparar a lógica de slug e validação
             const categoriaAtualizada = new Category({
                 ...propsAntigas,
                 name: CategoryName.create(name),
@@ -43,7 +42,10 @@ export class MockCategoryRepository implements ICategoryRepository {
             });
 
             this.items[index] = categoriaAtualizada;
+            return true;
         }
+
+        return false;
     }
 
     async delete(id: string): Promise<boolean> {

@@ -61,10 +61,11 @@ export class CategoryController {
        
         try {
            const uc = new UpdateCategoryUC(repo);
-           const {id} = req.params;
+           const { id } = req.params;
            const { name } = req.body;
-           await uc.execute(id as string, { name });
-           return res.status(204).json();
+           const result = await uc.execute(id as string, { name });
+           if(!result) return res.status(404).send();
+           return res.status(204).send();
 
         } catch (error: any){
            return res.status(400).json({status: 'error', errors: [error.message]});
