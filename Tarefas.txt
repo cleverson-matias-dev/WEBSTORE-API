@@ -1,5 +1,5 @@
-
-[REFACTOR] Criar método statico create para entidades do domínio e refatorar os usos
+[FIX] repositorio category update não deve retornar void
+[REFACTOR] Attribute use cases deve receber e enviar DTOs e não entidades
 
 
 Validação Estrutural nos DTOs

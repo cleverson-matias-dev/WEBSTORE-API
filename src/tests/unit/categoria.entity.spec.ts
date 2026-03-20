@@ -1,56 +1,56 @@
-import { Categoria } from '@modules/catalogo/domain/entities/categoria.entity';
-import { CategoriaNome } from '../../modules/catalogo/domain/value-objects/categoria.nome.vo';
+import { Category } from '@modules/catalogo/domain/entities/category.entity';
+import { CategoryName } from '../../modules/catalogo/domain/value-objects/category.name.vo';
 
-describe('Categoria Entity', () => {
+describe('Category Entity', () => {
     
-    // Helper para criar o Value Object de nome
-    const makeNome = (nome: string) => new CategoriaNome(nome);
+    // Helper para criar o Value Object de name
+    const makeNome = (name: string) => new CategoryName(name);
 
-    it('deve criar uma categoria válida com slug gerado automaticamente', () => {
-        const nome = 'Eletrônicos e Celulares';
-        const categoria = new Categoria({
-            nome: makeNome(nome)
+    it('deve criar uma category válida com slug gerado automaticamente', () => {
+        const name = 'Eletrônicos e Celulares';
+        const category = new Category({
+            name: makeNome(name)
         });
 
-        const props = categoria.getProps();
+        const props = category.getProps();
         
-        expect(props.nome.val()).toBe(nome);
+        expect(props.name.val()).toBe(name);
         expect(props.slug).toBe('eletronicos-e-celulares');
     });
 
     it('deve manter o slug fornecido se ele já existir nas props', () => {
-        const categoria = new Categoria({
-            nome: makeNome('Computadores'),
+        const category = new Category({
+            name: makeNome('Computadores'),
             slug: 'slug-customizado-manual'
         });
 
-        expect(categoria.getProps().slug).toBe('slug-customizado-manual');
+        expect(category.getProps().slug).toBe('slug-customizado-manual');
     });
 
     it('deve gerar slug corretamente com caracteres especiais e acentuação', () => {
-        const categoria = new Categoria({
-            nome: makeNome('  Cozinha & Decoração Ávida!  ')
+        const category = new Category({
+            name: makeNome('  Cozinha & Decoração Ávida!  ')
         });
 
         // Esperado: minúsculo, sem acento, sem símbolos, espaços viram hífens
-        expect(categoria.getProps().slug).toBe('cozinha-decoracao-avida');
+        expect(category.getProps().slug).toBe('cozinha-decoracao-avida');
     });
 
     it('deve aceitar e armazenar um parent_id opcional', () => {
         const parentId = 'uuid-pai-123';
-        const categoria = new Categoria({
-            nome: makeNome('Subcategoria'),
+        const category = new Category({
+            name: makeNome('Subcategoria'),
             parent_id: parentId
         });
 
-        expect(categoria.getProps().parent_id).toBe(parentId);
+        expect(category.getProps().parent_id).toBe(parentId);
     });
 
     it('deve garantir que múltiplos hífens seguidos no slug sejam normalizados', () => {
-        const categoria = new Categoria({
-            nome: makeNome('Teste --- Espaçamento')
+        const category = new Category({
+            name: makeNome('Teste --- Espaçamento')
         });
 
-        expect(categoria.getProps().slug).toBe('teste-espacamento');
+        expect(category.getProps().slug).toBe('teste-espacamento');
     });
 });

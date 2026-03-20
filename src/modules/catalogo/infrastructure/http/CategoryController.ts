@@ -1,16 +1,15 @@
 import { Request, Response } from "express";
 import { TypeORMCategoryRepository } from "../persistence/TypeORMCategoryRepository";
-import { CriarCategoria, ListarCategorias, BuscarCategoria, DeletarCategoria, AlterarCategoria } from "@modules/catalogo/application/use-cases/categoria-use-cases";
-import { Categoria } from "@modules/catalogo/domain/entities/categoria.entity";
+import { SaveCategoryUC, GetAllCategoriesUC, FindCategoryByIdUC, DeleteCategoryUC, UpdateCategoryUC } from "@modules/catalogo/application/use-cases/category-use-cases";
 
 const repo = new TypeORMCategoryRepository();
 
 export class CategoryController {
-    async create(req: Request, res: Response) {
+    async save(req: Request, res: Response) {
         try {
-            const data = req.body;
-            const useCase = new CriarCategoria(repo);
-            return res.status(201).json(await useCase.executar(data));
+            const data = req.body;        
+            const uc = new SaveCategoryUC(repo);
+            return res.status(201).json(await uc.execute(data));
 
         } catch (error: any) {
             return res.status(400).json({status: 'error', errors: [error.message]})
@@ -19,19 +18,19 @@ export class CategoryController {
 
     async all(req: Request, res: Response) {
         try {
-           const useCase = new ListarCategorias(repo);
-           return res.status(200).json(await useCase.executar());
+           const useCase = new GetAllCategoriesUC(repo);
+           return res.status(200).json(await useCase.execute());
         } catch (error: any){
             return res.status(400).json({status: 'error', errors: [error.message]});
         }
     }
 
-    async find(req: Request, res: Response) {
+    async findById(req: Request, res: Response) {
         try {
 
-           const useCase = new BuscarCategoria(repo);
+           const uc = new FindCategoryByIdUC(repo);
            const {id} = req.params;
-           const result = await useCase.executar(id as string);
+           const result = await uc.execute(id as string);
 
            if(!result) {
                 return res.status(404).json({status: 'error', errors: ['recurso não encontrado.']})
@@ -46,11 +45,11 @@ export class CategoryController {
 
     async delete(req: Request, res: Response) {
         try {
-           const useCase = new DeletarCategoria(repo);
+           const uc = new DeleteCategoryUC(repo);
            const {id} = req.params;
-           const response = await useCase.executar(id as string);
+           const response = await uc.execute(id as string);
            if(!response) {
-             return res.status(404).json({status: 'error', errors: ['Categoria não encontrada.']});
+             return res.status(404).json({status: 'error', errors: ['Category não encontrada.']});
            }
            return res.status(204).json();
         } catch (error: any){
@@ -61,10 +60,10 @@ export class CategoryController {
     async update(req: Request, res: Response) {
        
         try {
-           const useCase = new AlterarCategoria(repo);
+           const uc = new UpdateCategoryUC(repo);
            const {id} = req.params;
-           const { nome } = req.body;
-           await useCase.executar(id as string, { nome });
+           const { name } = req.body;
+           await uc.execute(id as string, { name });
            return res.status(204).json();
 
         } catch (error: any){

@@ -1,16 +1,16 @@
-export interface CreateCategoriaDTO {
-    nome: string;
+export interface CreateCategoryDTO {
+    name: string;
     parent_id?: string | null;
     slug?: string;
 }
 
-export interface UpdateCategoriaDTO {
-    nome: string;
+export interface UpdateCategoryDTO {
+    name: string;
 }
 
-export interface CategoriaDTO {
+export interface CategoryDTO {
     id: string;
-    nome: string;
+    name: string;
     slug: string;
     parent_id?: string | null;
     created_at: Date;

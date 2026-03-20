@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, OneToMany, UpdateDateColumn } from "typeorm"
-import { CategoriaEntity } from "./CategoriaEntity"
+import { CategoryEntity } from "./CategoryEntity"
 import { Sku } from "./Sku"
 import { Imagem } from "./Imagem"
 
@@ -12,7 +12,7 @@ export class Produto {
         type: 'varchar',
         length: '100'
     })
-    nome: string
+    name: string
 
     @Column({
         type: 'varchar',
@@ -28,9 +28,9 @@ export class Produto {
     @OneToMany(()=>Sku, (sku) => sku.produto)
     skus: Sku[]
 
-    @OneToOne(()=>CategoriaEntity)
+    @OneToOne(()=>CategoryEntity)
     @JoinColumn()
-    categoria_id: CategoriaEntity
+    categoria_id: CategoryEntity
 
     @OneToMany(()=>Imagem, (imagem)=> imagem.produto)
     imagens: Imagem[]

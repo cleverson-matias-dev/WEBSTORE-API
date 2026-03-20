@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
 import { TypeORMAttributeRepository } from "../persistence/TypeORMAttributeRepository";
-import { AlterarAtributo, BuscarAtributo, CriarAtributo, DeletarAtributo, ListarAtributos } from "@modules/catalogo/application/use-cases/atributo-use-cases";
-import { Atributo } from "@modules/catalogo/domain/entities/atributo.entity";
+import { UpdateAttributeUC, FindAttributeUC, saveAttributeUC, DeleteAttributeUC, GetAllAttributesUC } from "@modules/catalogo/application/use-cases/attribute-use-cases";
+import { SaveCategoryUC } from "@modules/catalogo/application/use-cases/category-use-cases";
 
 const repo = new TypeORMAttributeRepository();
 
 export class AttributesController {
 
-    async create(req: Request, res: Response){
+    async save(req: Request, res: Response){
         try {
-            res.status(201).json(await (new CriarAtributo(repo)).executar(req.body));
+            const uc = new saveAttributeUC(repo);
+            res.status(201).json(await uc.execute(req.body));
         } catch (error: any) {
             res.status(400).json({status: 'error', errors: [error.message]});
         }
@@ -17,19 +18,19 @@ export class AttributesController {
 
     async all(req: Request, res: Response) {
         try {
-            const useCase = new ListarAtributos(repo);
-            return res.status(200).json(await useCase.executar());
+            const uc = new GetAllAttributesUC(repo);
+            return res.status(200).json(await uc.execute());
         } catch (error: any){
             return res.status(400).json({status: 'error', errors: [error.message]});
         }
     }
 
-    async find(req: Request, res: Response) {
+    async findById(req: Request, res: Response) {
         try {
 
-            const useCase = new BuscarAtributo(repo);
+            const uc = new FindAttributeUC(repo);
             const {id} = req.params;
-            const result = await useCase.executar(id as string);
+            const result = await uc.execute(id as string);
 
             if(!result) {
                 return res.status(404).json({status: 'error', errors: ['recurso não encontrado.']})
@@ -44,11 +45,11 @@ export class AttributesController {
 
     async delete(req: Request, res: Response) {
         try {
-            const useCase = new DeletarAtributo(repo);
+            const uc = new DeleteAttributeUC(repo);
             const {id} = req.params;
-            const response = await useCase.executar(id as string);
+            const response = await uc.execute(id as string);
             if(!response) {
-                return res.status(404).json({status: 'error', errors: ['Atributo não encontrado.']});
+                return res.status(404).json({status: 'error', errors: ['Attribute não encontrado.']});
             }
             return res.status(204).json();
         } catch (error: any){
@@ -59,10 +60,10 @@ export class AttributesController {
     async update(req: Request, res: Response) {
            
         try {
-            const useCase = new AlterarAtributo(repo);
+            const uc = new UpdateAttributeUC(repo);
             const {id} = req.params;
-            const { nome } = req.body;
-            await useCase.executar(id as string, { nome });
+            const { name } = req.body;
+            await uc.execute(id as string, { name });
 
             res.status(204).json()
         } catch (error: any){

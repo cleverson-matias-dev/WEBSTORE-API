@@ -1,18 +1,18 @@
 import { ICategoryRepository } from "@modules/catalogo/application/repository/ICategoryRepository";
 import { AppDataSource } from "@shared/infra/db/data-source";
 import { Repository } from "typeorm";
-import { Categoria } from "@modules/catalogo/domain/entities/categoria.entity";
-import { CategoriaEntity } from "./entities/CategoriaEntity";
-import { CategoriaNome } from "@modules/catalogo/domain/value-objects/categoria.nome.vo";
+import { Category } from "@modules/catalogo/domain/entities/category.entity";
+import { CategoryEntity } from "./entities/CategoryEntity";
+import { CategoryName } from "@modules/catalogo/domain/value-objects/category.name.vo";
 
 export class TypeORMCategoryRepository implements ICategoryRepository {
-    private repository: Repository<CategoriaEntity> = AppDataSource.getRepository(CategoriaEntity);
+    private repository: Repository<CategoryEntity> = AppDataSource.getRepository(CategoryEntity);
 
     // Helper para converter o que vem do banco para o Domínio
-    private toDomain(val: CategoriaEntity): Categoria {
-        return new Categoria({
+    private toDomain(val: CategoryEntity): Category {
+        return new Category({
             id: val.id,
-            nome: new CategoriaNome(val.nome),
+            name: new CategoryName(val.name),
             created_at: val.created_at,
             parent_id: val.parent_id,
             slug: val.slug,
@@ -20,19 +20,19 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
         });
     }
 
-    async save(categoria: Categoria): Promise<Categoria> {
-        const { nome, parent_id, slug } = categoria.getProps();
+    async save(category: Category): Promise<Category> {
+        const { name, parent_id, slug } = category.getProps();
 
-        const exists = await this.repository.findOneBy({ nome: nome.val() });
+        const exists = await this.repository.findOneBy({ name: name.val() });
         if (exists) throw new Error('Essa categoria já existe.');
 
         if (parent_id) {
             const parentExists = await this.repository.findOneBy({ id: parent_id });
-            if (!parentExists) throw new Error('Categoria pai não existe');
+            if (!parentExists) throw new Error('Category pai não existe');
         }
 
         const data = this.repository.create({
-            nome: nome.val(),
+            name: name.val(),
             parent_id,
             slug
         });
@@ -41,23 +41,23 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
         return this.toDomain(saved);
     }
 
-    async findAll(): Promise<Categoria[]> {
+    async all(): Promise<Category[]> {
         const response = await this.repository.find();
         return response.map(this.toDomain);
     }
 
-    async findById(id: string): Promise<Categoria | []> {
+    async findBy(id: string): Promise<Category | []> {
         const val = await this.repository.findOneBy({ id });
         return val ? this.toDomain(val) : [];
     }
 
-    async update(id: string, nome: string): Promise<void> {
-        const voNome = new CategoriaNome(nome);
+    async update(id: string, name: string): Promise<void> {
+        const voNome = new CategoryName(name);
         // O slug é gerado no domínio, por isso instanciamos a entidade de domínio
-        const categoriaMock = new Categoria({ nome: voNome });
+        const categoriaMock = new Category({ name: voNome });
 
         await this.repository.update(id, {
-            nome: voNome.val(),
+            name: voNome.val(),
             slug: categoriaMock.getProps().slug
         });
     }

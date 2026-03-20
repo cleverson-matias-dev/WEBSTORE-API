@@ -1,12 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from "typeorm"
 
-@Entity({name: 'categorias'})
-export class CategoriaEntity {
+@Entity({name: 'categories'})
+export class CategoryEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
     @Column({ type: 'varchar', length: '100' })
-    nome: string
+    name: string
 
     @Column({ type: 'varchar', length: '100' })
     slug: string
@@ -16,15 +16,15 @@ export class CategoriaEntity {
     parent_id?: string | null
 
     // 2. Garante que a relação aceite nulo (nullable: true)
-    @ManyToOne(() => CategoriaEntity, (categoria) => categoria.children, { 
+    @ManyToOne(() => CategoryEntity, (category) => category.children, { 
         onDelete: 'CASCADE', 
         nullable: true 
     })
     @JoinColumn({ name: 'parent_id' })
-    parent?: CategoriaEntity | null
+    parent?: CategoryEntity | null
 
-    @OneToMany(() => CategoriaEntity, (categoria) => categoria.parent)
-    children: CategoriaEntity[]
+    @OneToMany(() => CategoryEntity, (category) => category.parent)
+    children: CategoryEntity[]
 
     @CreateDateColumn()
     created_at: Date

@@ -43,7 +43,7 @@ export class Sku {
     dimensoes: string
 
     @OneToMany(()=>SkuAtributoValor, (skuAtributoValor) => skuAtributoValor.sku)
-    atributos: SkuAtributoValor[]
+    attributes: SkuAtributoValor[]
 
     @CreateDateColumn()
     created_at: Date

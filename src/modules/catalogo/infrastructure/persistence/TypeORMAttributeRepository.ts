@@ -1,50 +1,50 @@
-import { IAtributoRepository } from "@modules/catalogo/application/repository/IAtributoRepository";
-import { Atributo } from "@modules/catalogo/domain/entities/atributo.entity";
-import { AtributoEntity } from "./entities/AtributoEntity";
-import { AtributoNome } from "@modules/catalogo/domain/value-objects/atributo.nome.vo";
+import { Attribute } from "@modules/catalogo/domain/entities/attribute.entity";
+import { AttributeEntity } from "./entities/AttributeEntity";
 import { AppDataSource } from "@shared/infra/db/data-source";
 import { Repository } from "typeorm";
+import { IAttributeRepository } from "@modules/catalogo/application/repository/IAttributeRepository";
+import { AttributeName } from "@modules/catalogo/domain/value-objects/attribute.name.vo";
 
-export class TypeORMAttributeRepository implements IAtributoRepository {
-    private repository: Repository<AtributoEntity> = AppDataSource.getRepository(AtributoEntity);
+export class TypeORMAttributeRepository implements IAttributeRepository {
+    private repository: Repository<AttributeEntity> = AppDataSource.getRepository(AttributeEntity);
 
-    private toDomain(val: AtributoEntity): Atributo {
-        return new Atributo({
+    private toDomain(val: AttributeEntity): Attribute {
+        return new Attribute({
             id: val.id,
-            nome: new AtributoNome(val.nome),
+            name: new AttributeName(val.name),
             created_at: val.created_at,
             updated_at: val.updated_at
         });
     }
 
-    async save(atributo: Atributo): Promise<Atributo> {
-        const { nome } = atributo.getProps();
+    async save(attribute: Attribute): Promise<Attribute> {
+        const { name } = attribute.getProps();
 
-        const result = await this.repository.findBy({nome: nome.val()});
+        const result = await this.repository.findBy({name: name.val()});
         if(result.length) throw new Error('Esse atributo já existe.');
 
-        const data: AtributoEntity = this.repository.create({
-            nome: nome.val()
+        const data: AttributeEntity = this.repository.create({
+            name: name.val()
         })
 
-        const saved: AtributoEntity = await this.repository.save(data);
+        const saved: AttributeEntity = await this.repository.save(data);
         return this.toDomain(saved);
 
     }
 
-    async findAll(): Promise<Atributo[]> {
+    async all(): Promise<Attribute[]> {
         const result = await this.repository.find();
         return result.map(this.toDomain);
     }
 
-    async findById(id: string): Promise<Atributo | []> {
+    async findBy(id: string): Promise<Attribute | []> {
         const result = await this.repository.findOneBy({id});
         return result ? this.toDomain(result) : [];
     }
 
-    async update(id: string, nome: string): Promise<boolean> {
-        const voNome: AtributoNome = new AtributoNome(nome);
-        const result = await this.repository.update(id, {nome: voNome.val()});
+    async update(id: string, name: string): Promise<boolean> {
+        const voNome: AttributeName = new AttributeName(name);
+        const result = await this.repository.update(id, {name: voNome.val()});
         return !!(result.affected && result.affected > 0);
     }
 

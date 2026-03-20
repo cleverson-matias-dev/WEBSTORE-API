@@ -1,80 +1,80 @@
-import { Atributo } from "@modules/catalogo/domain/entities/atributo.entity";
+import { Attribute } from "@modules/catalogo/domain/entities/attribute.entity";
 import { MockAtributoRepository } from "./mockAtributoRepository";
-import { AlterarAtributo, BuscarAtributo, CriarAtributo, DeletarAtributo, ListarAtributos } from "@modules/catalogo/application/use-cases/atributo-use-cases";
+import { UpdateAttributeUC, FindAttributeUC, saveAttributeUC, DeleteAttributeUC, GetAllAttributesUC } from "@modules/catalogo/application/use-cases/attribute-use-cases";
 
 
-describe('Casos de Uso: Atributo', () => {
+describe('Casos de Uso: Attribute', () => {
     let repo: MockAtributoRepository;
 
     beforeEach(() => {
         repo = new MockAtributoRepository();
     });
 
-    test('Deve criar um novo atributo', async () => {
-        const casoDeUso = new CriarAtributo(repo);
-        const resultado = await casoDeUso.executar({ nome: 'Cor Primária' });
+    test('Deve criar um novo attribute', async () => {
+        const casoDeUso = new saveAttributeUC(repo);
+        const resultado = await casoDeUso.execute({ name: 'Cor Primária' });
 
         expect(resultado).toBeDefined();
-        expect(resultado.nome).toBe('Cor Primária');
+        expect(resultado.name).toBe('Cor Primária');
         expect(resultado.id).toBeDefined();
     });
 
-    test('Deve buscar um atributo pelo ID', async () => {
-        const criarUC = new CriarAtributo(repo);
-        const atributoCriado = await criarUC.executar({ nome: 'Tamanho' });
+    test('Deve buscar um attribute pelo ID', async () => {
+        const criarUC = new saveAttributeUC(repo);
+        const atributoCriado = await criarUC.execute({ name: 'Tamanho' });
         const id = atributoCriado.id;
 
-        const buscarUC = new BuscarAtributo(repo);
-        const resultado = await buscarUC.executar(id);
+        const buscarUC = new FindAttributeUC(repo);
+        const resultado = await buscarUC.execute(id);
 
         expect(resultado).toBeDefined();
         expect(resultado?.id).toBe(id);
     });
 
-    test('Deve listar todos os atributos', async () => {
-        const criarUC = new CriarAtributo(repo);
-        await criarUC.executar({ nome: 'Atributo 1' });
-        await criarUC.executar({ nome: 'Atributo 2' });
+    test('Deve listar todos os attributes', async () => {
+        const criarUC = new saveAttributeUC(repo);
+        await criarUC.execute({ name: 'Attribute 1' });
+        await criarUC.execute({ name: 'Attribute 2' });
 
-        const listarUC = new ListarAtributos(repo);
-        const lista = await listarUC.executar();
+        const listarUC = new GetAllAttributesUC(repo);
+        const lista = await listarUC.execute();
 
         expect(lista).toHaveLength(2);
-        expect(lista[0].nome).toBe('Atributo 1');
+        expect(lista[0].name).toBe('Attribute 1');
     });
 
-    test('Deve alterar o nome de um atributo', async () => {
-        const criarUC = new CriarAtributo(repo);
-        const atributo = await criarUC.executar({ nome: 'Nome Antigo' });
-        const id = atributo.id;
+    test('Deve alterar o name de um attribute', async () => {
+        const criarUC = new saveAttributeUC(repo);
+        const attribute = await criarUC.execute({ name: 'Nome Antigo' });
+        const id = attribute.id;
 
-        const alterarUC = new AlterarAtributo(repo);
-        await alterarUC.executar(id, { nome: 'Nome Novo' });
+        const alterarUC = new UpdateAttributeUC(repo);
+        await alterarUC.execute(id, { name: 'Nome Novo' });
 
-        const buscarUC = new BuscarAtributo(repo);
-        const atualizado = await buscarUC.executar(id);
+        const buscarUC = new FindAttributeUC(repo);
+        const atualizado = await buscarUC.execute(id);
 
-        expect(atualizado?.nome).toBe('Nome Novo');
+        expect(atualizado?.name).toBe('Nome Novo');
     });
 
-    test('Deve deletar um atributo', async () => {
-        const criarUC = new CriarAtributo(repo);
-        const atributo = await criarUC.executar({ nome: 'Para Deletar' });
-        const id = atributo.id;
+    test('Deve deletar um attribute', async () => {
+        const criarUC = new saveAttributeUC(repo);
+        const attribute = await criarUC.execute({ name: 'Para Deletar' });
+        const id = attribute.id;
 
-        const deletarUC = new DeletarAtributo(repo);
-        const sucesso = await deletarUC.executar(id);
+        const deletarUC = new DeleteAttributeUC(repo);
+        const sucesso = await deletarUC.execute(id);
 
-        const listarUC = new ListarAtributos(repo);
-        const lista = await listarUC.executar();
+        const listarUC = new GetAllAttributesUC(repo);
+        const lista = await listarUC.execute();
 
         expect(sucesso).toBe(true);
         expect(lista).toHaveLength(0);
     });
 
-    test('Não deve criar atributo com nome inválido (menos de 3 caracteres)', async () => {
-        const casoDeUso = new CriarAtributo(repo);
-        await expect(casoDeUso.executar({ nome: 'Ab' }))
-            .rejects.toThrow('Nome de Atributo inválido.');
+    test('Não deve criar attribute com name inválido (menos de 3 caracteres)', async () => {
+        const casoDeUso = new saveAttributeUC(repo);
+        await expect(casoDeUso.execute({ name: 'Ab' }))
+            .rejects.toThrow('Nome de Attribute inválido.');
     });
 });

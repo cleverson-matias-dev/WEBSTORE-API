@@ -1,60 +1,60 @@
-// Atributo.spec.ts
-import { AtributoNome } from "@modules/catalogo/domain/value-objects/atributo.nome.vo"; // ajuste o caminho
-import { Atributo, IAtributo } from "@modules/catalogo/domain/entities/atributo.entity";
+// Attribute.spec.ts
+import { AttributeName } from "@modules/catalogo/domain/value-objects/attribute.name.vo"; // ajuste o caminho
+import { Attribute, IAttribute } from "@modules/catalogo/domain/entities/attribute.entity";
 
-describe('AtributoNome Value Object', () => {
-    test('deve criar um nome de atributo válido', () => {
-        const nome = "Cor do Produto";
-        const vo = AtributoNome.create(nome);
-        expect(vo.val()).toBe(nome);
+describe('AttributeName Value Object', () => {
+    test('deve criar um name de attribute válido', () => {
+        const name = "Cor do Produto";
+        const vo = AttributeName.create(name);
+        expect(vo.val()).toBe(name);
     });
 
-    test('deve lançar erro se o nome tiver menos de 3 caracteres', () => {
-        expect(() => AtributoNome.create('Ab')).toThrow('Nome de Atributo inválido.');
+    test('deve lançar erro se o name tiver menos de 3 caracteres', () => {
+        expect(() => AttributeName.create('Ab')).toThrow('Nome de Attribute inválido.');
     });
 
-    test('deve lançar erro se o nome tiver mais de 100 caracteres', () => {
+    test('deve lançar erro se o name tiver mais de 100 caracteres', () => {
         const nomeLongo = 'a'.repeat(101);
-        expect(() => AtributoNome.create(nomeLongo)).toThrow('Nome de Atributo inválido.');
+        expect(() => AttributeName.create(nomeLongo)).toThrow('Nome de Attribute inválido.');
     });
 
     test('deve aceitar caracteres especiais permitidos (acentos e símbolos)', () => {
         const nomeEspecial = 'Tamanho/Peso (Kg!) @2023';
-        const vo = AtributoNome.create(nomeEspecial);
+        const vo = AttributeName.create(nomeEspecial);
         expect(vo.val()).toBe(nomeEspecial);
     });
 
     test('deve invalidar strings vazias ou nulas', () => {
-        expect(() => AtributoNome.create('')).toThrow();
+        expect(() => AttributeName.create('')).toThrow();
         // @ts-ignore
-        expect(() => AtributoNome.create(null)).toThrow();
+        expect(() => AttributeName.create(null)).toThrow();
     });
 });
 
-describe('Atributo Entity', () => {
-    test('deve instanciar a entidade Atributo com sucesso', () => {
-        const nomeVO = AtributoNome.create('Material Principal');
+describe('Attribute Entity', () => {
+    test('deve instanciar a entidade Attribute com sucesso', () => {
+        const nomeVO = AttributeName.create('Material Principal');
         const dataCriacao = new Date();
         
-        const props: IAtributo = {
+        const props: IAttribute = {
             id: 'uuid-123',
-            nome: nomeVO,
+            name: nomeVO,
             created_at: dataCriacao
         };
 
-        const atributo = new Atributo(props);
+        const attribute = new Attribute(props);
 
-        expect(atributo.getProps().nome).toBeInstanceOf(AtributoNome);
-        expect(atributo.getProps().nome.val()).toBe('Material Principal');
-        expect(atributo.getProps().id).toBe('uuid-123');
-        expect(atributo.getProps().created_at).toBe(dataCriacao);
+        expect(attribute.getProps().name).toBeInstanceOf(AttributeName);
+        expect(attribute.getProps().name.val()).toBe('Material Principal');
+        expect(attribute.getProps().id).toBe('uuid-123');
+        expect(attribute.getProps().created_at).toBe(dataCriacao);
     });
 
     test('deve garantir que a entidade retorne as props corretamente via getProps', () => {
-        const nomeVO = AtributoNome.create('Voltagem');
-        const atributo = new Atributo({ nome: nomeVO });
+        const nomeVO = AttributeName.create('Voltagem');
+        const attribute = new Attribute({ name: nomeVO });
 
-        expect(atributo.getProps()).toHaveProperty('nome');
-        expect(atributo.getProps().nome.val()).toBe('Voltagem');
+        expect(attribute.getProps()).toHaveProperty('name');
+        expect(attribute.getProps().name.val()).toBe('Voltagem');
     });
 });

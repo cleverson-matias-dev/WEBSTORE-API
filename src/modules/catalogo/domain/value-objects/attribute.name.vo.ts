@@ -1,15 +1,15 @@
-export class AtributoNome {
+export class AttributeName {
     private _value: string;
 
     constructor(value: string) {
         if (!this.validate(value)) {
-            throw new Error('Nome de Atributo inválido.');
+            throw new Error('Nome de Attribute inválido.');
         }
         this._value = value;
     }
 
-    static create(value: string): AtributoNome {
-        return new AtributoNome(value);
+    static create(value: string): AttributeName {
+        return new AttributeName(value);
     }
 
     private validate(value: string): boolean {

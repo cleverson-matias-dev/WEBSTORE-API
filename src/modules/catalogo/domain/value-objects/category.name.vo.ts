@@ -1,15 +1,15 @@
-export class CategoriaNome {
+export class CategoryName {
     private _value: string;
 
     constructor(value: string) {
         if (!this.validate(value)) {
-            throw new Error('Nome de Categoria inválida.');
+            throw new Error('Nome de Category inválida.');
         }
         this._value = value;
     }
 
-    static create(value: string): CategoriaNome {
-        return new CategoriaNome(value);
+    static create(value: string): CategoryName {
+        return new CategoryName(value);
     }
 
     private validate(value: string): boolean {

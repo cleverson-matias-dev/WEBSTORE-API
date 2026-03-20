@@ -4,7 +4,6 @@ import { ZodError, ZodObject } from 'zod';
 export const validate = (schema: ZodObject) => 
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // O método parse valida e remove campos não definidos no schema
       await schema.parseAsync({
         body: req.body,
         query: req.query,

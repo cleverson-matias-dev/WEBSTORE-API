@@ -1,25 +1,25 @@
-import { CategoriaNome } from "../value-objects/categoria.nome.vo";
+import { CategoryName } from "../value-objects/category.name.vo";
 
-export interface ICategoria {
+export interface ICategory {
     id?:string, 
-    nome: CategoriaNome, 
+    name: CategoryName, 
     slug?: string, 
     parent_id?: string | null, 
     created_at?: Date, 
     updated_at?: Date
 }
 
-export class Categoria {
+export class Category {
     
-    private props: ICategoria;
+    private props: ICategory;
 
-    constructor(props: ICategoria) {
+    constructor(props: ICategory) {
         this.props = props;
-        this.props.slug = this.props.slug || this.generateSlug(this.props.nome);
+        this.props.slug = this.props.slug || this.generateSlug(this.props.name);
     }
 
-    private generateSlug(nome: CategoriaNome): string {
-        return nome.val()
+    private generateSlug(name: CategoryName): string {
+        return name.val()
             .normalize('NFD')                
             .replace(/[\u0300-\u036f]/g, '') 
             .toLowerCase()                   
@@ -29,7 +29,7 @@ export class Categoria {
             .replace(/-+/g, '-');            
     }
 
-    getProps(): ICategoria {
+    getProps(): ICategory {
         return this.props;
     }
 }

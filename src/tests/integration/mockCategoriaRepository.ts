@@ -1,15 +1,15 @@
-import { Categoria } from "../../modules/catalogo/domain/entities/categoria.entity";
-import { CategoriaNome } from "../../modules/catalogo/domain/value-objects/categoria.nome.vo";
+import { Category } from "../../modules/catalogo/domain/entities/category.entity";
+import { CategoryName } from "../../modules/catalogo/domain/value-objects/category.name.vo";
 import { ICategoryRepository } from "../../modules/catalogo/application/repository/ICategoryRepository";
 import { v4 as uuidv4 } from 'uuid';
 
 export class MockCategoryRepository implements ICategoryRepository {
-    private items: Categoria[] = [];
+    private items: Category[] = [];
 
-    async save(categoria: Categoria): Promise<Categoria> {
-        const props = categoria.getProps();
+    async save(category: Category): Promise<Category> {
+        const props = category.getProps();
         
-        const novaCategoria = new Categoria({
+        const novaCategoria = new Category({
             ...props,
             id: props.id || uuidv4(),
             created_at: props.created_at || new Date(),
@@ -20,25 +20,25 @@ export class MockCategoryRepository implements ICategoryRepository {
         return novaCategoria;
     }
 
-    async findAll(): Promise<Categoria[]> {
+    async all(): Promise<Category[]> {
         return [...this.items];
     }
 
-    async findById(id: string): Promise<Categoria | []> {
+    async findBy(id: string): Promise<Category | []> {
         const item = this.items.find(cat => cat.getProps().id === id);
         return item || [];
     }
 
-    async update(id: string, nome: string): Promise<void> {
+    async update(id: string, name: string): Promise<void> {
         const index = this.items.findIndex(cat => cat.getProps().id === id);
         
         if (index !== -1) {
             const propsAntigas = this.items[index].getProps();
             
             // Criamos uma nova instância para disparar a lógica de slug e validação
-            const categoriaAtualizada = new Categoria({
+            const categoriaAtualizada = new Category({
                 ...propsAntigas,
-                nome: CategoriaNome.create(nome),
+                name: CategoryName.create(name),
                 updated_at: new Date()
             });
 

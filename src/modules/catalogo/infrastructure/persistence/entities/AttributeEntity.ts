@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm"
 
-@Entity({name: 'atributos'})
-export class AtributoEntity {
+@Entity({name: 'attributes'})
+export class AttributeEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
@@ -9,7 +9,7 @@ export class AtributoEntity {
         type: 'varchar',
         length: '100'
     })
-    nome: string
+    name: string
 
     @CreateDateColumn()
     created_at: Date

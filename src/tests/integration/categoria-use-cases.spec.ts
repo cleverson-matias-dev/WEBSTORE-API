@@ -1,89 +1,89 @@
-import { Categoria } from "../../modules/catalogo/domain/entities/categoria.entity";
-import { AlterarCategoria, BuscarCategoria, CriarCategoria, DeletarCategoria, ListarCategorias } from "../../modules/catalogo/application/use-cases/categoria-use-cases";
+import { Category } from "../../modules/catalogo/domain/entities/category.entity";
+import { UpdateCategoryUC, FindCategoryByIdUC, SaveCategoryUC, DeleteCategoryUC, GetAllCategoriesUC } from "../../modules/catalogo/application/use-cases/category-use-cases";
 import { MockCategoryRepository } from "./mockCategoriaRepository"
 
-describe('Use Cases: Categoria (com Mock Repository Real)', () => {
+describe('Use Cases: Category (com Mock Repository Real)', () => {
     let repo: MockCategoryRepository;
 
     beforeEach(() => {
         repo = new MockCategoryRepository();
     });
 
-    describe('CriarCategoria', () => {
-        it('deve persistir uma nova categoria no repositório', async () => {
-            const useCase = new CriarCategoria(repo);
-            const input = { nome: 'Eletrônicos', slug: 'eletronicos', parent_id: '' };
+    describe('SaveCategoryUC', () => {
+        it('deve persistir uma nova category no repositório', async () => {
+            const useCase = new SaveCategoryUC(repo);
+            const input = { name: 'Eletrônicos', slug: 'eletronicos', parent_id: '' };
 
-            const resultado = await useCase.executar(input);
-            const itens = await repo.findAll();
+            const resultado = await useCase.execute(input);
+            const itens = await repo.all();
 
             expect(itens).toHaveLength(1);
-            expect(resultado.nome).toBe('Eletrônicos');
+            expect(resultado.name).toBe('Eletrônicos');
             expect(resultado.parent_id).toBeNull();
         });
     });
 
-    describe('BuscarCategoria', () => {
-        it('deve encontrar uma categoria existente pelo ID', async () => {
-            const useCaseCriar = new CriarCategoria(repo);
-            const categoriaCriada = await useCaseCriar.executar({ nome: 'Games', slug: 'games' });
+    describe('FindCategoryByIdUC', () => {
+        it('deve encontrar uma category existente pelo ID', async () => {
+            const useCaseCriar = new SaveCategoryUC(repo);
+            const categoriaCriada = await useCaseCriar.execute({ name: 'Games', slug: 'games' });
             const id = categoriaCriada.id;
 
-            const useCaseBuscar = new BuscarCategoria(repo);
-            const resultado = await useCaseBuscar.executar(id);
+            const useCaseBuscar = new FindCategoryByIdUC(repo);
+            const resultado = await useCaseBuscar.execute(id);
 
             expect(resultado).toBeDefined();
-            expect(resultado?.nome).toBe('Games');
+            expect(resultado?.name).toBe('Games');
         });
 
 
-        it('deve retornar null se a categoria não existir', async () => {
-            const useCase = new BuscarCategoria(repo);
-            const resultado = await useCase.executar('id-inexistente');
+        it('deve retornar null se a category não existir', async () => {
+            const useCase = new FindCategoryByIdUC(repo);
+            const resultado = await useCase.execute('id-inexistente');
             expect(resultado).toBeNull();
         });
     });
 
-    describe('AlterarCategoria', () => {
-        it('deve atualizar o nome de uma categoria existente', async () => {
-            const useCaseCriar = new CriarCategoria(repo);
-            const categoria = await useCaseCriar.executar({ nome: 'Antigo', slug: 'antigo' });
-            const id = categoria.id;
+    describe('UpdateCategoryUC', () => {
+        it('deve atualizar o name de uma category existente', async () => {
+            const useCaseCriar = new SaveCategoryUC(repo);
+            const category = await useCaseCriar.execute({ name: 'Antigo', slug: 'antigo' });
+            const id = category.id;
 
-            const useCaseAlterar = new AlterarCategoria(repo);
-            await useCaseAlterar.executar(id, { nome: 'Novo Nome' });
+            const useCaseAlterar = new UpdateCategoryUC(repo);
+            await useCaseAlterar.execute(id, { name: 'Novo Nome' });
 
-            const categoriaAtualizada = await repo.findById(id);
+            const categoriaAtualizada = await repo.findBy(id);
 
-            if(categoriaAtualizada instanceof Categoria) {
-                expect(categoriaAtualizada?.getProps().nome.val()).toBe('Novo Nome');
+            if(categoriaAtualizada instanceof Category) {
+                expect(categoriaAtualizada?.getProps().name.val()).toBe('Novo Nome');
             }
         });
     });
 
-    describe('DeletarCategoria', () => {
-        it('deve remover a categoria e retornar 1 se deletado com sucesso', async () => {
-            const useCaseCriar = new CriarCategoria(repo);
-            const categoria = await useCaseCriar.executar({ nome: 'Para Deletar', slug: 'delete' });
-            const id = categoria.id;
+    describe('DeleteCategoryUC', () => {
+        it('deve remover a category e retornar 1 se deletado com sucesso', async () => {
+            const useCaseCriar = new SaveCategoryUC(repo);
+            const category = await useCaseCriar.execute({ name: 'Para Deletar', slug: 'delete' });
+            const id = category.id;
 
-            const useCaseDeletar = new DeletarCategoria(repo);
-            const resultado = await useCaseDeletar.executar(id);
+            const useCaseDeletar = new DeleteCategoryUC(repo);
+            const resultado = await useCaseDeletar.execute(id);
 
-            const itens = await repo.findAll();
+            const itens = await repo.all();
             expect(resultado).toBe(true);
             expect(itens).toHaveLength(0);
         });
     });
 
-    describe('ListarCategorias', () => {
-        it('deve listar todas as categorias cadastradas', async () => {
-            const useCaseCriar = new CriarCategoria(repo);
-            await useCaseCriar.executar({ nome: 'Cat 1', slug: 'cat-1' });
-            await useCaseCriar.executar({ nome: 'Cat 2', slug: 'cat-2' });
+    describe('GetAllCategoriesUC', () => {
+        it('deve listar todas as categories cadastradas', async () => {
+            const useCaseCriar = new SaveCategoryUC(repo);
+            await useCaseCriar.execute({ name: 'Cat 1', slug: 'cat-1' });
+            await useCaseCriar.execute({ name: 'Cat 2', slug: 'cat-2' });
 
-            const useCaseListar = new ListarCategorias(repo);
-            const resultado = await useCaseListar.executar();
+            const useCaseListar = new GetAllCategoriesUC(repo);
+            const resultado = await useCaseListar.execute();
 
             expect(resultado).toHaveLength(2);
         });
