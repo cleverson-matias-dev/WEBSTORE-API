@@ -8,17 +8,17 @@ import { CategoryMapper } from "../dtos/category-mapper";
 export class UpdateCategoryUC {
     constructor(private repo: ICategoryRepository) {}
 
-    async execute(id: string, dto: UpdateCategoryDTO): Promise<boolean> {
+    async execute(uuid: string, dto: UpdateCategoryDTO): Promise<boolean> {
         const name = new CategoryName(dto.name);
-        return this.repo.update(id, name.val());
+        return this.repo.update(uuid, name.val());
     }
 }
 
 export class FindCategoryByIdUC {
     constructor(private repository: ICategoryRepository){}
 
-    async execute(id: string): Promise<CategoryDTO | null> {
-        const category = await this.repository.findBy(id);
+    async execute(uuid: string): Promise<CategoryDTO | null> {
+        const category = await this.repository.findBy(uuid);
         if (category instanceof Category) {
             return CategoryMapper.toDTO(category);
         }
@@ -41,8 +41,8 @@ export class SaveCategoryUC {
 export class DeleteCategoryUC {
     constructor(private repo: ICategoryRepository) {}
 
-    async execute(id: string): Promise<boolean> {
-        return this.repo.delete(id);
+    async execute(uuid: string): Promise<boolean> {
+        return this.repo.delete(uuid);
     }
 }
 

@@ -7,17 +7,17 @@ import { IAttributeRepository } from "../repository/IAttributeRepository";
 export class UpdateAttributeUC {
     constructor(private repo: IAttributeRepository) {}
 
-    async execute(id: string, dto: UpdateAttributeDTO): Promise<void> {
+    async execute(uuid: string, dto: UpdateAttributeDTO): Promise<boolean> {
         const name = new AttributeName(dto.name);
-        await this.repo.update(id, name.val());
+        return this.repo.update(uuid, name.val());
     }
 }
 
 export class FindAttributeUC {
     constructor(private repository: IAttributeRepository){}
 
-    async execute(id: string): Promise<AttributeDTO | null> {
-        const attribute = await this.repository.findBy(id);
+    async execute(uuid: string): Promise<AttributeDTO | null> {
+        const attribute = await this.repository.findBy(uuid);
         if (attribute instanceof Attribute) {
             return AttributeMapper.toDTO(attribute);
         }
@@ -39,8 +39,8 @@ export class saveAttributeUC {
 export class DeleteAttributeUC {
     constructor(private repo: IAttributeRepository) {}
 
-    async execute(id: string): Promise<boolean> {
-        return this.repo.delete(id);
+    async execute(uuid: string): Promise<boolean> {
+        return this.repo.delete(uuid);
     }
 }
 
