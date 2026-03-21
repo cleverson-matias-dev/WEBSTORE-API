@@ -12,3 +12,16 @@ export interface AttributeDTO {
     created_at: Date;
     updated_at: Date;
 }
+
+export interface GetAllAttributesInputDTO {
+    page?: number,
+    limit?: number,
+    name?: string
+}
+
+export interface PaginatedAttributesDTO {
+    items: AttributeDTO[],
+    total: number,
+    page: number,
+    limit: number
+}

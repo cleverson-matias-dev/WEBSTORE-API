@@ -1,5 +1,4 @@
 
-[FEATURE] Paginação e Filtros:
 Logs e Observabilidade:
 Transações para Integridade: operações que modificam múltiplas entidades
 Documentação: JSDoc Dtos Mappers Casos de uso

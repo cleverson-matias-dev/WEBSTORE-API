@@ -16,3 +16,16 @@ export interface CategoryDTO {
     created_at: Date;
     updated_at: Date;
 }
+
+export interface GetAllCategoriesInputDTO {
+    name?: string,
+    limit?: number,
+    page?: number
+}
+
+export interface PaginatedCategoriesDTO {
+    items: CategoryDTO[],
+    total: number,
+    page: number,
+    limit: number
+}

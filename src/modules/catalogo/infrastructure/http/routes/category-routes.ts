@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { CategoryController } from "../CategoryController";
 import { validate } from "../middlewares/validate";
-import { saveCategorySchema, deleteCategorySchema, getCategorySchema, updateCategorySchema } from "../schemas/category-schema";
+import { saveCategorySchema, deleteCategorySchema, getCategorySchema, updateCategorySchema, getAllCategoriesInputSchema } from "../schemas/category-schema";
 
 export const categoryRoutes = Router();
 const controller = new CategoryController();
 
-categoryRoutes.get('/', (req, res) => controller.all(req, res));
+categoryRoutes.get('/', validate(getAllCategoriesInputSchema), (req, res) => controller.all(req, res));
 
 categoryRoutes.post('/', validate(saveCategorySchema), 
     (req, res) => controller.save(req, res)

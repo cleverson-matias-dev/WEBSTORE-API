@@ -13,8 +13,17 @@ export class AttributesController {
     }
 
     async all(req: Request, res: Response) {
+
+        const { page, limit, name } = req.query;
         const uc = new GetAllAttributesUC(repo);
-        return res.status(200).json(await uc.execute());
+        
+        const result = await uc.execute({
+            page: Number(page),
+            limit: Number(limit),
+            name: name as string
+        });
+
+        return res.status(200).json(result);
     }
 
     async findById(req: Request, res: Response) {

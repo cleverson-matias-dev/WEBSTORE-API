@@ -13,8 +13,15 @@ export class CategoryController {
     }
 
     async all(req: Request, res: Response) {
+        const { name, limit, page } = req.query;
         const useCase = new GetAllCategoriesUC(repo);
-        const result = await useCase.execute();
+
+        const result = await useCase.execute({
+            name: name as string,
+            limit: Number(limit),
+            page:  Number(page)
+        });
+
         return res.status(200).json(result);
     }
 

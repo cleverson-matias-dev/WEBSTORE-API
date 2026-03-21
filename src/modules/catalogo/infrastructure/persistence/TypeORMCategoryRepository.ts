@@ -1,6 +1,6 @@
-import { ICategoryRepository } from "@modules/catalogo/application/repository/ICategoryRepository";
+import { CategoryFilterOptions, ICategoryRepository } from "@modules/catalogo/application/repository/ICategoryRepository";
 import { AppDataSource } from "@shared/infra/db/data-source";
-import { Repository } from "typeorm";
+import { Like, Repository } from "typeorm";
 import { Category } from "@modules/catalogo/domain/entities/category.entity";
 import { CategoryEntity } from "./entities/CategoryEntity";
 import { CategoryName } from "@modules/catalogo/domain/value-objects/category.name.vo";
@@ -41,9 +41,19 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
         return this.toDomain(saved);
     }
 
-    async all(): Promise<Category[]> {
-        const response = await this.repository.find();
-        return response.map(this.toDomain);
+    async allPaginated(options: CategoryFilterOptions): Promise<[Category[], number]> {
+        const { limit, offset, name } = options;
+
+        const [entities, total] = await this.repository.findAndCount({
+            where: name ? { name: Like(`%${name}%`)} : {},
+            take: limit,
+            skip: offset,
+            order: { name: 'ASC' }
+        });
+
+        const domainCategories = entities.map(this.toDomain);
+
+        return [domainCategories, total];
     }
 
     async findBy(id: string): Promise<Category | []> {

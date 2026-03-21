@@ -83,9 +83,9 @@ describe('Use Cases: Category (com Mock Repository Real)', () => {
             await useCaseCriar.execute({ name: 'Cat 2', slug: 'cat-2' });
 
             const useCaseListar = new GetAllCategoriesUC(repo);
-            const resultado = await useCaseListar.execute();
+            const resultado = await useCaseListar.execute({});
 
-            expect(resultado).toHaveLength(2);
+            expect(resultado.items).toHaveLength(2);
         });
     });
 });

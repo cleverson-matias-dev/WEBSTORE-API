@@ -1,4 +1,3 @@
-import { Attribute } from "@modules/catalogo/domain/entities/attribute.entity";
 import { MockAtributoRepository } from "./mockAtributoRepository";
 import { UpdateAttributeUC, FindAttributeUC, saveAttributeUC, DeleteAttributeUC, GetAllAttributesUC } from "@modules/catalogo/application/use-cases/attribute-use-cases";
 
@@ -37,10 +36,10 @@ describe('Casos de Uso: Attribute', () => {
         await criarUC.execute({ name: 'Attribute 2' });
 
         const listarUC = new GetAllAttributesUC(repo);
-        const lista = await listarUC.execute();
+        const lista = await listarUC.execute({});
 
-        expect(lista).toHaveLength(2);
-        expect(lista[0].name).toBe('Attribute 1');
+        expect(lista.items).toHaveLength(2);
+        expect(lista.items[0].name).toBe('Attribute 1');
     });
 
     test('Deve alterar o name de um attribute', async () => {
@@ -66,10 +65,10 @@ describe('Casos de Uso: Attribute', () => {
         const sucesso = await deletarUC.execute(id);
 
         const listarUC = new GetAllAttributesUC(repo);
-        const lista = await listarUC.execute();
+        const lista = await listarUC.execute({});
 
         expect(sucesso).toBe(true);
-        expect(lista).toHaveLength(0);
+        expect(lista.items).toHaveLength(0);
     });
 
     test('Não deve criar attribute com name inválido (menos de 3 caracteres)', async () => {

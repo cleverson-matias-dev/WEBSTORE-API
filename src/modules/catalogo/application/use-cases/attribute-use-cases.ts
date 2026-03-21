@@ -1,6 +1,6 @@
 import { AttributeName } from "@modules/catalogo/domain/value-objects/attribute.name.vo";
 import { Attribute } from "@modules/catalogo/domain/entities/attribute.entity";
-import { CreateAttributeDTO, UpdateAttributeDTO, AttributeDTO } from "../dtos/attribute-dtos";
+import { CreateAttributeDTO, UpdateAttributeDTO, AttributeDTO, GetAllAttributesInputDTO, PaginatedAttributesDTO } from "../dtos/attribute-dtos";
 import { AttributeMapper } from "../dtos/attribute-mapper";
 import { IAttributeRepository } from "../repository/IAttributeRepository";
 
@@ -47,10 +47,24 @@ export class DeleteAttributeUC {
 export class GetAllAttributesUC {
     constructor(private repository: IAttributeRepository) {}
 
-    async execute(): Promise<AttributeDTO[]> {
-        const attributes = await this.repository.all();
-        return attributes.map(AttributeMapper.toDTO);
-    }
+    async execute(input: GetAllAttributesInputDTO): Promise<PaginatedAttributesDTO> {
 
+        const page = Number(input.page) || 1;
+        const limit = Number(input.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const [attributes, total] = await this.repository.allPaginated({
+            offset,
+            limit,
+            name: input.name
+        });
+
+        return {
+            items: attributes.map(AttributeMapper.toDTO),
+            total,
+            page,
+            limit
+        };
+    }
 }
 

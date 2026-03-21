@@ -1,4 +1,4 @@
-import { IAttributeRepository } from '@modules/catalogo/application/repository/IAttributeRepository';
+import { IAttributeRepository, AttributeFilterOptions } from '@modules/catalogo/application/repository/IAttributeRepository';
 import { Attribute } from '@modules/catalogo/domain/entities/attribute.entity';
 import { AttributeName } from '@modules/catalogo/domain/value-objects/attribute.name.vo';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,6 +18,16 @@ export class MockAtributoRepository implements IAttributeRepository {
 
         this.items.push(novoAtributo);
         return novoAtributo;
+    }
+
+    async allPaginated(options: AttributeFilterOptions): Promise<[Attribute[], number]> {
+        let filtered = this.items;
+        if (options.name) {
+            filtered = filtered.filter(a => a.getProps().name.val().includes(options.name!));
+        }
+        const total = filtered.length;
+        const paginated = filtered.slice(options.offset, options.offset + options.limit);
+        return [paginated, total];
     }
 
     async all(): Promise<Attribute[]> {

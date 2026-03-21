@@ -1,6 +1,6 @@
 import { Category } from "../../modules/catalogo/domain/entities/category.entity";
 import { CategoryName } from "../../modules/catalogo/domain/value-objects/category.name.vo";
-import { ICategoryRepository } from "../../modules/catalogo/application/repository/ICategoryRepository";
+import { ICategoryRepository, CategoryFilterOptions } from "../../modules/catalogo/application/repository/ICategoryRepository";
 import { v4 as uuidv4 } from 'uuid';
 
 export class MockCategoryRepository implements ICategoryRepository {
@@ -18,6 +18,16 @@ export class MockCategoryRepository implements ICategoryRepository {
 
         this.items.push(novaCategoria);
         return novaCategoria;
+    }
+
+    async allPaginated(options: CategoryFilterOptions): Promise<[Category[], number]> {
+        let filtered = this.items;
+        if (options.name) {
+            filtered = filtered.filter(c => c.getProps().name.val().includes(options.name!));
+        }
+        const total = filtered.length;
+        const paginated = filtered.slice(options.offset, options.offset + options.limit);
+        return [paginated, total];
     }
 
     async all(): Promise<Category[]> {
