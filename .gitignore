@@ -1,5 +1,6 @@
 build/
 node_modules/
 package-lock.json
-Tarefas.txt
+Checklist.txt
+tarefas.txt
 
