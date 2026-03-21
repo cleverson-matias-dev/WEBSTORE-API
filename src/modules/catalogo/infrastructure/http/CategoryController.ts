@@ -5,71 +5,52 @@ import { SaveCategoryUC, GetAllCategoriesUC, FindCategoryByIdUC, DeleteCategoryU
 const repo = new TypeORMCategoryRepository();
 
 export class CategoryController {
-    async save(req: Request, res: Response) {
-        try {
-            const data = req.body;        
-            const uc = new SaveCategoryUC(repo);
-            return res.status(201).json(await uc.execute(data));
 
-        } catch (error: any) {
-            return res.status(400).json({status: 'error', errors: [error.message]})
-        }
+    async save(req: Request, res: Response) {
+        const data = req.body;        
+        const uc = new SaveCategoryUC(repo);
+        return res.status(201).json(await uc.execute(data));
     }
 
     async all(req: Request, res: Response) {
-        try {
-           const useCase = new GetAllCategoriesUC(repo);
-           return res.status(200).json(await useCase.execute());
-        } catch (error: any){
-            return res.status(400).json({status: 'error', errors: [error.message]});
-        }
+        const useCase = new GetAllCategoriesUC(repo);
+        const result = await useCase.execute();
+        return res.status(200).json(result);
     }
 
     async findById(req: Request, res: Response) {
-        try {
 
-           const uc = new FindCategoryByIdUC(repo);
-           const {id} = req.params;
-           const result = await uc.execute(id as string);
+        const uc = new FindCategoryByIdUC(repo);
+        const { id } = req.params;
+        const result = await uc.execute(id as string);
 
-           if(!result) {
-                return res.status(404).json({status: 'error', errors: ['recurso não encontrado.']})
-           }
-
-           return res.status(200).json(result);
-
-        } catch (error: any){
-            return res.status(400).json({status: 'error', errors: [error.message]});
+        if(!result) {
+            return res.status(404).json({status: 'error', errors: ['recurso não encontrado.']})
         }
+
+        return res.status(200).json(result);
     }
 
     async delete(req: Request, res: Response) {
-        try {
-           const uc = new DeleteCategoryUC(repo);
-           const {id} = req.params;
-           const response = await uc.execute(id as string);
-           if(!response) {
-             return res.status(404).json({status: 'error', errors: ['Category não encontrada.']});
-           }
-           return res.status(204).json();
-        } catch (error: any){
-            return res.status(400).json({status: 'error', errors: [error.message]});
+        
+        const uc = new DeleteCategoryUC(repo);
+        const {id} = req.params;
+        const response = await uc.execute(id as string);
+
+        if(!response) {
+            return res.status(404).json({status: 'error', errors: ['Category não encontrada.']});
         }
+
+        return res.status(204).json();
     }
 
     async update(req: Request, res: Response) {
        
-        try {
            const uc = new UpdateCategoryUC(repo);
            const { id } = req.params;
            const { name } = req.body;
            const result = await uc.execute(id as string, { name });
-           if(!result) return res.status(404).send();
            return res.status(204).send();
-
-        } catch (error: any){
-           return res.status(400).json({status: 'error', errors: [error.message]});
-        }
     }
 
 }

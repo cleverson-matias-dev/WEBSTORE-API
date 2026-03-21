@@ -4,11 +4,11 @@ import { Repository } from "typeorm";
 import { Category } from "@modules/catalogo/domain/entities/category.entity";
 import { CategoryEntity } from "./entities/CategoryEntity";
 import { CategoryName } from "@modules/catalogo/domain/value-objects/category.name.vo";
+import { AppError } from "@shared/errors/AppError";
 
 export class TypeORMCategoryRepository implements ICategoryRepository {
     private repository: Repository<CategoryEntity> = AppDataSource.getRepository(CategoryEntity);
 
-    // Helper para converter o que vem do banco para o Domínio
     private toDomain(val: CategoryEntity): Category {
         return new Category({
             id: val.id,
@@ -24,11 +24,11 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
         const { name, parent_id, slug } = category.getProps();
 
         const exists = await this.repository.findOneBy({ name: name.val() });
-        if (exists) throw new Error('Essa categoria já existe.');
+        if (exists) throw new AppError('Essa categoria já existe.', 409);
 
         if (parent_id) {
             const parentExists = await this.repository.findOneBy({ id: parent_id });
-            if (!parentExists) throw new Error('Category pai não existe');
+            if (!parentExists) throw new AppError('Category pai não existe', 404);
         }
 
         const data = this.repository.create({
@@ -48,12 +48,12 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
 
     async findBy(id: string): Promise<Category | []> {
         const val = await this.repository.findOneBy({ id });
+        if(!val) throw new AppError('recurso não encontrado', 404);
         return val ? this.toDomain(val) : [];
     }
 
     async update(id: string, name: string): Promise<boolean> {
         const voNome = new CategoryName(name);
-        // O slug é gerado no domínio, por isso instanciamos a entidade de domínio
         const categoriaMock = new Category({ name: voNome });
 
         const result =  await this.repository.update(id, {
@@ -61,11 +61,15 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
             slug: categoriaMock.getProps().slug
         });
 
-        return !!(result.affected && result.affected > 0);
+        const success = !!(result.affected && result.affected > 0);
+        if(!success) throw new AppError('recurso não encontrado', 404);
+        return success;
     }
 
     async delete(id: string): Promise<boolean> {
         const result = await this.repository.delete(id);
-        return !!(result.affected && result.affected > 0);
+        const success = !!(result.affected && result.affected > 0);
+        if(!success) throw new AppError('recurso não encontrado', 404);
+        return success
     }
 }

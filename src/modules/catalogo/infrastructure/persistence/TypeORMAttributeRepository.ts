@@ -4,6 +4,7 @@ import { AppDataSource } from "@shared/infra/db/data-source";
 import { Repository } from "typeorm";
 import { IAttributeRepository } from "@modules/catalogo/application/repository/IAttributeRepository";
 import { AttributeName } from "@modules/catalogo/domain/value-objects/attribute.name.vo";
+import { AppError } from "@shared/errors/AppError";
 
 export class TypeORMAttributeRepository implements IAttributeRepository {
     private repository: Repository<AttributeEntity> = AppDataSource.getRepository(AttributeEntity);
@@ -21,7 +22,7 @@ export class TypeORMAttributeRepository implements IAttributeRepository {
         const { name } = attribute.getProps();
 
         const result = await this.repository.findBy({name: name.val()});
-        if(result.length) throw new Error('Esse atributo já existe.');
+        if(result.length) throw new AppError('Esse atributo já existe.', 404);
 
         const data: AttributeEntity = this.repository.create({
             name: name.val()
@@ -39,18 +40,23 @@ export class TypeORMAttributeRepository implements IAttributeRepository {
 
     async findBy(id: string): Promise<Attribute | []> {
         const result = await this.repository.findOneBy({id});
+        if(!result) throw new AppError('recurso não encontrado', 404);
         return result ? this.toDomain(result) : [];
     }
 
     async update(id: string, name: string): Promise<boolean> {
         const voNome: AttributeName = new AttributeName(name);
         const result = await this.repository.update(id, {name: voNome.val()});
-        return !!(result.affected && result.affected > 0);
+        const success = !!(result.affected && result.affected > 0);
+        if(!success) throw new AppError('recurso não encontrado', 404);
+        return success
     }
 
     async delete(id: string): Promise<boolean> {
         const result = await this.repository.delete(id);
-        return !!(result.affected && result.affected > 0);
+        const success = !!(result.affected && result.affected > 0);
+        if(!success) throw new AppError('recurso não encontrado', 404);
+        return success
     }
     
 }

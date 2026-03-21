@@ -1,6 +1,7 @@
 import express from 'express';
 import catalogRoutes from '@modules/catalogo/infrastructure/http/routes';
 import { AppDataSource } from '../db/data-source';
+import { errorHandler } from '@shared/middlewares/ErrorHandler';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use('/api', catalogRoutes);
+app.use(errorHandler);
 
 AppDataSource.initialize().then(()=>{
     console.log("Banco de dados inicializado!");

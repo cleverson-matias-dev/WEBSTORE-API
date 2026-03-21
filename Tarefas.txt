@@ -1,7 +1,6 @@
 
 
 Validação Estrutural nos DTOs
-Tratamento de Erros Consistente:
 Paginação e Filtros:
 Logs e Observabilidade:
 Transações para Integridade: operações que modificam múltiplas entidades
