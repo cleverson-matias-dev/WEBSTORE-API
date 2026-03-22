@@ -8,8 +8,6 @@
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "npm run build && node -r tsconfig-paths/register build/shared/infra/http/server.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/shared/infra/db/data-source.ts",
-    "migrate": "npm run typeorm migration:run",
-    "migrate:rollback": "npm run typeorm migration:revert",
     "tests": "jest"
   },
   "keywords": [],
