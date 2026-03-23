@@ -1,4 +1,4 @@
-import { CategoryFilterOptions, ICategoryRepository } from "@modules/catalogo/application/repository/ICategoryRepository";
+import { CategoryFilterOptions, ICategoryRepository } from "@modules/catalogo/application/interfaces/repository/ICategoryRepository";
 import { AppDataSource } from "@shared/infra/db/data-source";
 import { Like, Repository } from "typeorm";
 import { Category } from "@modules/catalogo/domain/entities/category.entity";
@@ -23,14 +23,9 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
     async save(category: Category): Promise<Category> {
         const { name, parent_id, slug } = category.getProps();
 
-        const exists = await this.repository.findOneBy({ name: name.val() });
-        if (exists) throw new AppError('Essa categoria já existe.', 409);
-
-        if (parent_id) {
-            const parentExists = await this.repository.findOneBy({ id: parent_id });
-            if (!parentExists) throw new AppError('Category pai não existe', 404);
-        }
-
+        const parentExists = await this.repository.findOneBy({ id: parent_id || '' });
+        if (!parentExists) throw new AppError('categoria pai não existe', 404);
+        
         const data = this.repository.create({
             name: name.val(),
             parent_id,
@@ -56,10 +51,9 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
         return [domainCategories, total];
     }
 
-    async findBy(id: string): Promise<Category | []> {
+    async findBy(id: string): Promise<Category | null> {
         const val = await this.repository.findOneBy({ id });
-        if(!val) throw new AppError('recurso não encontrado', 404);
-        return val ? this.toDomain(val) : [];
+        return val ? this.toDomain(val) : null;
     }
 
     async update(id: string, name: string): Promise<boolean> {

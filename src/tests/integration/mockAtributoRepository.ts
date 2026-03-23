@@ -1,4 +1,4 @@
-import { IAttributeRepository, AttributeFilterOptions } from '@modules/catalogo/application/repository/IAttributeRepository';
+import { IAttributeRepository, AttributeFilterOptions } from '@modules/catalogo/application/interfaces/repository/IAttributeRepository';
 import { Attribute } from '@modules/catalogo/domain/entities/attribute.entity';
 import { AttributeName } from '@modules/catalogo/domain/value-objects/attribute.name.vo';
 import { v4 as uuidv4 } from 'uuid';

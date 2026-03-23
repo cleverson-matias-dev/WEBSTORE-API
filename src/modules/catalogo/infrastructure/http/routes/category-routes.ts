@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { CategoryController } from "../CategoryController";
-import { validate } from "../middlewares/validate";
-import { saveCategorySchema, deleteCategorySchema, getCategorySchema, updateCategorySchema, getAllCategoriesInputSchema } from "../schemas/category-schema";
+import { CategoryController } from "../contrrollers/CategoryController";
+import { validate } from "../../../../../shared/middlewares/validator";
+import { saveCategorySchema, deleteCategorySchema, getCategorySchema, updateCategorySchema, getAllCategoriesInputSchema } from "../validation-schemas/category-schema";
 
 export const categoryRoutes = Router();
 const controller = new CategoryController();

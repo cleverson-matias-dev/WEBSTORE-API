@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { validate } from "../middlewares/validate";
-import { AttributesController } from "../AttributesController";
-import { saveAttributeSchema, deleteAttributeSchema, updateAttributeSchema, getAttributeSchema, getAllAttributesSchema } from "@modules/catalogo/infrastructure/http/schemas/attribute-schema"
+import { validate } from "../../../../../shared/middlewares/validator";
+import { AttributesController } from "../contrrollers/AttributesController";
+import { saveAttributeSchema, deleteAttributeSchema, updateAttributeSchema, getAttributeSchema, getAllAttributesSchema } from "@modules/catalogo/infrastructure/http/validation-schemas/attribute-schema"
 
 export const attributeRoutes = Router();
 const attributesController = new AttributesController();

@@ -2,7 +2,7 @@ import { Attribute } from "@modules/catalogo/domain/entities/attribute.entity";
 import { AttributeEntity } from "./entities/AttributeEntity";
 import { AppDataSource } from "@shared/infra/db/data-source";
 import { Like, Repository } from "typeorm";
-import { AttributeFilterOptions, IAttributeRepository } from "@modules/catalogo/application/repository/IAttributeRepository";
+import { AttributeFilterOptions, IAttributeRepository } from "@modules/catalogo/application/interfaces/repository/IAttributeRepository";
 import { AttributeName } from "@modules/catalogo/domain/value-objects/attribute.name.vo";
 import { AppError } from "@shared/errors/AppError";
 
@@ -20,41 +20,29 @@ export class TypeORMAttributeRepository implements IAttributeRepository {
 
     async save(attribute: Attribute): Promise<Attribute> {
         const { name } = attribute.getProps();
-
-        const result = await this.repository.findBy({name: name.val()});
-        if(result.length) throw new AppError('Esse atributo já existe.', 404);
-
-        const data: AttributeEntity = this.repository.create({
-            name: name.val()
-        })
-
-        const saved: AttributeEntity = await this.repository.save(data);
+        const data = this.repository.create({ name: name.val() });
+        const saved = await this.repository.save(data);
         return this.toDomain(saved);
-
     }
 
     async allPaginated(options: AttributeFilterOptions): Promise<[Attribute[], number]> {
         const { limit, offset, name } = options;
 
-        // Criamos o objeto de busca dinamicamente
         const [entities, total] = await this.repository.findAndCount({
-            where: name ? { name: Like(`%${name}%`) } : {}, // Filtra se o nome for enviado
-            take: limit,    // Equivalente ao LIMIT do SQL
-            skip: offset,   // Equivalente ao OFFSET do SQL
-            order: { name: 'ASC' } // Opcional: mantém uma ordenação padrão
+            where: name ? { name: Like(`%${name}%`) } : {},
+            take: limit,   
+            skip: offset,   
+            order: { name: 'ASC' } 
         });
 
-        // Mapeamos as entidades do TypeORM para objetos de domínio
         const domainAttributes = entities.map(entity => this.toDomain(entity));
 
         return [domainAttributes, total];
     }
 
-
-    async findBy(id: string): Promise<Attribute | []> {
+    async findBy(id: string): Promise<Attribute | null> {
         const result = await this.repository.findOneBy({id});
-        if(!result) throw new AppError('recurso não encontrado', 404);
-        return result ? this.toDomain(result) : [];
+        return result ? this.toDomain(result) : null;
     }
 
     async update(id: string, name: string): Promise<boolean> {

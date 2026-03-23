@@ -1,10 +1,11 @@
 
 import { CategoryName } from "../../domain/value-objects/category.name.vo";
-import { ICategoryRepository } from "../repository/ICategoryRepository";
+import { ICategoryRepository } from "../interfaces/repository/ICategoryRepository";
 import { Category } from "../../domain/entities/category.entity";
 import { CreateCategoryDTO, UpdateCategoryDTO, CategoryDTO, GetAllCategoriesInputDTO, PaginatedCategoriesDTO } from "../dtos/category-dtos";
 import { CategoryMapper } from "../dtos/category-mapper";
 import { input } from "zod";
+import { AppError } from "@shared/errors/AppError";
 
 export class UpdateCategoryUC {
     constructor(private repo: ICategoryRepository) {}
@@ -18,12 +19,11 @@ export class UpdateCategoryUC {
 export class FindCategoryByIdUC {
     constructor(private repository: ICategoryRepository){}
 
-    async execute(uuid: string): Promise<CategoryDTO | null> {
-        const category = await this.repository.findBy(uuid);
-        if (category instanceof Category) {
+    async execute(uuid: string): Promise<CategoryDTO> {
+    
+            const category = await this.repository.findBy(uuid);
+            if (!(category instanceof Category)) throw new AppError('categoria não encontrada', 404);
             return CategoryMapper.toDTO(category);
-        }
-        return null;
     }
 }
 
@@ -34,8 +34,13 @@ export class SaveCategoryUC {
         const name = new CategoryName(dto.name);
         const parent_id = dto.parent_id === "" ? null : dto.parent_id;
         const category = new Category({ name, parent_id, slug: dto.slug });
-        const saved = await this.repository.save(category);
-        return CategoryMapper.toDTO(saved);
+        try {
+            const saved = await this.repository.save(category);
+            return CategoryMapper.toDTO(saved);
+        } catch (error) {
+            throw new AppError('erro ao salvar categoria', 400);
+        }
+        
     }
 }
 

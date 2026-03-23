@@ -2,7 +2,8 @@ import { AttributeName } from "@modules/catalogo/domain/value-objects/attribute.
 import { Attribute } from "@modules/catalogo/domain/entities/attribute.entity";
 import { CreateAttributeDTO, UpdateAttributeDTO, AttributeDTO, GetAllAttributesInputDTO, PaginatedAttributesDTO } from "../dtos/attribute-dtos";
 import { AttributeMapper } from "../dtos/attribute-mapper";
-import { IAttributeRepository } from "../repository/IAttributeRepository";
+import { IAttributeRepository } from "../interfaces/repository/IAttributeRepository";
+import { AppError } from "@shared/errors/AppError";
 
 export class UpdateAttributeUC {
     constructor(private repo: IAttributeRepository) {}
@@ -16,12 +17,11 @@ export class UpdateAttributeUC {
 export class FindAttributeUC {
     constructor(private repository: IAttributeRepository){}
 
-    async execute(uuid: string): Promise<AttributeDTO | null> {
+    async execute(uuid: string): Promise<AttributeDTO> {
+                
         const attribute = await this.repository.findBy(uuid);
-        if (attribute instanceof Attribute) {
-            return AttributeMapper.toDTO(attribute);
-        }
-        return null;
+        if (!(attribute instanceof Attribute)) throw new AppError('recurso não encontrado', 404);
+        return AttributeMapper.toDTO(attribute);
     }
 }
 
@@ -31,8 +31,14 @@ export class saveAttributeUC {
     async execute(dto: CreateAttributeDTO): Promise<AttributeDTO> {
         const name = new AttributeName(dto.name);
         const attribute = new Attribute({ name: name });
-        const saved = await this.repository.save(attribute);
-        return AttributeMapper.toDTO(saved);
+        try {
+            const saved = await this.repository.save(attribute);
+            return AttributeMapper.toDTO(saved);
+        } catch (error: any) {
+            if(error?.code == 'ER_DUP_ENTRY') throw new AppError('esse atributo já existe', 409);
+            throw new AppError('Erro ao salvar atributo', 400);
+        }
+       
     }
 }
 
