@@ -34,9 +34,9 @@ export class MockAtributoRepository implements IAttributeRepository {
         return this.items;
     }
 
-    async findBy(id: string): Promise<Attribute | []> {
+    async findBy(id: string): Promise<Attribute | null> {
         const item = this.items.find(i => i.getProps().id === id);
-        return item ? item : [];
+        return item ? item : null;
     }
 
     async update(id: string, name: string): Promise<boolean> {

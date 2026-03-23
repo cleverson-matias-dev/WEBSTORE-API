@@ -34,7 +34,7 @@ export class CategoryController {
         const uc = new FindCategoryByIdUC(repo);
         const { id } = req.params;
         const result = await uc.execute(id as string);
-
+        
         if(!result) {
             return res.status(404).json({status: 'error', errors: ['recurso não encontrado.']})
         }

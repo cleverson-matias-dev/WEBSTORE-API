@@ -1,6 +1,7 @@
 import { Category } from "../../modules/catalogo/domain/entities/category.entity";
 import { UpdateCategoryUC, FindCategoryByIdUC, SaveCategoryUC, DeleteCategoryUC, GetAllCategoriesUC } from "../../modules/catalogo/application/use-cases/category-use-cases";
 import { MockCategoryRepository } from "./mockCategoriaRepository"
+import { AppError } from "@shared/errors/AppError";
 
 describe('Use Cases: Category (com Mock Repository Real)', () => {
     let repo: MockCategoryRepository;
@@ -37,10 +38,11 @@ describe('Use Cases: Category (com Mock Repository Real)', () => {
         });
 
 
-        it('deve retornar null se a category não existir', async () => {
+        it('deve emitir um erro se a category não existir', async () => {
             const useCase = new FindCategoryByIdUC(repo);
-            const resultado = await useCase.execute('id-inexistente');
-            expect(resultado).toBeNull();
+            
+            await expect(useCase.execute('id-inexistente'))
+                .rejects.toThrow(new AppError('categoria não encontrada', 404));
         });
     });
 
