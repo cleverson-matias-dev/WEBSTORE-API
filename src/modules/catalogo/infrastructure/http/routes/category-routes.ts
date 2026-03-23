@@ -6,9 +6,10 @@ import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepo
 import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
 
 export const categoryRoutes = Router();
-const repo = new TypeORMCategoryRepository();
-const logger = new PinoLoggerAdapter();
-const controller = new CategoryController(repo, logger);
+const controller = new CategoryController(
+    new TypeORMCategoryRepository(),
+    new PinoLoggerAdapter()
+);
 
 categoryRoutes.get('/', validate(getAllCategoriesInputSchema), (req, res) => controller.all(req, res));
 

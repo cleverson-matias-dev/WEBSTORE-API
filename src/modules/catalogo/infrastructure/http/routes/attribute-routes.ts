@@ -6,9 +6,10 @@ import { TypeORMAttributeRepository } from "../../persistence/TypeORMAttributeRe
 import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
 
 export const attributeRoutes = Router();
-const repo = new TypeORMAttributeRepository();
-const logger = new PinoLoggerAdapter();
-const attributesController = new AttributesController(repo, logger);
+const attributesController = new AttributesController(
+    new TypeORMAttributeRepository(),
+    new PinoLoggerAdapter()
+);
 
 attributeRoutes.get('/', validate(getAllAttributesSchema), (req, res) => attributesController.all(req, res));
 

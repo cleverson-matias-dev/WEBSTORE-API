@@ -1,5 +1,5 @@
 
-
+[FEATURE] Criar um container de injeção de dependência
 Logs e Observabilidade:
 Transações para Integridade: operações que modificam múltiplas entidades
 Documentação: JSDoc Dtos Mappers Casos de uso
