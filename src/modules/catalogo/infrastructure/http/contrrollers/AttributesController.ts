@@ -1,24 +1,26 @@
 import { Request, Response } from "express";
-import { TypeORMAttributeRepository } from "../../persistence/TypeORMAttributeRepository";
 import { UpdateAttributeUC, FindAttributeUC, saveAttributeUC, DeleteAttributeUC, GetAllAttributesUC } from "@modules/catalogo/application/use-cases/attribute-use-cases";
-import { PinoLoggerAdapter } from "../../../../../shared/logger/PinoLoggerAdapter";
-
-const repo = new TypeORMAttributeRepository();
-const logger = new PinoLoggerAdapter();
+import { IAttributeRepository } from "@modules/catalogo/application/interfaces/repository/IAttributeRepository";
+import { ILogger } from "@modules/catalogo/application/interfaces/logs/ILogger";
 
 export class AttributesController {
 
+    constructor(
+        private repo: IAttributeRepository,
+        private logger: ILogger
+    ){}
+
     async save(req: Request, res: Response){
-        logger.info('attempt of create attribute', req.body);
-        const uc = new saveAttributeUC(repo);
+        this.logger.info('attempt of create attribute', req.body);
+        const uc = new saveAttributeUC(this.repo);
         const response = await uc.execute(req.body);
         res.status(201).json(response);
     }
 
     async all(req: Request, res: Response) {
-        logger.info('attempt: get all attributes whith filter', req.query);
+        this.logger.info('attempt: get all attributes whith filter', req.query);
         const { page, limit, name } = req.query;
-        const uc = new GetAllAttributesUC(repo);
+        const uc = new GetAllAttributesUC(this.repo);
         
         const result = await uc.execute({
             page: Number(page),
@@ -30,8 +32,8 @@ export class AttributesController {
     }
 
     async findById(req: Request, res: Response) {
-            logger.info('attempt: find attribute whith filter', req.params);
-            const uc = new FindAttributeUC(repo);
+            this.logger.info('attempt: find attribute whith filter', req.params);
+            const uc = new FindAttributeUC(this.repo);
             const { id } = req.params;
             const result = await uc.execute(id as string);
 
@@ -43,8 +45,8 @@ export class AttributesController {
     }
 
     async delete(req: Request, res: Response) {
-            logger.info('attempt: delete attribute whith filter', req.params);
-            const uc = new DeleteAttributeUC(repo);
+            this.logger.info('attempt: delete attribute whith filter', req.params);
+            const uc = new DeleteAttributeUC(this.repo);
             const {id} = req.params;
             const response = await uc.execute(id as string);
             if(!response) {
@@ -54,8 +56,8 @@ export class AttributesController {
     }
 
     async update(req: Request, res: Response) {
-            logger.info('attempt: update attribute whith filter', {...req.params, ...req.body});
-            const uc = new UpdateAttributeUC(repo);
+            this.logger.info('attempt: update attribute whith filter', {...req.params, ...req.body});
+            const uc = new UpdateAttributeUC(this.repo);
             const { id } = req.params;
             const { name } = req.body;
             await uc.execute(id as string, { name });

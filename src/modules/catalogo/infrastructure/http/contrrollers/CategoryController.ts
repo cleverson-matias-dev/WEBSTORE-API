@@ -1,24 +1,28 @@
 import { Request, Response } from "express";
-import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepository";
 import { SaveCategoryUC, GetAllCategoriesUC, FindCategoryByIdUC, DeleteCategoryUC, UpdateCategoryUC } from "@modules/catalogo/application/use-cases/category-use-cases";
-import { PinoLoggerAdapter } from "../../../../../shared/logger/PinoLoggerAdapter";
+import { ICategoryRepository } from "@modules/catalogo/application/interfaces/repository/ICategoryRepository";
+import { ILogger } from "@modules/catalogo/application/interfaces/logs/ILogger";
 
-const repo = new TypeORMCategoryRepository();
-const logger = new PinoLoggerAdapter();
+
 
 export class CategoryController {
 
+    constructor(
+        private repo: ICategoryRepository,
+        private logger: ILogger
+    ){}
+
     async save(req: Request, res: Response) {
-        logger.info('attempt: save categories whith filter', req.body);
+        this.logger.info('attempt: save categories whith filter', req.body);
         const data = req.body;        
-        const uc = new SaveCategoryUC(repo);
+        const uc = new SaveCategoryUC(this.repo);
         return res.status(201).json(await uc.execute(data));
     }
 
     async all(req: Request, res: Response) {
-        logger.info('attempt: get categories whith filter', req.query);
+        this.logger.info('attempt: get categories whith filter', req.query);
         const { name, limit, page } = req.query;
-        const useCase = new GetAllCategoriesUC(repo);
+        const useCase = new GetAllCategoriesUC(this.repo);
 
         const result = await useCase.execute({
             name: name as string,
@@ -30,8 +34,8 @@ export class CategoryController {
     }
 
     async findById(req: Request, res: Response) {
-        logger.info('attempt: find categories whith filter', req.params);
-        const uc = new FindCategoryByIdUC(repo);
+        this.logger.info('attempt: find categories whith filter', req.params);
+        const uc = new FindCategoryByIdUC(this.repo);
         const { id } = req.params;
         const result = await uc.execute(id as string);
         
@@ -43,8 +47,8 @@ export class CategoryController {
     }
 
     async delete(req: Request, res: Response) {
-        logger.info('attempt: delete categories whith filter', req.params);
-        const uc = new DeleteCategoryUC(repo);
+        this.logger.info('attempt: delete categories whith filter', req.params);
+        const uc = new DeleteCategoryUC(this.repo);
         const {id} = req.params;
         const response = await uc.execute(id as string);
 
@@ -56,8 +60,8 @@ export class CategoryController {
     }
 
     async update(req: Request, res: Response) {
-           logger.info('attempt: update categories whith filter', {...req.params, ...req.body});
-           const uc = new UpdateCategoryUC(repo);
+           this.logger.info('attempt: update categories whith filter', {...req.params, ...req.body});
+           const uc = new UpdateCategoryUC(this.repo);
            const { id } = req.params;
            const { name } = req.body;
            const result = await uc.execute(id as string, { name });

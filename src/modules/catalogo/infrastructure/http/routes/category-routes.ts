@@ -2,9 +2,13 @@ import { Router } from "express";
 import { CategoryController } from "../contrrollers/CategoryController";
 import { validate } from "../../../../../shared/middlewares/validator";
 import { saveCategorySchema, deleteCategorySchema, getCategorySchema, updateCategorySchema, getAllCategoriesInputSchema } from "../validation-schemas/category-schema";
+import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepository";
+import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
 
 export const categoryRoutes = Router();
-const controller = new CategoryController();
+const repo = new TypeORMCategoryRepository();
+const logger = new PinoLoggerAdapter();
+const controller = new CategoryController(repo, logger);
 
 categoryRoutes.get('/', validate(getAllCategoriesInputSchema), (req, res) => controller.all(req, res));
 
