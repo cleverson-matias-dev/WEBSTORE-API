@@ -1,15 +1,12 @@
 
-[FEATURE] Criar um container de injeção de dependência
-Logs e Observabilidade:
+[FEATURE] Logs e Observabilidade
 Transações para Integridade: operações que modificam múltiplas entidades
 Documentação: JSDoc Dtos Mappers Casos de uso
 cache
 
-Testes
 Documentação
 Segurança
 Padrão Restful
 Versionamento
 Respostas HTTP(200, 201, 400, 401, 404, 500)
-Tratamento de erros
 Rate Limit

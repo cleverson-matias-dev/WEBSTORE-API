@@ -13,15 +13,15 @@ export const errorHandler = (
 ) => {
 
     if (error instanceof AppError) {
-        logger.error(error.message, error.stack, {});
+        logger.error(error.message, error.message, {});
         return res.status(error.statusCode).json({
-        status: 'error',
-        message: error.message,
+            status: 'error',
+            message: error.message,
         });
     } 
 
     console.log('Erro inesperado', error);
-    logger.error(error.message, error.stack, {});
+    logger.error(error.message, error.message, {});
     
 
     return res.status(500).json({

@@ -11,14 +11,14 @@ export class AttributesController {
     ){}
 
     async save(req: Request, res: Response){
-        this.logger.info('attempt of create attribute', req.body);
+        this.logger.debug('attempt of create attribute', req.body);
         const uc = new saveAttributeUC(this.repo);
         const response = await uc.execute(req.body);
         res.status(201).json(response);
     }
 
     async all(req: Request, res: Response) {
-        this.logger.info('attempt: get all attributes whith filter', req.query);
+        this.logger.debug('attempt: get all attributes whith filter', req.query);
         const { page, limit, name } = req.query;
         const uc = new GetAllAttributesUC(this.repo);
         
@@ -32,7 +32,7 @@ export class AttributesController {
     }
 
     async findById(req: Request, res: Response) {
-            this.logger.info('attempt: find attribute whith filter', req.params);
+            this.logger.debug('attempt: find attribute whith filter', req.params);
             const uc = new FindAttributeUC(this.repo);
             const { id } = req.params;
             const result = await uc.execute(id as string);
@@ -45,7 +45,7 @@ export class AttributesController {
     }
 
     async delete(req: Request, res: Response) {
-            this.logger.info('attempt: delete attribute whith filter', req.params);
+            this.logger.debug('attempt: delete attribute whith filter', req.params);
             const uc = new DeleteAttributeUC(this.repo);
             const {id} = req.params;
             const response = await uc.execute(id as string);
@@ -56,7 +56,7 @@ export class AttributesController {
     }
 
     async update(req: Request, res: Response) {
-            this.logger.info('attempt: update attribute whith filter', {...req.params, ...req.body});
+            this.logger.debug('attempt: update attribute whith filter', {...req.params, ...req.body});
             const uc = new UpdateAttributeUC(this.repo);
             const { id } = req.params;
             const { name } = req.body;

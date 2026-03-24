@@ -13,14 +13,14 @@ export class CategoryController {
     ){}
 
     async save(req: Request, res: Response) {
-        this.logger.info('attempt: save categories whith filter', req.body);
+        this.logger.debug('attempt: save categories whith filter', req.body);
         const data = req.body;        
         const uc = new SaveCategoryUC(this.repo);
         return res.status(201).json(await uc.execute(data));
     }
 
     async all(req: Request, res: Response) {
-        this.logger.info('attempt: get categories whith filter', req.query);
+        this.logger.debug('attempt: get categories whith filter', req.query);
         const { name, limit, page } = req.query;
         const useCase = new GetAllCategoriesUC(this.repo);
 
@@ -34,7 +34,7 @@ export class CategoryController {
     }
 
     async findById(req: Request, res: Response) {
-        this.logger.info('attempt: find categories whith filter', req.params);
+        this.logger.debug('attempt: find categories whith filter', req.params);
         const uc = new FindCategoryByIdUC(this.repo);
         const { id } = req.params;
         const result = await uc.execute(id as string);
@@ -47,7 +47,7 @@ export class CategoryController {
     }
 
     async delete(req: Request, res: Response) {
-        this.logger.info('attempt: delete categories whith filter', req.params);
+        this.logger.debug('attempt: delete categories whith filter', req.params);
         const uc = new DeleteCategoryUC(this.repo);
         const {id} = req.params;
         const response = await uc.execute(id as string);
@@ -60,7 +60,7 @@ export class CategoryController {
     }
 
     async update(req: Request, res: Response) {
-           this.logger.info('attempt: update categories whith filter', {...req.params, ...req.body});
+           this.logger.debug('attempt: update categories whith filter', {...req.params, ...req.body});
            const uc = new UpdateCategoryUC(this.repo);
            const { id } = req.params;
            const { name } = req.body;

@@ -2,14 +2,13 @@ import express from 'express';
 import catalogRoutes from '@modules/catalogo/infrastructure/http/routes/routes';
 import { AppDataSource } from '../db/data-source';
 import { errorHandler } from '@shared/middlewares/errorHandler';
-import { correlationMiddleware } from '@shared/middlewares/correlation';
+import { loggerMiddleware } from '@shared/middlewares/loggerMiddleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
+app.use(loggerMiddleware)
 app.use(express.json());
-app.use(correlationMiddleware);
 app.use('/api', catalogRoutes);
 app.use(errorHandler);
 
