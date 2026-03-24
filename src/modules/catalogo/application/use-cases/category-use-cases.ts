@@ -4,7 +4,6 @@ import { ICategoryRepository } from "../interfaces/repository/ICategoryRepositor
 import { Category } from "../../domain/entities/category.entity";
 import { CreateCategoryDTO, UpdateCategoryDTO, CategoryDTO, GetAllCategoriesInputDTO, PaginatedCategoriesDTO } from "../dtos/category-dtos";
 import { CategoryMapper } from "../dtos/category-mapper";
-import { input } from "zod";
 import { AppError } from "@shared/errors/AppError";
 
 export class UpdateCategoryUC {
