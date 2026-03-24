@@ -4,6 +4,8 @@ import { AppDataSource } from '../db/data-source';
 import { errorHandler } from '@shared/middlewares/errorHandler';
 import { loggerMiddleware } from '@shared/middlewares/loggerMiddleware';
 import { sanitizeMiddleware } from '@shared/middlewares/sanitizeMiddleware';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from 'config/swagger';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 app.use(loggerMiddleware);
 app.use(express.json());
 app.use('/api', sanitizeMiddleware, catalogRoutes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(errorHandler);
 
 
