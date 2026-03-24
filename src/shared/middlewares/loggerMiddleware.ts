@@ -5,6 +5,7 @@ import { randomUUID } from "node:crypto";
 export const loggerMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   const correlationId = req.headers["x-request-id"] || randomUUID();
+  res.setHeader('x-correlation-id', correlationId);
   const childLogger = logger.child({ 
     correlationId,
     method: req.method,
