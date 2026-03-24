@@ -38,7 +38,8 @@ export class SaveCategoryUC {
             const saved = await this.repository.save(category);
             return CategoryMapper.toDTO(saved);
         } catch (error) {
-            throw new AppError('erro ao salvar categoria', 400);
+            if(error instanceof AppError) throw error;
+            throw new Error('erro ao salvar categoria');
         }
         
     }

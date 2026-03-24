@@ -23,17 +23,24 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
     async save(category: Category): Promise<Category> {
         const { name, parent_id, slug } = category.getProps();
 
-        const parentExists = await this.repository.findOneBy({ id: parent_id || '' });
-        if (!parentExists) throw new AppError('categoria pai não existe', 404);
-        
+        if(parent_id) {
+            const parentExists = await this.repository.findOneBy({ id: parent_id });
+            if (!parentExists) throw new AppError('categoria pai não existe', 404);
+        }
+
         const data = this.repository.create({
             name: name.val(),
             parent_id,
             slug
         });
 
-        const saved = await this.repository.save(data);
-        return this.toDomain(saved);
+        try {
+            const saved = await this.repository.save(data);
+            return this.toDomain(saved);
+        } catch (error) {
+            throw new AppError('registro já existe', 409);
+        }
+       
     }
 
     async allPaginated(options: CategoryFilterOptions): Promise<[Category[], number]> {
