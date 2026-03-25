@@ -39,7 +39,7 @@ const attributesController = new AttributesController(
  *   name: Attributes
  *   description: Gerenciamento de atributos do catálogo
  * 
- * /api/attributes:
+ * /catalogo/api/v2/attributes:
  *   get:
  *     summary: Lista todos os atributos
  *     tags: [Attributes]
@@ -94,7 +94,7 @@ const attributesController = new AttributesController(
  *       500:
  *         $ref: '#/components/responses/StandardError'
  * 
- * /api/attributes/{id}:
+ * /catalogo/api/v2/attributes/{id}:
  *   get:
  *     summary: Obtém um atributo pelo ID
  *     tags: [Attributes]

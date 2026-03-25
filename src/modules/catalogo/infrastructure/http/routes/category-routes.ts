@@ -39,7 +39,7 @@ const controller = new CategoryController(
  *   name: Categories
  *   description: Gerenciamento de categorias do catálogo
  * 
- * /api/categories:
+ * /catalogo/api/v2/categories:
  *   get:
  *     summary: Lista todas as categorias
  *     tags: [Categories]
@@ -94,7 +94,7 @@ const controller = new CategoryController(
  *       500:
  *         $ref: '#/components/responses/StandardError'
  * 
- * /api/categories/{id}:
+ * /catalogo/api/v2/categories/{id}:
  *   get:
  *     summary: Obtém uma categoria pelo ID
  *     tags: [Categories]
