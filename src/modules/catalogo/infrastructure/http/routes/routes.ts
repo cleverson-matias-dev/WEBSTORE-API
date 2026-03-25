@@ -4,7 +4,7 @@ import { categoryRoutes } from "./category-routes";
 
 const catalogoRoutes = Router();
 
-catalogoRoutes.use('/categories', categoryRoutes);
-catalogoRoutes.use('/attributes', attributeRoutes);
+catalogoRoutes.use('/v1/categories', categoryRoutes);
+catalogoRoutes.use('/v1/attributes', attributeRoutes);
 
 export default catalogoRoutes;

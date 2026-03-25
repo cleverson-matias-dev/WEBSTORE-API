@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use( express.json() );
 app.use( loggerMiddleware );
-app.use( '/api', sanitizeMiddleware, catalogRoutes);
+app.use( '/api/catalogo', sanitizeMiddleware, catalogRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use( errorHandlerMiddleware );
 
