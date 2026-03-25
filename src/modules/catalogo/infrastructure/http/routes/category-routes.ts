@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { CategoryController } from "../contrrollers/CategoryController";
-import { validate } from "../../../../../shared/middlewares/validator";
+import { validate } from "../../../../../shared/middlewares/validator-middleware";
 import { saveCategorySchema, deleteCategorySchema, getCategorySchema, updateCategorySchema, getAllCategoriesInputSchema } from "../validation-schemas/category-schema";
 import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepository";
 import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
@@ -13,6 +13,28 @@ const controller = new CategoryController(
 
 /**
  * @openapi
+ * 
+ * components:
+ *   schemas:
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         status:
+ *           type: string
+ *           example: error
+ *         errors:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: ["Mensagens de erro detalhadas aqui"]
+ *   responses:
+ *     StandardError:
+ *       description: Resposta de erro padrão
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ErrorResponse'
+ * 
  * tags:
  *   name: Categories
  *   description: Gerenciamento de categorias do catálogo
@@ -26,19 +48,16 @@ const controller = new CategoryController(
  *         name: name
  *         schema:
  *           type: string
- *         description: Filtra categorias pelo nome
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
  *           default: 10
- *         description: Quantidade de registros por página
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
  *           default: 1
- *         description: Número da página atual
  *     responses:
  *       200:
  *         description: Lista de categorias retornada com sucesso
@@ -47,10 +66,11 @@ const controller = new CategoryController(
  *             schema:
  *               $ref: '#/components/schemas/PaginatedCategoriesDTO'
  *       400:
- *         description: Erro na requisição (parâmetros inválidos)
+ *         $ref: '#/components/responses/StandardError'
+ *       404:
+ *         $ref: '#/components/responses/StandardError'
  *       500:
- *         description: Erro interno do servidor
- *
+ *         $ref: '#/components/responses/StandardError'
  *   post:
  *     summary: Cria uma nova categoria
  *     tags: [Categories]
@@ -67,6 +87,12 @@ const controller = new CategoryController(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/CategoryDTO'
+ *       400:
+ *         $ref: '#/components/responses/StandardError'
+ *       409: 
+ *         $ref: '#/components/responses/StandardError'
+ *       500:
+ *         $ref: '#/components/responses/StandardError'
  * 
  * /api/categories/{id}:
  *   get:
@@ -86,9 +112,12 @@ const controller = new CategoryController(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/CategoryDTO'
+ *       400:
+ *         $ref: '#/components/responses/StandardError'
  *       404:
- *         description: Categoria não encontrada
- * 
+ *         $ref: '#/components/responses/StandardError'
+ *       500:
+ *         $ref: '#/components/responses/StandardError'
  *   patch:
  *     summary: Atualiza uma categoria existente
  *     tags: [Categories]
@@ -112,6 +141,14 @@ const controller = new CategoryController(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/CategoryDTO'
+ *       400:
+ *         $ref: '#/components/responses/StandardError'
+ *       404:
+ *         $ref: '#/components/responses/StandardError'
+ *       409:
+ *         $ref: '#/components/responses/StandardError'
+ *       500:
+ *         $ref: '#/components/responses/StandardError'
  * 
  *   delete:
  *     summary: Remove uma categoria
@@ -126,8 +163,12 @@ const controller = new CategoryController(
  *     responses:
  *       204:
  *         description: Categoria removida com sucesso
+ *       400:
+ *         $ref: '#/components/responses/StandardError'
  *       404:
- *         description: Categoria não encontrada
+ *         $ref: '#/components/responses/StandardError'
+ *       500:
+ *         $ref: '#/components/responses/StandardError'
  */
 
 

@@ -1,21 +1,20 @@
 import express from 'express';
 import catalogRoutes from '@modules/catalogo/infrastructure/http/routes/routes';
 import { AppDataSource } from '../db/data-source';
-import { errorHandler } from '@shared/middlewares/errorHandler';
-import { loggerMiddleware } from '@shared/middlewares/loggerMiddleware';
-import { sanitizeMiddleware } from '@shared/middlewares/sanitizeMiddleware';
+import { loggerMiddleware } from '@shared/middlewares/logger-middleware';
+import { sanitizeMiddleware } from '@shared/middlewares/sanitize-middleware';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from 'config/swagger';
+import { errorHandlerMiddleware } from '@shared/middlewares/error-handler-middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(loggerMiddleware);
-app.use(express.json());
-app.use('/api', sanitizeMiddleware, catalogRoutes);
+app.use( express.json() );
+app.use( loggerMiddleware );
+app.use( '/api', sanitizeMiddleware, catalogRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use(errorHandler);
-
+app.use( errorHandlerMiddleware );
 
 AppDataSource.initialize().then(()=>{
     console.log("Banco de dados inicializado!");

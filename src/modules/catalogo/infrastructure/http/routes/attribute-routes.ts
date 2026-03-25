@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validate } from "../../../../../shared/middlewares/validator";
+import { validate } from "../../../../../shared/middlewares/validator-middleware";
 import { AttributesController } from "../contrrollers/AttributesController";
 import { saveAttributeSchema, deleteAttributeSchema, updateAttributeSchema, getAttributeSchema, getAllAttributesSchema } from "@modules/catalogo/infrastructure/http/validation-schemas/attribute-schema"
 import { TypeORMAttributeRepository } from "../../persistence/TypeORMAttributeRepository";
@@ -13,6 +13,28 @@ const attributesController = new AttributesController(
 
 /**
  * @openapi
+ * 
+ * components:
+ *   schemas:
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         status:
+ *           type: string
+ *           example: error
+ *         errors:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: ["Mensagens de erro detalhadas aqui"]
+ *   responses:
+ *     StandardError:
+ *       description: Resposta de erro padrão
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ErrorResponse'
+ * 
  * tags:
  *   name: Attributes
  *   description: Gerenciamento de atributos do catálogo
@@ -26,19 +48,16 @@ const attributesController = new AttributesController(
  *         name: name
  *         schema:
  *           type: string
- *         description: Filtra atributos pelo nome
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
  *           default: 10
- *         description: Quantidade de registros por página
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
  *           default: 1
- *         description: Numero da página atual
  *     responses:
  *       200:
  *         description: Lista de atributos retornada com sucesso
@@ -47,10 +66,11 @@ const attributesController = new AttributesController(
  *             schema:
  *               $ref: '#/components/schemas/PaginatedAttributesDTO'
  *       400:
- *         description: Erro na requisição (parâmetros inválidos)
+ *         $ref: '#/components/responses/StandardError'
+ *       404:
+ *         $ref: '#/components/responses/StandardError'
  *       500:
- *         description: Erro interno do servidor
- *
+ *         $ref: '#/components/responses/StandardError'
  *   post:
  *     summary: Cria um novo atributo
  *     tags: [Attributes]
@@ -67,6 +87,12 @@ const attributesController = new AttributesController(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AttributeDTO'
+ *       400:
+ *         $ref: '#/components/responses/StandardError'
+ *       409: 
+ *         $ref: '#/components/responses/StandardError'
+ *       500:
+ *         $ref: '#/components/responses/StandardError'
  * 
  * /api/attributes/{id}:
  *   get:
@@ -86,9 +112,12 @@ const attributesController = new AttributesController(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AttributeDTO'
+ *       400:
+ *         $ref: '#/components/responses/StandardError'
  *       404:
- *         description: Atributo não encontrado
- * 
+ *         $ref: '#/components/responses/StandardError'
+ *       500:
+ *         $ref: '#/components/responses/StandardError'
  *   patch:
  *     summary: Atualiza um atributo existente
  *     tags: [Attributes]
@@ -112,6 +141,14 @@ const attributesController = new AttributesController(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AttributeDTO'
+ *       400:
+ *         $ref: '#/components/responses/StandardError'
+ *       404:
+ *         $ref: '#/components/responses/StandardError'
+ *       409:
+ *         $ref: '#/components/responses/StandardError'
+ *       500:
+ *         $ref: '#/components/responses/StandardError'
  * 
  *   delete:
  *     summary: Remove um atributo
@@ -126,8 +163,13 @@ const attributesController = new AttributesController(
  *     responses:
  *       204:
  *         description: Atributo removido com sucesso
+ *       400:
+ *         $ref: '#/components/responses/StandardError'
+ *       404:
+ *         $ref: '#/components/responses/StandardError'
+ *       500:
+ *         $ref: '#/components/responses/StandardError'
  */
-
 
 attributeRoutes.get('/', validate(getAllAttributesSchema), (req, res) => attributesController.all(req, res));
 

@@ -5,28 +5,27 @@ import { NextFunction, Request, Response } from "express";
 
 const logger: ILogger = new PinoLoggerAdapter();
 
-export const errorHandler = (
+export const errorHandlerMiddleware = (
     error: Error,
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
+    // Log do erro original
+    logger.error(error.message, error.message, {});
 
     if (error instanceof AppError) {
-        logger.error(error.message, error.message, {});
         return res.status(error.statusCode).json({
             status: 'error',
-            message: error.message,
+            errors: [error.message], // Retorna a mensagem em uma array
         });
     } 
 
-    console.log('Erro inesperado', error);
-    logger.error(error.message, error.message, {});
-    
+    // Log para erros não tratados (500)
+    console.error('Erro inesperado:', error);
 
     return res.status(500).json({
         status: 'error',
-        message: 'Internal server error',
+        errors: ['Internal server error'],
     });
-
-}
+};
