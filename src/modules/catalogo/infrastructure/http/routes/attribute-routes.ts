@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validate } from "../../../../../shared/middlewares/validator-middleware";
+import { validate } from "@shared/middlewares/validator"; 
 import { AttributesController } from "../contrrollers/AttributesController";
 import { saveAttributeSchema, deleteAttributeSchema, updateAttributeSchema, getAttributeSchema, getAllAttributesSchema } from "@modules/catalogo/infrastructure/http/validation-schemas/attribute-schema"
 import { TypeORMAttributeRepository } from "../../persistence/TypeORMAttributeRepository";

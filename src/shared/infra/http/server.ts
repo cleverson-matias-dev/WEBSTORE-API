@@ -1,18 +1,19 @@
 import express from 'express';
 import catalogRoutes from '@modules/catalogo/infrastructure/http/routes/routes';
 import { AppDataSource } from '../db/data-source';
-import { loggerMiddleware } from '@shared/middlewares/logger-middleware';
-import { sanitizeMiddleware } from '@shared/middlewares/sanitize-middleware';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from 'config/swagger';
 import { errorHandlerMiddleware } from '@shared/middlewares/error-handler-middleware';
+import { loggerMiddleware } from '@shared/middlewares/loggerMiddleware';
+import { sanitizeMiddleware } from '@shared/middlewares/sanitizeMiddleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use( express.json() );
 app.use( loggerMiddleware );
-app.use( '/api/catalogo', sanitizeMiddleware, catalogRoutes);
+app.use( '/api/catalogo', sanitizeMiddleware
+    , catalogRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use( errorHandlerMiddleware );
 

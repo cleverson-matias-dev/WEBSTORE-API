@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm"
 
-@Entity({name: 'attributes'})
+@Entity({name: 'attributes', database: 'webstore_catalogo'})
 export class AttributeEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string

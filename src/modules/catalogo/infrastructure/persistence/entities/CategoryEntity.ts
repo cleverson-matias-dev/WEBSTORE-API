@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from "typeorm"
 
-@Entity({name: 'categories'})
+@Entity({name: 'categories', database: 'webstore_catalogo'})
 export class CategoryEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string
