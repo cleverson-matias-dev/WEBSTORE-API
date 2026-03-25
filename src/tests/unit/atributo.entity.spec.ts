@@ -1,6 +1,6 @@
 // Attribute.spec.ts
-import { AttributeName } from "@modules/catalogo/domain/value-objects/attribute.name.vo"; // ajuste o caminho
-import { Attribute, IAttribute } from "@modules/catalogo/domain/entities/attribute.entity";
+import { AttributeName } from "@modules/catalog/domain/value-objects/attribute.name.vo"; // ajuste o caminho
+import { Attribute, IAttribute } from "@modules/catalog/domain/entities/attribute.entity";
 
 describe('AttributeName Value Object', () => {
     test('deve criar um name de attribute válido', () => {

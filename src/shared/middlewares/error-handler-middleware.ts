@@ -1,4 +1,4 @@
-import { ILogger } from "@modules/catalogo/application/interfaces/logs/ILogger";
+import { ILogger } from "@modules/catalog/application/interfaces/logs/ILogger";
 import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
 import { AppError } from "@shared/errors/AppError";
 import { NextFunction, Request, Response } from "express";

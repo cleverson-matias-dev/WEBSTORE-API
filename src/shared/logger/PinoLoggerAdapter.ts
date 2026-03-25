@@ -1,4 +1,4 @@
-import { ILogger } from "@modules/catalogo/application/interfaces/logs/ILogger";
+import { ILogger } from "@modules/catalog/application/interfaces/logs/ILogger";
 import { logger } from "./logger-context";
 
 export class PinoLoggerAdapter implements ILogger {

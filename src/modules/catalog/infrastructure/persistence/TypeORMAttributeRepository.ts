@@ -1,9 +1,9 @@
-import { Attribute } from "@modules/catalogo/domain/entities/attribute.entity";
+import { Attribute } from "@modules/catalog/domain/entities/attribute.entity";
 import { AttributeEntity } from "./entities/AttributeEntity";
 import { AppDataSource } from "@shared/infra/db/data-source";
 import { Like, Repository } from "typeorm";
-import { AttributeFilterOptions, IAttributeRepository } from "@modules/catalogo/application/interfaces/repository/IAttributeRepository";
-import { AttributeName } from "@modules/catalogo/domain/value-objects/attribute.name.vo";
+import { AttributeFilterOptions, IAttributeRepository } from "@modules/catalog/application/interfaces/repository/IAttributeRepository";
+import { AttributeName } from "@modules/catalog/domain/value-objects/attribute.name.vo";
 import { AppError } from "@shared/errors/AppError";
 
 export class TypeORMAttributeRepository implements IAttributeRepository {

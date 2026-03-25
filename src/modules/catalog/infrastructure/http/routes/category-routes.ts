@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { validate } from "@shared/middlewares/validator"; 
-import { AttributesController } from "../contrrollers/AttributesController";
-import { saveAttributeSchema, deleteAttributeSchema, updateAttributeSchema, getAttributeSchema, getAllAttributesSchema } from "@modules/catalogo/infrastructure/http/validation-schemas/attribute-schema"
-import { TypeORMAttributeRepository } from "../../persistence/TypeORMAttributeRepository";
+import { CategoryController } from "../contrrollers/CategoryController";
+import { saveCategorySchema, deleteCategorySchema, getCategorySchema, updateCategorySchema, getAllCategoriesInputSchema } from "../validation-schemas/category-schema";
+import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepository";
 import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
+import { validate } from "@shared/middlewares/validator";
 
-export const attributeRoutes = Router();
-const attributesController = new AttributesController(
-    new TypeORMAttributeRepository(),
+export const categoryRoutes = Router();
+const controller = new CategoryController(
+    new TypeORMCategoryRepository(),
     new PinoLoggerAdapter()
 );
 
@@ -36,13 +36,13 @@ const attributesController = new AttributesController(
  *             $ref: '#/components/schemas/ErrorResponse'
  * 
  * tags:
- *   name: Attributes
- *   description: Gerenciamento de atributos do catálogo
+ *   name: Categories
+ *   description: Gerenciamento de categorias do catálogo
  * 
- * /catalogo/api/v2/attributes:
+ * /catalog/api/v2/categories:
  *   get:
- *     summary: Lista todos os atributos
- *     tags: [Attributes]
+ *     summary: Lista todas as categorias
+ *     tags: [Categories]
  *     parameters:
  *       - in: query
  *         name: name
@@ -60,11 +60,11 @@ const attributesController = new AttributesController(
  *           default: 1
  *     responses:
  *       200:
- *         description: Lista de atributos retornada com sucesso
+ *         description: Lista de categorias retornada com sucesso
  *         content: 
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/PaginatedAttributesDTO'
+ *               $ref: '#/components/schemas/PaginatedCategoriesDTO'
  *       400:
  *         $ref: '#/components/responses/StandardError'
  *       404:
@@ -72,21 +72,21 @@ const attributesController = new AttributesController(
  *       500:
  *         $ref: '#/components/responses/StandardError'
  *   post:
- *     summary: Cria um novo atributo
- *     tags: [Attributes]
+ *     summary: Cria uma nova categoria
+ *     tags: [Categories]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CreateAttributeDTO'
+ *             $ref: '#/components/schemas/CreateCategoryDTO'
  *     responses:
  *       201:
- *         description: Atributo criado com sucesso
+ *         description: Categoria criada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/AttributeDTO'
+ *               $ref: '#/components/schemas/CategoryDTO'
  *       400:
  *         $ref: '#/components/responses/StandardError'
  *       409: 
@@ -94,10 +94,10 @@ const attributesController = new AttributesController(
  *       500:
  *         $ref: '#/components/responses/StandardError'
  * 
- * /catalogo/api/v2/attributes/{id}:
+ * /catalog/api/v2/categories/{id}:
  *   get:
- *     summary: Obtém um atributo pelo ID
- *     tags: [Attributes]
+ *     summary: Obtém uma categoria pelo ID
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
@@ -107,11 +107,11 @@ const attributesController = new AttributesController(
  *           format: uuid
  *     responses:
  *       200:
- *         description: Atributo encontrado
+ *         description: Categoria encontrada
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/AttributeDTO'
+ *               $ref: '#/components/schemas/CategoryDTO'
  *       400:
  *         $ref: '#/components/responses/StandardError'
  *       404:
@@ -119,8 +119,8 @@ const attributesController = new AttributesController(
  *       500:
  *         $ref: '#/components/responses/StandardError'
  *   patch:
- *     summary: Atualiza um atributo existente
- *     tags: [Attributes]
+ *     summary: Atualiza uma categoria existente
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
@@ -133,14 +133,14 @@ const attributesController = new AttributesController(
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UpdateAttributeDTO'
+ *             $ref: '#/components/schemas/UpdateCategoryDTO'
  *     responses:
  *       200:
- *         description: Atributo atualizado com sucesso
+ *         description: Categoria atualizada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/AttributeDTO'
+ *               $ref: '#/components/schemas/CategoryDTO'
  *       400:
  *         $ref: '#/components/responses/StandardError'
  *       404:
@@ -151,8 +151,8 @@ const attributesController = new AttributesController(
  *         $ref: '#/components/responses/StandardError'
  * 
  *   delete:
- *     summary: Remove um atributo
- *     tags: [Attributes]
+ *     summary: Remove uma categoria
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
@@ -162,7 +162,7 @@ const attributesController = new AttributesController(
  *           format: uuid
  *     responses:
  *       204:
- *         description: Atributo removido com sucesso
+ *         description: Categoria removida com sucesso
  *       400:
  *         $ref: '#/components/responses/StandardError'
  *       404:
@@ -171,27 +171,26 @@ const attributesController = new AttributesController(
  *         $ref: '#/components/responses/StandardError'
  */
 
-attributeRoutes.get('/', validate(getAllAttributesSchema), (req, res) => attributesController.all(req, res));
 
-attributeRoutes.post(
-    '/', 
-    validate(saveAttributeSchema), 
-    (req, res) => attributesController.save(req, res)
+categoryRoutes.get('/', validate(getAllCategoriesInputSchema), (req, res) => controller.all(req, res));
+
+categoryRoutes.post('/', validate(saveCategorySchema), 
+    (req, res) => controller.save(req, res)
 );
 
-attributeRoutes.get(
+categoryRoutes.get(
     '/:id', 
-    validate(getAttributeSchema), 
-    (req, res) => attributesController.findById(req, res)
+    validate(getCategorySchema), 
+    (req, res) => controller.findById(req, res)
 );
 
-attributeRoutes.delete(
+categoryRoutes.delete(
     '/:id', 
-    validate(deleteAttributeSchema),
-    (req, res) => attributesController.delete(req, res)
+    validate(deleteCategorySchema),
+    (req, res) => controller.delete(req, res)
 );
 
-attributeRoutes.patch(
-    '/:id', validate(updateAttributeSchema),
-    (req, res) => attributesController.update(req, res)
+categoryRoutes.patch(
+    '/:id', validate(updateCategorySchema),
+    (req, res) => controller.update(req, res)
 );

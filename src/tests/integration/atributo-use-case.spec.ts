@@ -1,5 +1,5 @@
 import { MockAtributoRepository } from "./mockAtributoRepository";
-import { UpdateAttributeUC, FindAttributeUC, saveAttributeUC, DeleteAttributeUC, GetAllAttributesUC } from "@modules/catalogo/application/use-cases/attribute-use-cases";
+import { UpdateAttributeUC, FindAttributeUC, saveAttributeUC, DeleteAttributeUC, GetAllAttributesUC } from "@modules/catalog/application/use-cases/attribute-use-cases";
 
 
 describe('Casos de Uso: Attribute', () => {

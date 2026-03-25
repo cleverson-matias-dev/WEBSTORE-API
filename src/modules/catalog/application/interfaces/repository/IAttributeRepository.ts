@@ -1,4 +1,4 @@
-import { Attribute } from "@modules/catalogo/domain/entities/attribute.entity"
+import { Attribute } from "@modules/catalog/domain/entities/attribute.entity"
 
 export interface AttributeFilterOptions {
     limit: number;

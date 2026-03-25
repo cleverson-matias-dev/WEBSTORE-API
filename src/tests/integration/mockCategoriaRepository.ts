@@ -1,6 +1,6 @@
-import { Category } from "../../modules/catalogo/domain/entities/category.entity";
-import { CategoryName } from "../../modules/catalogo/domain/value-objects/category.name.vo";
-import { ICategoryRepository, CategoryFilterOptions } from "../../modules/catalogo/application/interfaces/repository/ICategoryRepository";
+import { Category } from "../../modules/catalog/domain/entities/category.entity";
+import { CategoryName } from "../../modules/catalog/domain/value-objects/category.name.vo";
+import { ICategoryRepository, CategoryFilterOptions } from "../../modules/catalog/application/interfaces/repository/ICategoryRepository";
 import { v4 as uuidv4 } from 'uuid';
 
 export class MockCategoryRepository implements ICategoryRepository {

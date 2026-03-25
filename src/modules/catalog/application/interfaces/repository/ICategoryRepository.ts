@@ -1,4 +1,4 @@
-import { Category } from "@modules/catalogo/domain/entities/category.entity";
+import { Category } from "@modules/catalog/domain/entities/category.entity";
 
 export interface CategoryFilterOptions {
     name?: string,

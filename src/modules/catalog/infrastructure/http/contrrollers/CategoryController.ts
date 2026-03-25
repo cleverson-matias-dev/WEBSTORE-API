@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { SaveCategoryUC, GetAllCategoriesUC, FindCategoryByIdUC, DeleteCategoryUC, UpdateCategoryUC } from "@modules/catalogo/application/use-cases/category-use-cases";
-import { ICategoryRepository } from "@modules/catalogo/application/interfaces/repository/ICategoryRepository";
-import { ILogger } from "@modules/catalogo/application/interfaces/logs/ILogger";
+import { SaveCategoryUC, GetAllCategoriesUC, FindCategoryByIdUC, DeleteCategoryUC, UpdateCategoryUC } from "@modules/catalog/application/use-cases/category-use-cases";
+import { ICategoryRepository } from "@modules/catalog/application/interfaces/repository/ICategoryRepository";
+import { ILogger } from "@modules/catalog/application/interfaces/logs/ILogger";
 
 
 

@@ -1,5 +1,5 @@
-import { AttributeName } from "@modules/catalogo/domain/value-objects/attribute.name.vo";
-import { Attribute } from "@modules/catalogo/domain/entities/attribute.entity";
+import { AttributeName } from "@modules/catalog/domain/value-objects/attribute.name.vo";
+import { Attribute } from "@modules/catalog/domain/entities/attribute.entity";
 import { CreateAttributeDTO, UpdateAttributeDTO, AttributeDTO, GetAllAttributesInputDTO, PaginatedAttributesDTO } from "../dtos/attribute-dtos";
 import { AttributeMapper } from "../dtos/attribute-mapper";
 import { IAttributeRepository } from "../interfaces/repository/IAttributeRepository";
