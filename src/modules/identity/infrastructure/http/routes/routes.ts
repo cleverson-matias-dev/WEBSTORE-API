@@ -1,7 +1,6 @@
 import { Router } from "express";
+import { authRoutes } from "./users-auth-routes";
 
-const novo_nome = Router();
+export const identityRoutes = Router();
 
-// rotas
-
-export default novo_nome;
+identityRoutes.use('/v1/users/auth', authRoutes);

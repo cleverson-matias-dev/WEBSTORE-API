@@ -8,7 +8,7 @@ export const validate = (schema: ZodObject) =>
         body: req.body,
         query: req.query,
         params: req.params,
-      });
+      })
       return next();
     } catch (error: any) {
       if (error instanceof ZodError) {
