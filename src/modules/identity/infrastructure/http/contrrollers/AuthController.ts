@@ -1,12 +1,23 @@
-import { Request, Response } from "express";
+// controllers/auth.controller.ts
+import { Request, Response } from 'express';
+import { CreateUserUseCase } from '@modules/identity/application/use-cases/user-use-cases'; 
+import { LoginUseCase } from '@modules/identity/application/use-cases/auth-use-cases'; 
 
 export class AuthController {
+  constructor(
+    private registerUC: CreateUserUseCase,
+    private loginUC: LoginUseCase
+  ) {}
 
-    register(req: Request, res: Response){
-        res.json(req.body);
-    }
-    
-    login(req: Request, res: Response){
-        res.json(req.body);
-    }
+  // Rota: POST /auth/register
+  async register(req: Request, res: Response) {
+    const result = await this.registerUC.execute(req.body);
+    return res.status(201).json(result);
+  }
+
+  // Rota: POST /auth/login
+  async login(req: Request, res: Response) {
+    const result = await this.loginUC.execute(req.body);
+    return res.json(result);
+  }
 }

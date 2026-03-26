@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDat
 import { Produto } from "./Produto"
 
 
-@Entity()
-export class Imagem {
+@Entity({name: 'images', database: 'webstore_catalogo'})
+export class ImageEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string
 

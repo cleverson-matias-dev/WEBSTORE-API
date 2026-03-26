@@ -1,14 +1,24 @@
 import { Request, Response, Router } from "express";
 import { AuthController } from "../contrrollers/AuthController";
 import { validate } from "@shared/middlewares/validator";
-import { loginUserSchema, registerUserSchema } from "../validation-schemas/user-schemas";
+import { CreateUserUseCase } from "@modules/identity/application/use-cases/user-use-cases";
+import { TypeOrmUserRepository } from "../../persistence/UserTypeormAdapter";
+import { LoginUseCase } from "@modules/identity/application/use-cases/auth-use-cases";
+import { LoginSchema } from "../validation-schemas/auth-schemas";
+import { CreateUserSchema } from "../validation-schemas/user-schemas";
 
 export const authRoutes = Router();
 
+const repository = new TypeOrmUserRepository();
+const registerUC = new CreateUserUseCase(repository);
+const loginUC = new LoginUseCase(repository);
+
 authRoutes.post('/register',
-    validate(registerUserSchema),
-    (req: Request, res: Response) => new AuthController().register(req, res));
+    validate(CreateUserSchema),
+    (req: Request, res: Response) =>
+        new AuthController(registerUC, loginUC).register(req, res));
 
 authRoutes.post('/login',
-    validate(loginUserSchema),
-    (req: Request, res: Response) => new AuthController().login(req, res));
+    validate(LoginSchema),
+    (req: Request, res: Response) => 
+        new AuthController(registerUC, loginUC).login(req, res));

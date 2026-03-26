@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, OneToMany, UpdateDateColumn } from "typeorm"
 import { CategoryEntity } from "./CategoryEntity"
 import { Sku } from "./Sku"
-import { Imagem } from "./Imagem"
+import { ImageEntity } from "./ImageEntity"
 
 @Entity()
 export class Produto {
@@ -32,8 +32,8 @@ export class Produto {
     @JoinColumn()
     categoria_id: CategoryEntity
 
-    @OneToMany(()=>Imagem, (imagem)=> imagem.produto)
-    imagens: Imagem[]
+    @OneToMany(()=>ImageEntity, (imagem)=> imagem.produto)
+    imagens: ImageEntity[]
 
     @CreateDateColumn()
     created_at: Date
