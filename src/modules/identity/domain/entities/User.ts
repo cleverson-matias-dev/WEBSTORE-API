@@ -27,8 +27,6 @@ export class User {
       isActive: props.isActive ?? true,
       role: props.role ?? UserRole.CLIENT,
     });
-
-    console.log(user);
     
     return user;
   }
