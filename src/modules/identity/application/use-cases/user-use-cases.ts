@@ -61,19 +61,18 @@ export class UpdateUserUseCase {
   constructor(private userRepository: IUserRepository) {}
 
   async execute(id: string, data: UpdateUserDTO): Promise<UserResponseDTO> {
-    const user = await this.userRepository.findById(id);
-    if (!user) throw new AppError('Usuário não encontrado', 404);
 
     const cleanedFilters = Object.fromEntries(
           Object.entries(data).filter(([_, value]) => value !== undefined && value !== null && value !== '')
-      );
-
+    );
+    
+    const user = await this.userRepository.findById(id);
+    if (!user) throw new AppError('Usuário não encontrado', 404);
 
     if (data.password) {
       const hashedPassword = await bcrypt.hash(data.password, 10);
       cleanedFilters.password = Password.create(hashedPassword).getValue;
     }
-
 
     const updatedUser = await this.userRepository.update(id, cleanedFilters as Partial<User>);
     return UserMapper.toDTO(updatedUser);
@@ -86,7 +85,7 @@ export class DeleteUserUseCase {
 
   async execute(id: string): Promise<void> {
     const user = await this.userRepository.findById(id);
-    if (!user) throw new Error('Usuário não encontrado');
+    if (!user) throw new AppError('Usuário não encontrado', 404);
     await this.userRepository.delete(id);
   }
 }

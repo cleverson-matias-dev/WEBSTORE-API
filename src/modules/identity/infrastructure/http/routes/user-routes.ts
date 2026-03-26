@@ -43,7 +43,7 @@ userRoutes.get(
 userRoutes.patch(
   '/:id', 
   validate(IdParamSchema), 
-  //validate(UpdateUserSchema), 
+  validate(UpdateUserSchema), 
   (req, res) => userController.update(req, res)
 );
 

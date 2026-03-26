@@ -22,8 +22,7 @@ export const CreateUserSchema = z.object({
 export const UpdateUserSchema = z.object({
   body: z.object({
     email: z
-        .string()
-        .email("E-mail inválido")
+        .email({message: 'email inválido'})
         .optional()
         .or(z.literal('')),
 
