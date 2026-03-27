@@ -1,0 +1,66 @@
+components:
+  schemas:
+    CreateImageDTO:
+      type: object
+      required:
+      - produto_id
+      - url
+      - ordem
+      properties:
+        produto_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        url:
+          type: string
+          format: uri
+          example: "https://exemplo.com"
+        ordem:
+          type: integer
+          example: 1
+
+    UpdateImageDTO:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        ordem:
+          type: integer
+
+    ImageResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        produto_id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        ordem:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    PaginatedImagesDTO:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageResponseDTO'
+        total:
+          type: integer
+          example: 100
+        page:
+          type: integer
+          example: 1

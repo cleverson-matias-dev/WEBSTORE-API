@@ -3,5 +3,4 @@ build/
 node_modules/
 package-lock.json
 Checklist.txt
-tarefas.txt
-Tarefas.txt
+Backlog.txt

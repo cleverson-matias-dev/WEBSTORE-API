@@ -1,36 +1,48 @@
-
-import { Router } from "express";
-import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
-import { validate } from "@shared/middlewares/validator";
-import { ImagesController } from "../contrrollers/ImagesController";
-import { TypeORMImageRepository } from "../../persistence/TypeORMImagesRepository";
-import { deleteImageSchema, getAllImagesSchema, getImageSchema, saveImageSchema, updateImageSchema } from "../validation-schemas/image-schema";
+import { Router } from 'express';
+import { ImageController } from '../contrrollers/ImagesController';
+import { TypeOrmImageRepository } from '../../persistence/TypeORMImagesRepository';
+import { CreateImageUseCase, DeleteImageUseCase, GetImageByIdUseCase, ListImagesUseCase, UpdateImageUseCase } from '@modules/catalog/application/use-cases/imgage-use-cases';
+import { getAllImagesSchema, getImageSchema, saveImageSchema, updateImageSchema } from '../validation-schemas/image-schema';
+import { validate } from '@shared/middlewares/validator';
 
 export const imagesRoutes = Router();
-const controller = new ImagesController(
-    new TypeORMImageRepository(),
-    new PinoLoggerAdapter()
-);
 
-imagesRoutes.get('/', validate(getAllImagesSchema), (req, res) => controller.all(req, res));
+const typeormRepo = new TypeOrmImageRepository();
+const createUC = new CreateImageUseCase(typeormRepo);
+const getByIdUC = new GetImageByIdUseCase(typeormRepo);
+const listUC = new ListImagesUseCase(typeormRepo);
+const updateUC = new UpdateImageUseCase(typeormRepo);
+const deleteUC = new DeleteImageUseCase(typeormRepo);
 
-imagesRoutes.post('/', validate(saveImageSchema), 
-    (req, res) => controller.save(req, res)
+const imageController = new ImageController(createUC, getByIdUC, listUC, updateUC, deleteUC);
+
+imagesRoutes.post(
+  '/', 
+  validate(saveImageSchema), 
+  (req, res) => imageController.create(req, res)
 );
 
 imagesRoutes.get(
-    '/:id', 
-    validate(getImageSchema), 
-    (req, res) => controller.findById(req, res)
+  '/:id', 
+  validate(getImageSchema), 
+  (req, res) => imageController.findById(req, res)
 );
 
-imagesRoutes.delete(
-    '/:id', 
-    validate(deleteImageSchema),
-    (req, res) => controller.delete(req, res)
+imagesRoutes.get(
+  '/', 
+  validate(getAllImagesSchema), 
+  (req, res) => imageController.index(req, res)
 );
 
 imagesRoutes.patch(
-    '/:id', validate(updateImageSchema),
-    (req, res) => controller.update(req, res)
+  '/:id', 
+  validate(updateImageSchema), 
+  (req, res) => imageController.update(req, res)
 );
+
+imagesRoutes.delete(
+  '/:id', 
+  validate(getImageSchema), 
+  (req, res) => imageController.delete(req, res)
+);
+

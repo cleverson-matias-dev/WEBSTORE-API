@@ -3,6 +3,8 @@ tags:
   description: Gerenciamento de atributos do catálogo
 - name: Categories
   description: Gerenciamento de categorias do catálogo
+- name: Images
+  description: Gerenciamento de imagens dos produtos
 
 components:
   schemas:
@@ -54,12 +56,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedAttributesDTO'
-        400:
-          $ref: '#/components/responses/StandardError'
-        404:
-          $ref: '#/components/responses/StandardError'
-        500:
-          $ref: '#/components/responses/StandardError'
+        400: { $ref: '#/components/responses/StandardError' }
+        500: { $ref: '#/components/responses/StandardError' }
     post:
       summary: Cria um novo atributo
       tags: [ Attributes ]
@@ -72,16 +70,7 @@ paths:
       responses:
         201:
           description: Atributo criado com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AttributeDTO'
-        400:
-          $ref: '#/components/responses/StandardError'
-        409:
-          $ref: '#/components/responses/StandardError'
-        500:
-          $ref: '#/components/responses/StandardError'
+        400: { $ref: '#/components/responses/StandardError' }
 
   /catalog/api/v1/attributes/{id}:
     get:
@@ -129,24 +118,9 @@ paths:
     get:
       summary: Lista todas as categorias
       tags: [ Categories ]
-      parameters:
-      - in: query
-        name: name
-        schema:
-          type: string
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          default: 10
-      - in: query
-        name: page
-        schema:
-          type: integer
-          default: 1
       responses:
         200:
-          description: Lista de categorias retornada com sucesso
+          description: Lista de categorias retornada
           content:
             application/json:
               schema:
@@ -163,10 +137,6 @@ paths:
       responses:
         201:
           description: Categoria criada com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CategoryDTO'
 
   /catalog/api/v1/categories/{id}:
     get:
@@ -189,9 +159,105 @@ paths:
         schema:
           type: string
           format: uuid
+
+  # --- Imagens ---
+  /catalog/api/v1/images:
+    get:
+      summary: Lista imagens de forma paginada
+      tags: [ Images ]
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          default: 10
+      - in: query
+        name: page
+        schema:
+          type: integer
+          default: 1
+      responses:
+        200:
+          description: Lista de imagens retornada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImagesDTO'
+        400: { $ref: '#/components/responses/StandardError' }
+
+    post:
+      summary: Cria uma nova imagem para um produto
+      tags: [ Images ]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCategoryDTO'
+              $ref: '#/components/schemas/CreateImageDTO'
+      responses:
+        201:
+          description: Imagem criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageResponseDTO'
+        400: { $ref: '#/components/responses/StandardError' }
+
+  /catalog/api/v1/images/{id}:
+    get:
+      summary: Obtém uma imagem pelo ID
+      tags: [ Images ]
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageResponseDTO'
+        404: { $ref: '#/components/responses/StandardError' }
+
+    patch:
+      summary: Atualiza dados de uma imagem (url ou ordem)
+      tags: [ Images ]
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateImageDTO'
+      responses:
+        200:
+          description: Imagem atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageResponseDTO'
+        400: { $ref: '#/components/responses/StandardError' }
+
+    delete:
+      summary: Remove uma imagem do catálogo
+      tags: [ Images ]
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: Imagem removida com sucesso
+        404: { $ref: '#/components/responses/StandardError' }

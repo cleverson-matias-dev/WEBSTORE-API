@@ -2,7 +2,6 @@ import z from 'zod';
 
 export const getAllImagesSchema = z.object({
     query: z.object({
-        name: z.string().optional(),
         limit: z.string().optional(),
         page: z.string().optional()
     })
@@ -11,14 +10,17 @@ export type GetAllImagesSchema = z.infer<typeof getAllImagesSchema>['query']
 
 export const saveImageSchema = z.object({
     body: z.object({
-        name: z.string().min(3, 'Image precisa ter no mínimo 3 caracteres')
+        parent_id: z.uuid({message: 'uuid não válido'}).optional(),
+        url: z.string(),
+        ordem: z.string().optional()
     })
 });
-export type CreateImageSchema = z.infer<typeof saveImageSchema>['body'];
+export type SaveImageSchema = z.infer<typeof saveImageSchema>['body'];
 
 export const updateImageSchema = z.object({
     body: z.object({
-        name: z.string().min(3, 'Image precisa ter no mínimo 3 caracteres'),
+        url: z.string({message:"url não valida"}).optional(),
+        ordem: z.string("ordem não valida").optional()
     }),
     params: z.object({
         id: z.uuid({error:'Uuid não é válido'}),

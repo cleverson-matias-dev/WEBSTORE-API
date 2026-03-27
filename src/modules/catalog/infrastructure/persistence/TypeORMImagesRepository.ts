@@ -1,76 +1,74 @@
 import { Repository } from "typeorm";
-import { ImageEntity } from "./entities/ImageEntity";
-import { AppDataSource } from "@shared/infra/db/data-source";
 import { Image } from "@modules/catalog/domain/entities/image.entity";
-import { IImageRepository, ImagesFilterOptions } from "@modules/catalog/application/interfaces/repository/IImageRepository";
-import { AppError } from "@shared/errors/AppError";
+import { IImageRepository, SearchResult } from "@modules/catalog/application/interfaces/repository/IImageRepository";
+import { ImageEntity } from "./entities/ImageEntity";
+import { ImageMapper } from "@modules/catalog/application/dtos/image-mappers";
+import { AppDataSource } from "@shared/infra/db/data-source";
 
+export class TypeOrmImageRepository implements IImageRepository {
 
-export class TypeORMImageRepository implements IImageRepository {
-    private repository: Repository<ImageEntity> = AppDataSource.getRepository(ImageEntity);
+    private readonly ormRepository: Repository<ImageEntity> = AppDataSource.getRepository(ImageEntity);
+  
 
-    private toDomain(val: ImageEntity): Image {
-        return new Image({
-            id: val.id,
-            ordem: val.ordem,
-            produto_id: val.produto_id,
-            url: val.url,
-            created_at: val.created_at,
-            updated_at: val.updated_at
-        });
-    }
+  async save(image: Image): Promise<Image> {
+    const props = image.props_read_only;
 
-    async save(category: Image): Promise<Image> {
-        const { produto_id, url, ordem } = category.getProps();
+    // Criamos a instância da entidade de persistência
+    const imageEntity = this.ormRepository.create({
+      id: props.id, // Se for undefined, o @PrimaryGeneratedColumn gera o UUID
+      produto_id: props.produto_id,
+      url: image.url,
+      ordem: props.ordem,
+      created_at: props.created_at,
+      updated_at: props.updated_at
+    });
 
-        
+    const saved = await this.ormRepository.save(imageEntity);
 
-        try {
-            
-        } catch (error) {
-            throw new AppError('registro já existe', 409);
-        }
-       
-    }
+    // Retornamos para o domínio usando o mapper
+    return ImageMapper.toDomainFromPersistence(saved);
+  }
 
-    async allPaginated(options: ImagesFilterOptions): Promise<[Image[], number]> {
-        const { limit, offset, name } = options;
+  async allPaginated(page: number, limit: number): Promise<SearchResult<Image>> {
+    const [items, total] = await this.ormRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { ordem: "ASC" }
+    });
 
-        const [entities, total] = await this.repository.findAndCount({
-            where: name ? { name: Like(`%${name}%`)} : {},
-            take: limit,
-            skip: offset,
-            order: { name: 'ASC' }
-        });
+    return {
+      items: items.map(item => ImageMapper.toDomainFromPersistence(item)),
+      total,
+      current_page: page,
+      limit
+    };
+  }
 
-        const domainCategories = entities.map(this.toDomain);
+  async findById(id: string): Promise<Image | null> {
+    const found = await this.ormRepository.findOneBy({ id });
+    
+    if (!found) return null;
+    
+    return ImageMapper.toDomainFromPersistence(found);
+  }
 
-        return [domainCategories, total];
-    }
+  async update(image: Image): Promise<boolean> {
+    const props = image.props_read_only;
+    
+    if (!props.id) return false;
 
-    async findBy(id: string): Promise<Image | null> {
-        const val = await this.repository.findOneBy({ id });
-        return val ? this.toDomain(val) : null;
-    }
+    // O TypeORM ignora campos undefined no .update()
+    const result = await this.ormRepository.update(props.id, {
+      url: image.url,
+      ordem: props.ordem,
+      // updated_at é atualizado automaticamente pelo decorador @UpdateDateColumn
+    });
 
-    async update(id: string, name: string): Promise<boolean> {
-        //const voNome = new CategoryName(name);
-        const categoriaMock = new Image({ name: voNome });
+    return result.affected !== undefined && result.affected > 0;
+  }
 
-        const result =  await this.repository.update(id, {
-            name: voNome.val(),
-            slug: categoriaMock.getProps().slug
-        });
-
-        const success = !!(result.affected && result.affected > 0);
-        if(!success) throw new AppError('recurso não encontrado', 404);
-        return success;
-    }
-
-    async delete(id: string): Promise<boolean> {
-        const result = await this.repository.delete(id);
-        const success = !!(result.affected && result.affected > 0);
-        if(!success) throw new AppError('recurso não encontrado', 404);
-        return success
-    }
+  async delete(id: string): Promise<boolean> {
+    const result = await this.ormRepository.delete(id);
+    return !!(result.affected && result.affected > 0);
+  }
 }

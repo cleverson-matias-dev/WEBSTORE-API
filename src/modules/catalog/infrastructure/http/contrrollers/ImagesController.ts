@@ -1,73 +1,43 @@
-import { Request, Response } from "express";
-import { ILogger } from "@modules/catalog/application/interfaces/logs/ILogger";
+import { CreateImageUseCase, DeleteImageUseCase, GetImageByIdUseCase, ListImagesUseCase, UpdateImageUseCase } from '@modules/catalog/application/use-cases/imgage-use-cases';
+import { Request, Response } from 'express';
 
+export class ImageController {
+  constructor(
+    private createUC: CreateImageUseCase,
+    private getByIdUC: GetImageByIdUseCase,
+    private listUC: ListImagesUseCase,
+    private updateUC: UpdateImageUseCase,
+    private deleteUC: DeleteImageUseCase
+  ) {}
 
+  async create(req: Request, res: Response) {
+    const result = await this.createUC.execute(req.body);
+    res.status(201).json(result);
+  }
 
-export class ImagesController {
+  async findById(req: Request, res: Response) {
+    const result = await this.getByIdUC.execute(req.params.id as string);
+    res.status(200).json(result);
+  }
 
-    constructor(
-        private repo: IImageRepository,
-        private logger: ILogger
-    ){}
+  async index(req: Request, res: Response) {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    
+    const result = await this.listUC.execute(page, limit);
+    res.status(200).json(result);
+  }
 
-    async save(req: Request, res: Response) {
-        this.logger.debug('attempt: save images whith filter', req.body);
-        const data = req.body;        
-        const uc = new SaveImageUC(this.repo);
-        return res.status(201).json(await uc.execute(data));
-    }
+  async update(req: Request, res: Response) {
+    const success = await this.updateUC.execute({
+      id: req.params.id,
+      ...req.body
+    });
+    res.status(204).send();
+  }
 
-    async all(req: Request, res: Response) {
-        res.json('in construction')
-        this.logger.debug('attempt: get images whith filter', req.query);
-        const { name, limit, page } = req.query;
-        const useCase = new GetAllImagesUC(this.repo);
-
-        const result = await useCase.execute({
-            name: name as string,
-            limit: Number(limit),
-            page:  Number(page)
-        });
-
-        return res.status(200).json(result);
-    }
-
-    async findById(req: Request, res: Response) {
-        res.json('in construction')
-        this.logger.debug('attempt: find images whith filter', req.params);
-        const uc = new FindImageByIdUC(this.repo);
-        const { id } = req.params;
-        const result = await uc.execute(id as string);
-        
-        if(!result) {
-            return res.status(404).json({status: 'error', errors: ['recurso não encontrado.']})
-        }
-
-        return res.status(200).json(result);
-    }
-
-    async delete(req: Request, res: Response) {
-        res.json('in construction')
-        this.logger.debug('attempt: delete images whith filter', req.params);
-        const uc = new DeleteImageUC(this.repo);
-        const {id} = req.params;
-        const response = await uc.execute(id as string);
-
-        if(!response) {
-            return res.status(404).json({status: 'error', errors: ['Category não encontrada.']});
-        }
-
-        return res.status(204).json();
-    }
-
-    async update(req: Request, res: Response) {
-           res.json('in construction')
-           this.logger.debug('attempt: update images whith filter', {...req.params, ...req.body});
-           const uc = new UpdateImageUC(this.repo);
-           const { id } = req.params;
-           const { name } = req.body;
-           const result = await uc.execute(id as string, { name });
-           return res.status(204).send();
-    }
-
+  async delete(req: Request, res: Response) {
+    await this.deleteUC.execute(req.params.id as string);
+    res.status(204).send();
+  }
 }
