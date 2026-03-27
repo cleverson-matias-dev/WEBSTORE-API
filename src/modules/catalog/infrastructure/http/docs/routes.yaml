@@ -28,7 +28,7 @@ components:
 
 paths:
   # --- Atributos ---
-  /catalog/api/v2/attributes:
+  /catalog/api/v1/attributes:
     get:
       summary: Lista todos os atributos
       tags: [ Attributes ]
@@ -83,7 +83,7 @@ paths:
         500:
           $ref: '#/components/responses/StandardError'
 
-  /catalog/api/v2/attributes/{id}:
+  /catalog/api/v1/attributes/{id}:
     get:
       summary: Obtém um atributo pelo ID
       tags: [ Attributes ]
@@ -125,7 +125,7 @@ paths:
           description: Atributo removido com sucesso
 
   # --- Categorias ---
-  /catalog/api/v2/categories:
+  /catalog/api/v1/categories:
     get:
       summary: Lista todas as categorias
       tags: [ Categories ]
@@ -168,7 +168,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CategoryDTO'
 
-  /catalog/api/v2/categories/{id}:
+  /catalog/api/v1/categories/{id}:
     get:
       summary: Obtém uma categoria pelo ID
       tags: [ Categories ]

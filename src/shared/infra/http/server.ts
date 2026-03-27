@@ -1,7 +1,7 @@
 import express from 'express';
 import { AppDataSource } from '../db/data-source';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from 'config/swagger';
+import { createOption } from 'config/swagger';
 import { errorHandlerMiddleware } from '@shared/middlewares/error-handler-middleware';
 import { loggerMiddleware } from '@shared/middlewares/loggerMiddleware';
 import { sanitizeMiddleware } from '@shared/middlewares/sanitizeMiddleware';
@@ -15,7 +15,12 @@ app.use( express.json() );
 app.use( loggerMiddleware );
 app.use( '/catalog/api', sanitizeMiddleware, catalogoRoutes);
 app.use( '/identity/api', sanitizeMiddleware, identityRoutes);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/docs/identity/api-docs', 
+    swaggerUi.serveFiles(createOption('Identity')), 
+    swaggerUi.setup(createOption('Identity')));
+app.use('/docs/catalog/api-docs', 
+    swaggerUi.serveFiles(createOption('Catalog')), 
+    swaggerUi.setup(createOption('Catalog')));
 app.use( errorHandlerMiddleware );
 
 AppDataSource.initialize().then(()=>{

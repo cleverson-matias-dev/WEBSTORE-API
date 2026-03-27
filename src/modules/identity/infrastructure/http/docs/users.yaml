@@ -1,0 +1,226 @@
+openapi: 3.0.0
+info:
+  title: API de Usuários
+  version: 1.0.0
+
+paths:
+  /users:
+    post:
+      summary: Cria um novo usuário
+      tags: [ Users ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDTO'
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    get:
+      summary: Lista usuários de forma paginada
+      tags: [ Users ]
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          default: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          default: 10
+      responses:
+        '200':
+          description: Lista de usuários retornada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserResultDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /users/search:
+    get:
+      summary: Busca usuários por critérios específicos
+      tags: [ Users ]
+      parameters:
+      - in: query
+        name: email
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: string
+          enum: [ client, admin ]
+      responses:
+        '200':
+          description: Usuário(s) encontrado(s)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponseDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /users/{id}:
+    patch:
+      summary: Atualiza parcialmente um usuário
+      tags: [ Users ]
+      parameters:
+      - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDTO'
+      responses:
+        '200':
+          description: Usuário atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: Remove um usuário
+      tags: [ Users ]
+      parameters:
+      - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          description: Usuário removido com sucesso
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  parameters:
+    idParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: Requisição inválida (Erro de validação)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Erro interno do servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        errors:
+          type: array
+          items:
+            type: string
+          example: [ "Mensagens de erro detalhadas aqui" ]
+
+    LoginDTO:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+          format: email
+          example: usuario@exemplo.com
+        password:
+          type: string
+          format: password
+          example: "senha123"
+
+    AuthResponseDTO:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserResponseDTO'
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    CreateUserDTO:
+      type: object
+      required: [ email, password, firstName, lastName ]
+      properties:
+        email: { type: string, format: email, example: "joao.silva@email.com" }
+        password: { type: string, format: password, example: "Senha@123" }
+        firstName: { type: string, example: "João" }
+        lastName: { type: string, example: "Silva" }
+        role: { type: string, enum: [ client, admin ], default: client }
+
+    UpdateUserDTO:
+      type: object
+      properties:
+        password: { type: string, format: password }
+        firstName: { type: string }
+        lastName: { type: string }
+        role: { type: string, enum: [ client, admin ] }
+        isActive: { type: boolean, example: true }
+
+    UserResponseDTO:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        fullName: { type: string, example: "João Silva" }
+        role: { type: string, example: "client" }
+        isActive: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    PaginatedUserResultDTO:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponseDTO'
+        total: { type: integer, example: 100 }
+        page: { type: integer, example: 1 }
+        lastPage: { type: integer, example: 10 }
