@@ -1,3 +1,4 @@
+import { url } from 'node:inspector';
 import swaggerJSDoc from 'swagger-jsdoc';
 
 
@@ -10,6 +11,7 @@ export const createOption = (moduleName: string) => swaggerJSDoc({
     },
     servers: [
       {
+        url: `http://localhost:3000/${moduleName.toLocaleLowerCase()}/api/v1/`,
         description: 'Servidor de Desenvolvimento',
       }
     ],
