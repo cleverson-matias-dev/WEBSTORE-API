@@ -16,7 +16,7 @@ const options: swaggerJSDoc.Options = {
     ],
   },
   // Caminho para os arquivos onde você escreveu os comentários @openapi ou @swagger
-  apis: ['./src/modules/**/*.ts'], 
+  apis: ['./src/modules/**/*.yaml'], 
 };
 
 export const swaggerSpec = swaggerJSDoc(options);

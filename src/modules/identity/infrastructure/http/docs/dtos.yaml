@@ -1,0 +1,120 @@
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        errors:
+          type: array
+          items:
+            type: string
+          example: [ "Mensagens de erro detalhadas aqui" ]
+    LoginDTO:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: usuario@exemplo.com
+        password:
+          type: string
+          format: password
+          example: "senha123"
+
+    AuthResponseDTO:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserResponseDTO'
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    CreateUserDTO:
+      type: object
+      required:
+      - email
+      - password
+      - firstName
+      - lastName
+      properties:
+        email:
+          type: string
+          format: email
+          example: "joao.silva@email.com"
+        password:
+          type: string
+          format: password
+          example: "Senha@123"
+        firstName:
+          type: string
+          example: "João"
+        lastName:
+          type: string
+          example: "Silva"
+        role:
+          type: string
+          enum: [ client, admin ]
+          default: client
+
+    UpdateUserDTO:
+      type: object
+      properties:
+        password:
+          type: string
+          format: password
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum: [ client, admin ]
+        isActive:
+          type: boolean
+          example: true
+
+    UserResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+          example: "João Silva"
+        role:
+          type: string
+          example: "client"
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    # Exemplo genérico de Paginação (usando UserResponseDTO como exemplo de T)
+    PaginatedUserResultDTO:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponseDTO'
+        total:
+          type: integer
+          example: 100
+        page:
+          type: integer
+          example: 1
+        lastPage:
+          type: integer
+          example: 10

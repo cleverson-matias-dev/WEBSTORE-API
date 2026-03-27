@@ -1,0 +1,154 @@
+openapi: 3.0.0
+info:
+  title: API de Categorias e Atributos
+  version: 1.0.0
+
+paths: {} # O Swagger exige essa seção, mesmo que vazia.
+
+components:
+  schemas:
+
+    AttributeDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - created_at
+      - updated_at
+
+    CreateAttributeDTO:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+
+    UpdateAttributeDTO:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+
+    GetAllAttributesInputDTO:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+
+    PaginatedAttributesDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeDTO'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - limit
+
+    CategoryDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - slug
+      - created_at
+      - updated_at
+
+    CreateCategoryDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        slug:
+          type: string
+      required:
+      - name
+
+    UpdateCategoryDTO:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+
+    GetAllCategoriesInputDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        limit:
+          type: integer
+        page:
+          type: integer
+
+    PaginatedCategoriesDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDTO'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - limit
