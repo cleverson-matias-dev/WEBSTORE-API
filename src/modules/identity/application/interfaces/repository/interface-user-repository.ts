@@ -1,4 +1,4 @@
-import { User, UserRole } from "@modules/identity/domain/entities/User";
+import { User, UserProps, UserRole } from "@modules/identity/domain/entities/User";
 
 export interface UserFilters {
   id?: string;
@@ -45,7 +45,7 @@ export interface IUserRepository {
    * @param id ID do usuário
    * @param data Objeto com campos da entidade de domínio a serem alterados
    */
-  update(id: string, data: Partial<User>): Promise<User>;
+  update(id: string, data: Partial<UserProps>): Promise<User>;
 
   /**
    * Remove um usuário permanentemente ou realiza soft delete

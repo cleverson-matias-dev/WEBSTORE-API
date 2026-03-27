@@ -74,7 +74,7 @@ export class UpdateUserUseCase {
       cleanedFilters.password = Password.create(hashedPassword).getValue;
     }
 
-    const updatedUser = await this.userRepository.update(id, cleanedFilters as Partial<User>);
+    const updatedUser = await this.userRepository.update(id, cleanedFilters as Partial<UserProps>);
     return UserMapper.toDTO(updatedUser);
   }
 

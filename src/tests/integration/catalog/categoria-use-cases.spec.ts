@@ -1,5 +1,5 @@
-import { Category } from "../../modules/catalog/domain/entities/category.entity";
-import { UpdateCategoryUC, FindCategoryByIdUC, SaveCategoryUC, DeleteCategoryUC, GetAllCategoriesUC } from "../../modules/catalog/application/use-cases/category-use-cases";
+import { Category } from "../../../modules/catalog/domain/entities/category.entity";
+import { UpdateCategoryUC, FindCategoryByIdUC, SaveCategoryUC, DeleteCategoryUC, GetAllCategoriesUC } from "../../../modules/catalog/application/use-cases/category-use-cases";
 import { MockCategoryRepository } from "./mockCategoriaRepository"
 import { AppError } from "@shared/errors/AppError";
 

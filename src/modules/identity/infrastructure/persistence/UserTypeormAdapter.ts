@@ -47,18 +47,33 @@ export class TypeOrmUserRepository implements IUserRepository {
     return user ? UserMapper.toDomain(user) : null;
   }
 
-  async update(id: string, data: Partial<DomainUser>): Promise<DomainUser> {
-    
+  async update(id: string, data: Partial<import('@modules/identity/domain/entities/User').UserProps>): Promise<DomainUser> {
     try {
-        await this.repository.update(id, { ...data} as any);
-        const updated = await this.findById(id);
-        if (!updated) throw new AppError('Falha ao recuperar usuário atualizado', 400);
-        return updated;
+      const persistenceData: any = {};
+
+      if ((data as any).email) {
+        const email = (data as any).email;
+        persistenceData.email = typeof email === 'string' ? email : email.getValue;
+      }
+
+      if ((data as any).password) {
+        const password = (data as any).password;
+        persistenceData.password = typeof password === 'string' ? password : password.getValue;
+      }
+
+      if ((data as any).firstName !== undefined) persistenceData.firstName = (data as any).firstName;
+      if ((data as any).lastName !== undefined) persistenceData.lastName = (data as any).lastName;
+      if ((data as any).role !== undefined) persistenceData.role = (data as any).role;
+      if ((data as any).isActive !== undefined) persistenceData.isActive = (data as any).isActive;
+
+      await this.repository.update(id, persistenceData);
+      const updated = await this.findById(id);
+      if (!updated) throw new AppError('Falha ao recuperar usuário atualizado', 400);
+      return updated;
     } catch (error: any) {
-        if(error.code === 'ER_DUP_ENTRY') throw new AppError('email já existe', 409);
-        throw new AppError('Erro interno do servidor');
+      if (error.code === 'ER_DUP_ENTRY') throw new AppError('email já existe', 409);
+      throw new AppError('Erro interno do servidor');
     }
-    
   }
 
   async delete(id: string): Promise<void> {

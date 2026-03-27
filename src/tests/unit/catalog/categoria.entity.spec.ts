@@ -1,5 +1,5 @@
 import { Category } from '@modules/catalog/domain/entities/category.entity';
-import { CategoryName } from '../../modules/catalog/domain/value-objects/category.name.vo';
+import { CategoryName } from '../../../modules/catalog/domain/value-objects/category.name.vo';
 
 describe('Category Entity', () => {
     
