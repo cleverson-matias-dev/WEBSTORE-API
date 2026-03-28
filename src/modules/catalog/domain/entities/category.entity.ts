@@ -1,4 +1,5 @@
 import { CategoryName } from "../value-objects/category.name.vo";
+import { Slug } from "../value-objects/slug.vo";
 
 export interface ICategory {
     id?:string, 
@@ -15,18 +16,7 @@ export class Category {
 
     constructor(props: ICategory) {
         this.props = props;
-        this.props.slug = this.props.slug || this.generateSlug(this.props.name);
-    }
-
-    private generateSlug(name: CategoryName): string {
-        return name.val()
-            .normalize('NFD')                
-            .replace(/[\u0300-\u036f]/g, '') 
-            .toLowerCase()                   
-            .trim()                          
-            .replace(/[^a-z0-9\s-]/g, '')    
-            .replace(/\s+/g, '-')            
-            .replace(/-+/g, '-');            
+        this.props.slug = this.props.slug || Slug.create(this.props.name.val()).getValue;
     }
 
     getProps(): ICategory {

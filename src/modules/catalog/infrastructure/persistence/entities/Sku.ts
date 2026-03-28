@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, ManyToOne, OneToMany, UpdateDateColumn } from "typeorm"
-import { Produto } from "./Produto"
+import { Produto } from "./ProductEntity"
 import { SkuAtributoValor } from "./SkuAtributoValor"
 
 @Entity()
