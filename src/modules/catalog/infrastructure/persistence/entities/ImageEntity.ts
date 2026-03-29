@@ -8,15 +8,18 @@ export class ImageEntity {
     id: string
 
     @Column({
-        type: 'uuid'
+        type: 'uuid',
+        nullable: false
     })
     produto_id: string
 
-    @ManyToOne(()=>Produto, (produto) => produto.images)
+    @ManyToOne(()=>Produto, (produto) => produto.images, {onDelete: 'CASCADE'})
+    @JoinColumn({name:'produto_id'})
     produto: Produto
 
     @Column({
-        type: 'varchar'
+        type: 'varchar',
+        unique: true
     })
     url: string
 

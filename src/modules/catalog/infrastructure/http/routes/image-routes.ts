@@ -4,11 +4,13 @@ import { TypeOrmImageRepository } from '../../persistence/TypeORMImagesRepositor
 import { CreateImageUseCase, DeleteImageUseCase, GetImageByIdUseCase, ListImagesUseCase, UpdateImageUseCase } from '@modules/catalog/application/use-cases/imgage-use-cases';
 import { getAllImagesSchema, getImageSchema, saveImageSchema, updateImageSchema } from '../validation-schemas/image-schema';
 import { validate } from '@shared/middlewares/validator';
+import { TypeormProductRepository } from '../../persistence/TypeORMProductRepository';
 
 export const imagesRoutes = Router();
 
 const typeormRepo = new TypeOrmImageRepository();
-const createUC = new CreateImageUseCase(typeormRepo);
+const productRepo = new TypeormProductRepository();
+const createUC = new CreateImageUseCase(typeormRepo, productRepo);
 const getByIdUC = new GetImageByIdUseCase(typeormRepo);
 const listUC = new ListImagesUseCase(typeormRepo);
 const updateUC = new UpdateImageUseCase(typeormRepo);
@@ -34,7 +36,7 @@ imagesRoutes.get(
   (req, res) => imageController.index(req, res)
 );
 
-imagesRoutes.patch(
+imagesRoutes.put(
   '/:id', 
   validate(updateImageSchema), 
   (req, res) => imageController.update(req, res)

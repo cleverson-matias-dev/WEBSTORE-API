@@ -10,7 +10,7 @@ export type GetAllImagesSchema = z.infer<typeof getAllImagesSchema>['query']
 
 export const saveImageSchema = z.object({
     body: z.object({
-        parent_id: z.uuid({message: 'uuid não válido'}).optional(),
+        produto_id: z.uuid({message: 'id do produto não é uuid válido'}),
         url: z.string(),
         ordem: z.string().optional()
     })

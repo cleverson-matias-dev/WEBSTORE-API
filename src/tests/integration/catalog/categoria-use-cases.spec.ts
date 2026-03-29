@@ -2,12 +2,16 @@ import { Category } from "../../../modules/catalog/domain/entities/category.enti
 import { UpdateCategoryUC, FindCategoryByIdUC, SaveCategoryUC, DeleteCategoryUC, GetAllCategoriesUC } from "../../../modules/catalog/application/use-cases/category-use-cases";
 import { MockCategoryRepository } from "./mockCategoriaRepository"
 import { AppError } from "@shared/errors/AppError";
+import { IProductRepository } from "@modules/catalog/application/interfaces/repository/IProductRepository";
+import { MockProductRepository } from "./mockProductRepository";
 
 describe('Use Cases: Category (com Mock Repository Real)', () => {
     let repo: MockCategoryRepository;
+    let prod_repo: IProductRepository;
 
     beforeEach(() => {
         repo = new MockCategoryRepository();
+        prod_repo = new MockProductRepository();
     });
 
     describe('SaveCategoryUC', () => {
@@ -69,7 +73,7 @@ describe('Use Cases: Category (com Mock Repository Real)', () => {
             const category = await useCaseCriar.execute({ name: 'Para Deletar', slug: 'delete' });
             const id = category.id;
 
-            const useCaseDeletar = new DeleteCategoryUC(repo);
+            const useCaseDeletar = new DeleteCategoryUC(repo, prod_repo);
             const resultado = await useCaseDeletar.execute(id);
 
             const itens = await repo.all();

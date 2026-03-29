@@ -32,11 +32,11 @@ export class Produto {
     @Column({type:'text', unique: false})
     category_id: string
 
-    @ManyToOne(()=>CategoryEntity, categoria => categoria.id)
+    @ManyToOne(()=>CategoryEntity, categoria => categoria.products, {onDelete:'RESTRICT'})
     @JoinColumn({name: 'category_id'})
     category: CategoryEntity
 
-    @OneToMany(()=>ImageEntity, (imagem)=> imagem.produto)
+    @OneToMany(()=>ImageEntity, (imagem)=> imagem.produto, {cascade: true})
     images: ImageEntity[]
 
     @CreateDateColumn()

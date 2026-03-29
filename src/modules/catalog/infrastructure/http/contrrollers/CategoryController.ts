@@ -2,12 +2,14 @@ import { Request, Response } from "express";
 import { SaveCategoryUC, GetAllCategoriesUC, FindCategoryByIdUC, DeleteCategoryUC, UpdateCategoryUC } from "@modules/catalog/application/use-cases/category-use-cases";
 import { ICategoryRepository } from "@modules/catalog/application/interfaces/repository/ICategoryRepository";
 import { ILogger } from "@modules/catalog/application/interfaces/logs/ILogger";
+import { IProductRepository } from "@modules/catalog/application/interfaces/repository/IProductRepository";
 
 
 
 export class CategoryController {
 
     constructor(
+        private product_repo: IProductRepository,
         private repo: ICategoryRepository,
         private logger: ILogger
     ){}
@@ -47,16 +49,11 @@ export class CategoryController {
     }
 
     async delete(req: Request, res: Response) {
-        this.logger.debug('attempt: delete categories whith filter', req.params);
-        const uc = new DeleteCategoryUC(this.repo);
+        const uc = new DeleteCategoryUC(this.repo, this.product_repo);
         const {id} = req.params;
-        const response = await uc.execute(id as string);
+        await uc.execute(id as string);
 
-        if(!response) {
-            return res.status(404).json({status: 'error', errors: ['Category não encontrada.']});
-        }
-
-        return res.status(204).json();
+        return res.status(204).send();
     }
 
     async update(req: Request, res: Response) {

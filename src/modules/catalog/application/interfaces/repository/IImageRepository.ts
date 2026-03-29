@@ -12,7 +12,7 @@ export interface IImageRepository {
   
   allPaginated(page: number, limit: number): Promise<SearchResult<Image>>;
   
-  findById(id: string): Promise<Image | null>;
+  findBy(prop:{}): Promise<Image | null>;
   
   update(image: Image): Promise<boolean>;
   

@@ -20,7 +20,6 @@ export class Image {
     };
   }
 
-  // Getters específicos tornam o código mais limpo que getProps()
   get url(): string {
     return this.props.url.getValue();
   }

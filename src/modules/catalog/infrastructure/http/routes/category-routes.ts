@@ -4,9 +4,11 @@ import { saveCategorySchema, deleteCategorySchema, getCategorySchema, updateCate
 import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepository";
 import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
 import { validate } from "@shared/middlewares/validator";
+import { TypeormProductRepository } from "../../persistence/TypeORMProductRepository";
 
 export const categoryRoutes = Router();
 const controller = new CategoryController(
+    new TypeormProductRepository(),
     new TypeORMCategoryRepository(),
     new PinoLoggerAdapter()
 );

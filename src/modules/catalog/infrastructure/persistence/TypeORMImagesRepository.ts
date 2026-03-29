@@ -13,9 +13,8 @@ export class TypeOrmImageRepository implements IImageRepository {
   async save(image: Image): Promise<Image> {
     const props = image.props_read_only;
 
-    // Criamos a instância da entidade de persistência
     const imageEntity = this.ormRepository.create({
-      id: props.id, // Se for undefined, o @PrimaryGeneratedColumn gera o UUID
+      id: props.id,
       produto_id: props.produto_id,
       url: image.url,
       ordem: props.ordem,
@@ -25,7 +24,6 @@ export class TypeOrmImageRepository implements IImageRepository {
 
     const saved = await this.ormRepository.save(imageEntity);
 
-    // Retornamos para o domínio usando o mapper
     return ImageMapper.toDomainFromPersistence(saved);
   }
 
@@ -44,8 +42,8 @@ export class TypeOrmImageRepository implements IImageRepository {
     };
   }
 
-  async findById(id: string): Promise<Image | null> {
-    const found = await this.ormRepository.findOneBy({ id });
+  async findBy(prop:{}): Promise<Image | null> {
+    const found = await this.ormRepository.findOneBy({ ...prop });
     
     if (!found) return null;
     
@@ -57,11 +55,9 @@ export class TypeOrmImageRepository implements IImageRepository {
     
     if (!props.id) return false;
 
-    // O TypeORM ignora campos undefined no .update()
     const result = await this.ormRepository.update(props.id, {
       url: image.url,
       ordem: props.ordem,
-      // updated_at é atualizado automaticamente pelo decorador @UpdateDateColumn
     });
 
     return result.affected !== undefined && result.affected > 0;

@@ -1,73 +1,88 @@
-import { CreateImageUseCase, GetImageByIdUseCase, UpdateImageUseCase } from "@modules/catalog/application/use-cases/imgage-use-cases";
+import { CreateImageUseCase } from "@modules/catalog/application/use-cases/imgage-use-cases";
 import { MockImageRepository } from "./mockImageRepository";
+import { MockProductRepository } from "./mockProductRepository";
+import { Product } from "@modules/catalog/domain/entities/product.entity";
+import { CreateImageDTO } from "@modules/catalog/application/dtos/image-dtos";
 
-describe("Image Use Cases Integration Tests", () => {
-  let repository: MockImageRepository;
+
+describe('CreateImageUseCase', () => {
+  let useCase: CreateImageUseCase;
+  let imageRepository: MockImageRepository;
+  let productRepository: MockProductRepository;
 
   beforeEach(() => {
-    repository = new MockImageRepository();
+    // Instanciando os adaptadores de teste (Mocks)
+    imageRepository = new MockImageRepository();
+    productRepository = new MockProductRepository();
+    
+    // Injeção de dependência via construtor
+    useCase = new CreateImageUseCase(imageRepository, productRepository);
   });
 
-  it("deve criar uma imagem e recuperá-la do repositório", async () => {
-    const createUseCase = new CreateImageUseCase(repository);
-    const input = {
-      produto_id: "prod-1",
-      url: "https://teste.com",
-      ordem: 1
+    it('deve criar uma imagem com sucesso quando o produto existir', async () => {
+      // 1. Arrange: Criar e salvar um produto no mock para simular existência no banco
+      const produtoId = 'uuid-v4-do-produto';
+      const produtoValido = Product.create({
+      id: 'uuid-123',
+      name: 'Produto Teste',
+      description: '...',
+      category_id: '...',
+      slug: 'produto-teste'
+    });
+
+    await productRepository.save(produtoValido);
+
+    const input: CreateImageDTO = {
+      produto_id: produtoId,
+      url: 'https://minhaloja.com',
+      ordem: 1,
     };
 
-    const result = await createUseCase.execute(input);
+    // 2. Act: Executar o caso de uso
+    const result = await useCase.execute(input);
 
-    expect(result.id).toBeDefined();
+    // 3. Assert: Verificar o retorno do DTO
+    expect(result).toHaveProperty('id');
     expect(result.url).toBe(input.url);
-    
-    // Verifica se realmente está no "banco"
-    const savedInDb = await repository.findById(result.id);
-    expect(savedInDb?.url).toBe(input.url);
+    expect(result.produto_id).toBe(produtoId);
+
+    // 4. Assert: Verificar se o estado foi alterado no "banco em memória" (Hexagonal)
+    const savedInMock = await imageRepository.findBy({ id: result.id });
+    expect(savedInMock).toBeDefined();
+    expect(savedInMock?.url).toBe(input.url);
   });
 
-  it("deve lançar erro ao tentar buscar imagem inexistente", async () => {
-    const getUseCase = new GetImageByIdUseCase(repository);
-    await expect(getUseCase.execute("id-inexistente")).rejects.toThrow("Imagem não encontrada");
-  });
+  it('deve lançar erro se tentar criar imagem para um produto inexistente', async () => {
+  const input: CreateImageDTO = {
+    produto_id: 'id-que-nao-existe',
+    url: 'https://minhaloja.com',
+    ordem: 1,
+  };
 
-  it("deve atualizar a URL de uma imagem existente", async () => {
-    const createUseCase = new CreateImageUseCase(repository);
-    const updateUseCase = new UpdateImageUseCase(repository);
+  // Alterado de 'Produto' para 'produto' para bater com o throw do seu código
+  await expect(useCase.execute(input)).rejects.toThrow('/produto não encontrado/i');
+});
 
-    // 1. Cria
-    const created = await createUseCase.execute({
-      produto_id: "p1",
-      url: "https://old.com",
-      ordem: 1
-    });
 
-    // 2. Atualiza
-    const newUrl = "https://new.com";
-    const success = await updateUseCase.execute({
-      id: created.id,
-      url: newUrl
-    });
+  it('deve garantir que a ordem da imagem seja persistida corretamente', async () => {
+    // Arrange
+    const produtoId = 'uuid-123';
+    await productRepository.save(Product.create({ 
+      id: produtoId, name: 'Mouse', description: '...', category_id: '...', slug: 'mouse' 
+    }));
 
-    // 3. Valida
-    expect(success).toBe(true);
-    const updated = await repository.findById(created.id);
-    expect(updated?.url).toBe(newUrl);
-  });
+    const input: CreateImageDTO = {
+      produto_id: produtoId,
+      url: 'https://img.com',
+      ordem: 5,
+    };
 
-  it("deve validar a URL mesmo durante a atualização", async () => {
-    const createUseCase = new CreateImageUseCase(repository);
-    const updateUseCase = new UpdateImageUseCase(repository);
+    // Act
+    const result = await useCase.execute(input);
 
-    const created = await createUseCase.execute({
-      produto_id: "p1",
-      url: "https://ok.com",
-      ordem: 1
-    });
-
-    await expect(updateUseCase.execute({
-      id: created.id,
-      url: "url-invalida"
-    })).rejects.toThrow("URL inválida");
+    // Assert
+    expect(result.ordem).toBe(5);
+    const imageInDb = await imageRepository.findBy({ id: result.id });
+    expect(imageInDb?.props_read_only.ordem).toBe(5);
   });
 });

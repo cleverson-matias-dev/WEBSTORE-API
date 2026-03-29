@@ -5,6 +5,8 @@ import { Category } from "../../domain/entities/category.entity";
 import { CreateCategoryDTO, UpdateCategoryDTO, CategoryDTO, GetAllCategoriesInputDTO, PaginatedCategoriesDTO } from "../dtos/category-dtos";
 import { CategoryMapper } from "../dtos/category-mapper";
 import { AppError } from "@shared/errors/AppError";
+import { IProductRepository } from "../interfaces/repository/IProductRepository";
+import { Product } from "@modules/catalog/domain/entities/product.entity";
 
 export class UpdateCategoryUC {
     constructor(private repo: ICategoryRepository) {}
@@ -45,9 +47,11 @@ export class SaveCategoryUC {
 }
 
 export class DeleteCategoryUC {
-    constructor(private repo: ICategoryRepository) {}
+    constructor(private repo: ICategoryRepository, private prod_repo: IProductRepository) {}
 
     async execute(uuid: string): Promise<boolean> {
+        const prods_with_category = await this.prod_repo.findBy({category_id: uuid});
+        if(prods_with_category instanceof Product) throw new AppError('existem produtos vinculados a essa categoria', 409);
         return this.repo.delete(uuid);
     }
 }
