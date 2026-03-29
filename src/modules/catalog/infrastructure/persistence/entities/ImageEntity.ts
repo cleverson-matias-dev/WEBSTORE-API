@@ -12,7 +12,7 @@ export class ImageEntity {
     })
     produto_id: string
 
-    @ManyToOne(()=>Produto, (produto) => produto.imagens)
+    @ManyToOne(()=>Produto, (produto) => produto.images)
     produto: Produto
 
     @Column({

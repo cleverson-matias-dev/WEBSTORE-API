@@ -20,6 +20,7 @@ export class CategoryEntity {
         onDelete: 'CASCADE', 
         nullable: true 
     })
+    
     @JoinColumn({ name: 'parent_id' })
     parent?: CategoryEntity | null
 
