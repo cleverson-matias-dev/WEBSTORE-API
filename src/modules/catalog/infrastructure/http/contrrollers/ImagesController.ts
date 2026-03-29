@@ -1,4 +1,4 @@
-import { CreateImageUseCase, DeleteImageUseCase, GetImageByIdUseCase, ListImagesUseCase, UpdateImageUseCase } from '@modules/catalog/application/use-cases/imgage-use-cases';
+import { CreateImageUseCase, DeleteImageUseCase, GetImageByIdUseCase, ListImagesUseCase, UpdateImageUseCase } from '@modules/catalog/application/use-cases/image-use-cases';
 import { Request, Response } from 'express';
 
 export class ImageController {

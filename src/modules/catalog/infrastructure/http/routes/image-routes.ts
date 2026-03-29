@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { ImageController } from '../contrrollers/ImagesController';
 import { TypeOrmImageRepository } from '../../persistence/TypeORMImagesRepository';
-import { CreateImageUseCase, DeleteImageUseCase, GetImageByIdUseCase, ListImagesUseCase, UpdateImageUseCase } from '@modules/catalog/application/use-cases/imgage-use-cases';
+import { CreateImageUseCase, DeleteImageUseCase, GetImageByIdUseCase, ListImagesUseCase, UpdateImageUseCase } from '@modules/catalog/application/use-cases/image-use-cases';
 import { getAllImagesSchema, getImageSchema, saveImageSchema, updateImageSchema } from '../validation-schemas/image-schema';
 import { validate } from '@shared/middlewares/validator';
 import { TypeormProductRepository } from '../../persistence/TypeORMProductRepository';
