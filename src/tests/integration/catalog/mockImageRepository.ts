@@ -1,7 +1,7 @@
-import { IImageRepository, SearchResult } from "@modules/catalog/application/interfaces/repository/IImageRepository";
-import { IImage, Image } from "@modules/catalog/domain/entities/image.entity";
+import { IImageRepository } from "@modules/catalog/application/interfaces/repository/IImageRepository";
+import { Image } from "@modules/catalog/domain/entities/image.entity";
 
-export class MockImageRepository implements IImageRepository {
+export class InMemoryImageRepository implements IImageRepository {
   public items: Image[] = [];
 
   async save(image: Image): Promise<Image> {
@@ -9,62 +9,24 @@ export class MockImageRepository implements IImageRepository {
     return image;
   }
 
-  async findBy(prop: Record<string, any>): Promise<Image | null> {
-    const image = this.items.find((item) => {
-      const props = item.props_read_only;
-      // Compara cada chave do objeto 'prop' com os valores dentro de 'props_read_only'
-      return Object.entries(prop).every(([key, value]) => {
-        return props[key as keyof IImage] === value;
-      });
-    });
-
-    return image || null;
+  async findBy(prop: any): Promise<Image | null> {
+    const key = Object.keys(prop)[0];
+    return this.items.find(item => (item as any)[key] === prop[key] || (item.props_read_only as any)[key] === prop[key]) || null;
   }
 
-  async allPaginated(page: number, limit: number): Promise<SearchResult<Image>> {
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    
-    // Ordenação simulada por 'ordem' para manter paridade com o TypeORM
-    const sortedItems = [...this.items].sort((a, b) => 
-        a.props_read_only.ordem - b.props_read_only.ordem
-    );
-
-    const paginatedItems = sortedItems.slice(startIndex, endIndex);
-
-    return {
-      items: paginatedItems,
-      total: this.items.length,
-      current_page: page,
-      limit: limit
-    };
+  async allPaginated(page: number, limit: number) {
+    return { items: this.items, total: this.items.length, current_page: page, limit };
   }
 
   async update(image: Image): Promise<boolean> {
-    const id = image.props_read_only.id;
-    const index = this.items.findIndex((item) => item.props_read_only.id === id);
-
-    if (index !== -1) {
-      this.items[index] = image;
-      return true;
-    }
-    return false;
+    const index = this.items.findIndex(i => i.props_read_only.id === image.props_read_only.id);
+    if (index === -1) return false;
+    this.items[index] = image;
+    return true;
   }
 
   async delete(id: string): Promise<boolean> {
-    const index = this.items.findIndex((item) => item.props_read_only.id === id);
-
-    if (index !== -1) {
-      this.items.splice(index, 1);
-      return true;
-    }
-    return false;
-  }
-
-  // Método auxiliar útil para testes de domínio
-  async findByProductId(produto_id: string): Promise<Image[]> {
-    return this.items.filter(
-      (item) => item.props_read_only.produto_id === produto_id
-    );
+    this.items = this.items.filter(i => i.props_read_only.id !== id);
+    return true;
   }
 }

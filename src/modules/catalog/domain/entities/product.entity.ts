@@ -1,4 +1,5 @@
 import { Slug } from '../value-objects/slug.vo';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface ProductProps {
   id?: string;
@@ -16,10 +17,15 @@ export class Product {
   private constructor(props: ProductProps) {
     this._props = {
       ...props,
+      id: props.id || uuidv4(),
       slug: props.slug && props.slug.trim() !== "" 
       ? props.slug 
       : Slug.create(props.name).getValue
     };
+  }
+
+  get id() {
+    return this.props.id!;
   }
 
   public static create(props: ProductProps): Product {
