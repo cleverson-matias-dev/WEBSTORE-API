@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, ManyToOne, OneToMany, UpdateDateColumn } from "typeorm"
 import { Produto } from "./ProductEntity"
-import { SkuAtributoValor } from "./SkuAtributoValor"
+import { SkuAtributoValor } from "./SkuAttributeValue"
 
 @Entity({database: 'webstore_catalogo', name: 'skus'})
 export class Sku {
