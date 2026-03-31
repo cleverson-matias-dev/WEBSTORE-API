@@ -5,6 +5,4 @@ package-lock.json
 Checklist.txt
 Backlog.txt
 merge_tool.js
-context_1.txt
-context_2.txt
-context_3.txt
+*.txt
