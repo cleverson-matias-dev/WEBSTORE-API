@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, Unique } from "typeorm"
 import { Sku } from "./Sku"
 import { AttributeEntity } from "./AttributeEntity"
 
 @Entity('sku_atributo_valor')
+@Unique(['sku_id', 'atributo_id'])
 export class SkuAtributoValor {
 
     @PrimaryGeneratedColumn("uuid")
