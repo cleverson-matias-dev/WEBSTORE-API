@@ -13,7 +13,7 @@ import { CategoryMapper } from "./category-mapper";
         slug: product.props.slug,
         description: product.props.description,
         images: product.props.images?.map(image => ImageMapper.toDTO(ImageMapper.toDomainFromPersistence(image))) || [],
-        category: CategoryMapper.toDTO(CategoryMapper.toDomain(product.props.category)) || null,
+        category: product.props.category ? CategoryMapper.toDTO(CategoryMapper.toDomain(product.props.category)) : undefined,
         category_id: product.props.category_id,
         created_at: product.props.created_at!,
       };
