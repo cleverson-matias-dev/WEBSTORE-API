@@ -7,6 +7,8 @@ export interface ProductProps {
   slug: string;
   description: string;
   category_id: string;
+  images?: any[],
+  category?: any,
   created_at?: Date;
   deleted_at?: Date;
 }

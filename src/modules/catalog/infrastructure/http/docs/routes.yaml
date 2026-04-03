@@ -5,6 +5,8 @@ tags:
   description: Gerenciamento de categorias do catálogo
 - name: Images
   description: Gerenciamento de imagens dos produtos
+- name: Produtos
+  description: Gerenciamento de produtos
 
 components:
   schemas:
@@ -261,3 +263,119 @@ paths:
         204:
           description: Imagem removida com sucesso
         404: { $ref: '#/components/responses/StandardError' }
+
+  # --- Produtos ---
+  /catalog/api/v1/products:
+    post:
+      summary: Criar um novo produto
+      tags: [ Produtos ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductInputDto'
+      responses:
+        '201':
+          description: Produto criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductOutputDto'
+        '400':
+          $ref: '#/components/responses/StandardError'
+        '404':
+          $ref: '#/components/responses/StandardError'
+        '409':
+          $ref: '#/components/responses/StandardError'
+
+    get:
+      summary: Listar produtos com paginação e filtros
+      tags: [ Produtos ]
+      parameters:
+      - in: query
+        name: page
+        schema: { type: integer, minimum: 1, default: 1 }
+      - in: query
+        name: limit
+        schema: { type: integer, minimum: 1, default: 10 }
+      - in: query
+        name: name
+        schema: { type: string }
+      - in: query
+        name: slug
+        schema: { type: string }
+      - in: query
+        name: description
+        schema: { type: string }
+      responses:
+        '200':
+          description: Lista de produtos retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductOutputDto'
+                  total: { type: integer }
+                  page: { type: integer }
+                  limit: { type: integer }
+        '400':
+          $ref: '#/components/responses/StandardError'
+
+  /catalog/api/v1/products/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema: { type: string, format: uuid }
+
+    get:
+      summary: Obter produto por ID
+      tags: [ Produtos ]
+      responses:
+        '200':
+          description: Detalhes do produto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductOutputDto'
+        '404':
+          $ref: '#/components/responses/StandardError'
+
+    put:
+      summary: Atualizar um produto existente
+      tags: [ Produtos ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductInputDto'
+      responses:
+        '200':
+          description: Produto atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductOutputDto'
+        '400':
+          $ref: '#/components/responses/StandardError'
+        '404':
+          $ref: '#/components/responses/StandardError'
+        '409':
+          $ref: '#/components/responses/StandardError'
+
+    delete:
+      summary: Remover um produto
+      tags: [ Produtos ]
+      responses:
+        '204':
+          description: Produto removido com sucesso
+        '404':
+          $ref: '#/components/responses/StandardError'
+        '400':
+          $ref: '#/components/responses/StandardError'

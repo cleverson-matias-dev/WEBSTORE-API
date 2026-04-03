@@ -152,3 +152,131 @@ components:
       - total
       - page
       - limit
+
+    CreateImageDTO:
+      type: object
+      required:
+      - produto_id
+      - url
+      - ordem
+      properties:
+        produto_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        url:
+          type: string
+          format: uri
+          example: "https://exemplo.com"
+        ordem:
+          type: integer
+          example: 1
+
+    UpdateImageDTO:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        ordem:
+          type: integer
+
+    ImageResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        produto_id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        ordem:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    PaginatedImagesDTO:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageResponseDTO'
+        total:
+          type: integer
+          example: 100
+        page:
+          type: integer
+          example: 1
+
+    CreateProductInputDto:
+      type: object
+      required:
+      - name
+      - description
+      - category_id
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category_id:
+          type: string
+          format: uuid
+
+    ProductOutputDto:
+      type: object
+      required:
+      - id
+      - name
+      - slug
+      - description
+      - category_id
+      - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageResponseDTO'
+        category:
+          $ref: '#/components/schemas/CategoryDTO'
+        description:
+          type: string
+        category_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+
+    UpdateProductInputDto:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        category_id:
+          type: string
+          format: uuid

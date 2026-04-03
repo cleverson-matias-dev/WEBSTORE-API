@@ -7,8 +7,10 @@ import { loggerMiddleware } from '@shared/middlewares/loggerMiddleware';
 import { sanitizeMiddleware } from '@shared/middlewares/sanitizeMiddleware';
 import catalogoRoutes from '@modules/catalog/infrastructure/http/routes/routes';
 import { identityRoutes } from '@modules/identity/infrastructure/http/routes/routes';
+import cors from 'cors'
 
 const app = express();
+app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 app.use( express.json() );

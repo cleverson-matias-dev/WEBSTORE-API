@@ -16,7 +16,12 @@ export class TypeormProductRepository implements IProductRepository {
   }
 
   async findBy(prop: {}): Promise<Product | null> {
-    const raw = await this.ormRepository.findOneBy({...prop} as any);
+    const raw = await this.ormRepository.findOne({ 
+      where: {...prop} as any, 
+      relations: {
+        images: true,
+        category: { parent: true }
+      }});
     return raw ? ProductMapper.toDomain(raw) : null;
   }
 
@@ -36,7 +41,13 @@ export class TypeormProductRepository implements IProductRepository {
       where,
       take: limit,
       skip,
-      order: { created_at: "DESC" } as any
+      order: { created_at: "DESC" } as any,
+      relations: {
+        images: true,
+        category: {
+          parent: true
+        }
+      }
     });
 
     return {
