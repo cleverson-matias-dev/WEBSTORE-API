@@ -280,3 +280,73 @@ components:
         category_id:
           type: string
           format: uuid
+
+    # --- Inputs (Requests) ---
+    CreateSkuInput:
+      type: object
+      required: [ productId, skuCode, price, weight, dimensions ]
+      properties:
+        productId:
+          type: string
+          format: uuid
+        skuCode:
+          type: string
+          minLength: 3
+          example: "TSHIRT-BLUE-LG"
+        price:
+          type: number
+          minimum: 0
+        currency:
+          type: string
+          default: "BRL"
+        weight:
+          type: number
+          description: "Peso em gramas"
+        dimensions:
+          type: string
+          example: "20x20x10"
+
+    UpdatePriceInput:
+      type: object
+      required: [ newPrice ]
+      properties:
+        newPrice:
+          type: number
+        currency:
+          type: string
+
+    UpdateLogisticsInput:
+      type: object
+      required: [ weight, dimensions ]
+      properties:
+        weight:
+          type: number
+        dimensions:
+          type: string
+
+    # --- Outputs (Responses) ---
+    SkuDetailsOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        skuCode:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        weight:
+          type: number
+        dimensions:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

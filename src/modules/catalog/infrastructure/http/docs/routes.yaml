@@ -379,3 +379,132 @@ paths:
           $ref: '#/components/responses/StandardError'
         '400':
           $ref: '#/components/responses/StandardError'
+
+  # --- Produtos ---
+  /catalog/api/v1/skus:
+    post:
+      summary: Cria um novo SKU
+      tags: [ SKUs ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/CreateSkuInput'
+      responses:
+        '201':
+          description: SKU criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuDetailsOutput'
+        '404':
+          $ref: '#/components/responses/StandardError'
+        '409':
+          $ref: '#/components/responses/StandardError'
+
+  /catalog/api/v1/skus/{id}:
+    get:
+      summary: Busca SKU por ID
+      tags: [ SKUs ]
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Detalhes do SKU
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuDetailsOutput'
+        '404':
+          $ref: '#/components/responses/StandardError'
+
+    delete:
+      summary: Remove um SKU
+      tags: [ SKUs ]
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '24':
+          description: SKU removido com sucesso
+        '404':
+          $ref: '#/components/responses/StandardError'
+
+  /catalog/api/v1/skus/product/{productId}:
+    get:
+      summary: Lista todos os SKUs de um produto
+      tags: [ SKUs ]
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Lista de SKUs vinculados ao produto
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkuDetailsOutput'
+
+  /catalog/api/v1/skus/{id}/price:
+    patch:
+      summary: Atualiza o preço de um SKU
+      tags: [ SKUs ]
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/UpdatePriceInput'
+      responses:
+        '200':
+          description: Preço atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuDetailsOutput'
+
+  /catalog/api/v1/skus/{id}/logistics:
+    patch:
+      summary: Atualiza peso e dimensões de um SKU
+      tags: [ SKUs ]
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/UpdateLogisticsInput'
+      responses:
+        '200':
+          description: Dados logísticos atualizados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuDetailsOutput'
