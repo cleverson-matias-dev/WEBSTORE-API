@@ -36,14 +36,14 @@ export class SkuMapper {
   static toOutput(sku: SkuDomain): SkuDetailsOutputDto {
     return {
       id: sku.id,
-      productId: sku.productId,
-      skuCode: sku.skuCode,
+      product_id: sku.productId,
+      sku_code: sku.skuCode,
       price: sku.price,
       currency: sku.currency,
       weight: sku.weight,
       dimensions: sku.dimensions,
-      createdAt: sku.created_at,
-      updatedAt: sku.updated_at,
+      created_at: sku.created_at,
+      updated_at: sku.updated_at,
     };
   }
 }

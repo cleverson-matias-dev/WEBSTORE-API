@@ -1,6 +1,6 @@
 export interface CreateSkuInputDto {
-  productId: string;
-  skuCode: string;
+  product_id: string;
+  sku_code: string;
   price: number;
   currency?: string;
   weight: number;
@@ -9,8 +9,8 @@ export interface CreateSkuInputDto {
 
 export interface CreateSkuOutputDto {
   id: string;
-  skuCode: string;
-  createdAt: Date;
+  sku_code: string;
+  created_at: Date;
 }
 
 export interface DeleteSkuInputDto {
@@ -45,12 +45,12 @@ export interface UpdateLogisticsOutputDto {
 
 export interface SkuDetailsOutputDto {
   id: string;
-  productId: string;
-  skuCode: string;
+  product_id: string;
+  sku_code: string;
   price: number;
   currency: string;
   weight: number;
   dimensions: string;
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
 }

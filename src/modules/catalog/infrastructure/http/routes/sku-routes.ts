@@ -21,7 +21,7 @@ skuRoutes.post(
 );
 
 skuRoutes.get(
-  '/product/:productId',
+  '/product/:product_id',
   validate(paramProductUuidSchema),
   (req: Request, res: Response) => skuController.getByProductId(req, res)
 );

@@ -14,15 +14,15 @@ export class SkuUseCases {
   ) {}
 
   async create(input: CreateSkuInputDto): Promise<CreateSkuOutputDto> {
-    const alreadyExists = await this.skuRepository.findByCode(input.skuCode);
+    const alreadyExists = await this.skuRepository.findByCode(input.sku_code);
     if (alreadyExists) throw new AppError("SKU Code já cadastrado.", 409);
 
-    const productExists = await this.productRepository.findBy({ id:input.productId });
+    const productExists = await this.productRepository.findBy({ id:input.product_id });
     if(!(productExists instanceof Product)) throw new AppError('produto não encontrado', 404);
 
     const sku = new SkuDomain({
-      productId: input.productId,
-      skuCode: new SkuCode(input.skuCode),
+      productId: input.product_id,
+      skuCode: new SkuCode(input.sku_code),
       price: new Price(input.price, input.currency),
       weight: new Weight(input.weight),
       dimensions: input.dimensions,

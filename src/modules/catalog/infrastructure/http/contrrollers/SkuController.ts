@@ -12,8 +12,8 @@ export class SkuController {
   }
 
   async getByProductId(req: Request, res: Response): Promise<void> {
-    const { productId } = req.params;
-    const output = await this.skuUseCases.getByProductId(productId as string);
+    const { product_id } = req.params;
+    const output = await this.skuUseCases.getByProductId(product_id as string);
     res.status(200).json(output);
   }
 

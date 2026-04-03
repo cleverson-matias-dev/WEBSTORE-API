@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 export const createSkuSchema = z.object({
   body: z.object({
-     productId: z.uuid('uuid inválido'),
-     skuCode: z.string('sku code inválido').min(1),
+     product_id: z.uuid('uuid inválido'),
+     sku_code: z.string('sku code inválido').min(1),
      price: z.number('preco inválido').nonnegative(),
      currency: z.string('moeda inválida').length(3).optional().default('BRL'),
      weight: z.number('peso inválido').nonnegative('peso negativo'),
@@ -21,7 +21,7 @@ export type ParamUuidSchema = z.infer<typeof paramUuidSchema>['params'];
 
 export const paramProductUuidSchema = z.object({
   params: z.object({
-     productId: z.uuid('uuid inválido'),
+     product_id: z.uuid('uuid inválido'),
   })
 });
 export type ParamProductUuidSchema = z.infer<typeof paramProductUuidSchema>['params'];
