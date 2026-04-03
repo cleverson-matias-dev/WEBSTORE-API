@@ -380,7 +380,7 @@ paths:
         '400':
           $ref: '#/components/responses/StandardError'
 
-  # --- Produtos ---
+  # --- Skus ---
   /catalog/api/v1/skus:
     post:
       summary: Cria um novo SKU
@@ -508,3 +508,99 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SkuDetailsOutput'
+
+  /catalog/api/v1/sku-attributes:
+    post:
+      summary: Atribuir valor de atributo a um SKU
+      tags:
+      - SkuAttributeValue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSkuAttributeValueRequest'
+      responses:
+        '201':
+          description: Criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuAttributeValueResponse'
+        '400':
+          $ref: '#/components/responses/StandardError'
+        '409':
+          $ref: '#/components/responses/StandardError'
+
+  /catalog/api/v1/sku-attributes/sku/{skuId}:
+    get:
+      summary: Lista todos os atributos de um SKU específico
+      tags:
+      - SkuAttributeValue
+      parameters:
+      - name: skuId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Lista de atributos retornada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkuAttributeValueResponse'
+        '400':
+          $ref: '#/components/responses/StandardError'
+
+  /catalog/api/v1/sku-attributes/{id}:
+    put:
+      summary: Atualiza o valor de um atributo de SKU
+      tags:
+      - SkuAttributeValue
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSkuAttributeValueRequest'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuAttributeValueResponse'
+        '400':
+          $ref: '#/components/responses/StandardError'
+        '404':
+          $ref: '#/components/responses/StandardError'
+
+    delete:
+      summary: Remove um atributo de um SKU
+      tags:
+      - SkuAttributeValue
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Removido com sucesso
+        '404':
+          $ref: '#/components/responses/StandardError'
+        '500':
+          $ref: '#/components/responses/StandardError'

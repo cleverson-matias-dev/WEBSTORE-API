@@ -350,3 +350,52 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    CreateSkuAttributeValueRequest:
+      type: object
+      required:
+      - skuId
+      - atributoId
+      - valor
+      properties:
+        skuId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        atributoId:
+          type: string
+          format: uuid
+          example: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+        valor:
+          type: string
+          maxLength: 100
+          description: "O valor do atributo (não pode ser vazio)"
+          example: "Azul"
+
+    UpdateSkuAttributeValueRequest:
+      type: object
+      required:
+      - novoValor
+      properties:
+        novoValor:
+          type: string
+          maxLength: 100
+          example: "Vermelho"
+
+    SkuAttributeValueResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        skuId:
+          type: string
+          format: uuid
+        atributoId:
+          type: string
+          format: uuid
+        valor:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
