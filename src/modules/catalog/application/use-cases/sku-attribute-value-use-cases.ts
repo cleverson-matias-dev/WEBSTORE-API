@@ -1,8 +1,8 @@
 import { SkuAttributeValue } from "@modules/catalog/domain/entities/sku-attribute-value";
 import { 
-  CreateSkuAttributeValueRequest, 
-  SkuAttributeValueResponse, 
-  UpdateSkuAttributeValueRequest 
+  CreateSkuAttributeValueRequestDTO, 
+  SkuAttributeValueResponseDTO, 
+  UpdateSkuAttributeValueRequestDTO 
 } from "../dtos/sku-attribute-value-dtos";
 import { ISkuAttributeValueRepository } from "../interfaces/repository/ISkuAttributeValueRepository";
 import { AppError } from "@shared/errors/AppError";
@@ -13,8 +13,8 @@ export class SkuAttributeValueService {
   /**
    * Atribui um novo atributo ao SKU (Create)
    */
-  async assignAttribute(data: CreateSkuAttributeValueRequest): Promise<SkuAttributeValueResponse> {
-    const exists = await this.repo.findBySkuAndAttribute(data.skuId, data.atributoId);
+  async assignAttribute(data: CreateSkuAttributeValueRequestDTO): Promise<SkuAttributeValueResponseDTO> {
+    const exists = await this.repo.findBySkuAndAttribute(data.sku_id, data.attribute_id);
     if (exists) throw new AppError("Este atributo já está definido para este SKU.", 409);
 
     try {
@@ -31,12 +31,12 @@ export class SkuAttributeValueService {
   /**
    * Atualiza o valor de um atributo existente (Update)
    */
-  async updateValue(data: UpdateSkuAttributeValueRequest): Promise<SkuAttributeValueResponse> {
+  async updateValue(data: UpdateSkuAttributeValueRequestDTO): Promise<SkuAttributeValueResponseDTO> {
     const attributeValue = await this.repo.findById(data.id);
     if (!attributeValue) throw new AppError("Atributo de SKU não encontrado.", 404);
 
     try {
-      attributeValue.changeValue(data.novoValor);
+      attributeValue.changeValue(data.new_value);
       await this.repo.update(attributeValue);
 
       return this.mapToResponse(attributeValue);
@@ -49,7 +49,7 @@ export class SkuAttributeValueService {
   /**
    * Lista todos os atributos de um SKU específico (Read)
    */
-  async listBySku(skuId: string): Promise<SkuAttributeValueResponse[]> {
+  async listBySku(skuId: string): Promise<SkuAttributeValueResponseDTO[]> {
     try {
       const items = await this.repo.findAllBySku(skuId);
       return items.map(item => this.mapToResponse(item));
@@ -79,13 +79,13 @@ export class SkuAttributeValueService {
   /**
    * Mapper privado para padronizar as respostas (D.R.Y)
    */
-  private mapToResponse(entity: SkuAttributeValue): SkuAttributeValueResponse {
+  private mapToResponse(entity: SkuAttributeValue): SkuAttributeValueResponseDTO {
     return {
       id: entity.id,
-      skuId: entity.skuId,
-      atributoId: entity.atributoId,
-      valor: entity.valor,
-      updatedAt: entity.updatedAt
+      sku_id: entity.skuId,
+      attribute_id: entity.atributoId,
+      value: entity.value,
+      updated_at: entity.updatedAt
     };
   }
 }

@@ -1,13 +1,13 @@
 import type { CategoryDTO } from "./category-dtos";
 import type { ImageResponseDTO } from "./image-dtos";
 
-export interface CreateProductInputDto {
+export interface CreateProductInputDTO {
   name: string;
   description: string;
   category_id: string;
 }
 
-export interface ProductOutputDto {
+export interface ProductOutputDTO {
   id: string;
   name: string;
   slug: string;
@@ -18,6 +18,6 @@ export interface ProductOutputDto {
   created_at: Date;
 }
 
-export interface UpdateProductInputDto extends Partial<CreateProductInputDto> {
+export interface UpdateProductInputDTO extends Partial<CreateProductInputDTO> {
   id: string;
 }

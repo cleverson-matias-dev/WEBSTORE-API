@@ -19,7 +19,7 @@ export interface DeleteSkuInputDto {
 
 export interface UpdatePriceInputDto {
   id: string;
-  newPrice: number;
+  new_price: number;
   currency?: string;
 }
 

@@ -15,7 +15,7 @@ export class TypeOrmImageRepository implements IImageRepository {
 
     const imageEntity = this.ormRepository.create({
       id: props.id,
-      produto_id: props.produto_id,
+      product_id: props.product_id,
       url: image.url,
       ordem: props.ordem,
       created_at: props.created_at,

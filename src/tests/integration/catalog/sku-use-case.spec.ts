@@ -42,8 +42,8 @@ describe("SkuUseCases Unit Tests", () => {
   describe("create", () => {
     it("deve criar um novo SKU com sucesso", async () => {
       const input = {
-        productId: defaultProduct.id,
-        skuCode: "TSHIRT-BLUE-L",
+        product_id: defaultProduct.id,
+        sku_code: "TSHIRT-BLUE-L",
         price: 49.9,
         currency: "BRL",
         weight: 200,
@@ -53,7 +53,7 @@ describe("SkuUseCases Unit Tests", () => {
       const result = await useCases.create(input);
 
       expect(result.id).toBeDefined();
-      expect(result.skuCode).toBe("TSHIRT-BLUE-L");
+      expect(result.sku_code).toBe("TSHIRT-BLUE-L");
       
       const saved = await repository.findById(result.id);
       expect(saved).toBeDefined();
@@ -62,8 +62,8 @@ describe("SkuUseCases Unit Tests", () => {
 
     it("deve lançar erro se o SKU Code já existir", async () => {
       const input = {
-        productId: defaultProduct.id,
-        skuCode: "EXISTING",
+        product_id: defaultProduct.id,
+        sku_code: "EXISTING",
         price: 10,
         weight: 100,
         dimensions: "1x1x1",
@@ -87,7 +87,7 @@ describe("SkuUseCases Unit Tests", () => {
 
       const updated = await useCases.updatePrice({
         id: sku.id,
-        newPrice: 150,
+        new_price: 150,
       });
 
       expect(updated.price).toBe(150);
@@ -144,8 +144,8 @@ describe("SkuUseCases Unit Tests", () => {
       await repository.create(sku);
 
       const result = await useCases.getById(sku.id);
-      expect(result.skuCode).toBe("GET-123");
-      expect(result.productId).toBe(defaultProduct.id);
+      expect(result.sku_code).toBe("GET-123");
+      expect(result.product_id).toBe(defaultProduct.id);
     });
   });
 });

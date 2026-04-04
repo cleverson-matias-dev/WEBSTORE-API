@@ -1,12 +1,12 @@
 import { Product } from "@modules/catalog/domain/entities/product.entity";
-import { ProductOutputDto } from "./product-dtos"; 
+import { ProductOutputDTO } from "./product-dtos"; 
 import { Produto as ProdutoEntity } from "@modules/catalog/infrastructure/persistence/entities/ProductEntity";
 import { ImageMapper } from "./image-mappers";
 import { CategoryMapper } from "./category-mapper";
 
   export class ProductMapper {
     
-    static toOutput(product: Product): ProductOutputDto {
+    static toOutput(product: Product): ProductOutputDTO {
       return {
         id: product.props.id!,
         name: product.props.name,

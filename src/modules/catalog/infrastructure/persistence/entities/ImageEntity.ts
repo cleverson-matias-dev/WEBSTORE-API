@@ -11,10 +11,10 @@ export class ImageEntity {
         type: 'uuid',
         nullable: false
     })
-    produto_id: string
+    product_id: string
 
     @ManyToOne(()=>Produto, (produto) => produto.images, {onDelete: 'CASCADE'})
-    @JoinColumn({name:'produto_id'})
+    @JoinColumn({name:'product_id'})
     produto: Produto
 
     @Column({

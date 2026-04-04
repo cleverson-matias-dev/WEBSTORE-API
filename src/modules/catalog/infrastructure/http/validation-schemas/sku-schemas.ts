@@ -17,7 +17,29 @@ export const paramUuidSchema = z.object({
      id: z.uuid('uuid inválido'),
   })
 });
-export type ParamUuidSchema = z.infer<typeof paramUuidSchema>['params'];
+
+export const skuPriceUpdateSchema = z.object({
+  params: z.object({
+     id: z.uuid('uuid inválido'),
+  }),
+  body: z.object({
+    new_price: z.string('preço inválido'),
+    currency: z.string('preço inválido')
+  })
+});
+export type SkuPriceUpdateSchema = z.infer<typeof skuPriceUpdateSchema>['params'];
+
+export const skuLogistcUpdateSchema = z.object({
+  params: z.object({
+     id: z.uuid('uuid inválido'),
+  }),
+  body: z.object({
+    id: z.uuid('uuid inválido'),
+    weight: z.string('peso inválido'),
+    dimensions: z.string('dimensões inválidas')
+  })
+});
+export type SkuLogistcUpdateSchema = z.infer<typeof skuLogistcUpdateSchema>['params'];
 
 export const paramProductUuidSchema = z.object({
   params: z.object({

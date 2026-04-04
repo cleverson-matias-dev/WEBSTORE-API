@@ -6,7 +6,7 @@ export class ImageMapper {
   
   static toDomain(dto: CreateImageDTO): Image {
     return new Image({
-      produto_id: dto.produto_id,
+      product_id: dto.product_id,
       url: new Url(dto.url),
       ordem: dto.ordem
     });
@@ -16,7 +16,7 @@ export class ImageMapper {
     const props = image.props_read_only;
     return {
       id: props.id!,
-      produto_id: props.produto_id,
+      product_id: props.product_id,
       url: image.url,
       ordem: props.ordem,
       created_at: props.created_at!
@@ -26,7 +26,7 @@ export class ImageMapper {
   static toDomainFromPersistence(raw: any): Image {
     return new Image({
       id: raw.id,
-      produto_id: raw.produto_id,
+      product_id: raw.product_id,
       url: new Url(raw.url),
       ordem: raw.ordem,
       created_at: raw.created_at,

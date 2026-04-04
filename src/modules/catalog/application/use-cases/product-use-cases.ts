@@ -1,4 +1,4 @@
-import { CreateProductInputDto, ProductOutputDto, UpdateProductInputDto } from "../dtos/product-dtos";
+import { CreateProductInputDTO, ProductOutputDTO, UpdateProductInputDTO } from "../dtos/product-dtos";
 import { Product } from "../../domain/entities/product.entity";
 import { IProductRepository, PagedProductOutput, ProductFilter } from "../interfaces/repository/IProductRepository";
 import { ProductMapper } from "../dtos/product-mappers";
@@ -8,7 +8,7 @@ import { ICategoryRepository } from "../interfaces/repository/ICategoryRepositor
 export class CreateProductUseCase {
   constructor(private productRepository: IProductRepository) {}
 
-  async execute(input: CreateProductInputDto): Promise<ProductOutputDto> {
+  async execute(input: CreateProductInputDTO): Promise<ProductOutputDTO> {
     const product = Product.create({
       name: input.name,
       description: input.description,
@@ -31,7 +31,7 @@ export class CreateProductUseCase {
 export class GetProductUseCase {
   constructor(private productRepository: IProductRepository) {}
 
-  async execute(prop: {}): Promise<ProductOutputDto> {
+  async execute(prop: {}): Promise<ProductOutputDTO> {
     const product = await this.productRepository.findBy(prop);
 
     if (!product) {
@@ -60,7 +60,7 @@ export class UpdateProductUseCase {
     private categoryRepository: ICategoryRepository
   ) {}
 
-  async execute(input: UpdateProductInputDto): Promise<ProductOutputDto> {
+  async execute(input: UpdateProductInputDTO): Promise<ProductOutputDTO> {
     // 1. Busca o produto original
     const product = await this.productRepository.findBy({ id: input.id });
     if (!product) throw new AppError("Produto não encontrado", 404);

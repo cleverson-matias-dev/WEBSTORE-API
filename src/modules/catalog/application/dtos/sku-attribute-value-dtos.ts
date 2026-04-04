@@ -1,18 +1,18 @@
-export interface CreateSkuAttributeValueRequest {
-  skuId: string;
-  atributoId: string;
-  valor: string;
+export interface CreateSkuAttributeValueRequestDTO {
+  sku_id: string;
+  attribute_id: string;
+  value: string;
 }
 
-export interface UpdateSkuAttributeValueRequest {
+export interface UpdateSkuAttributeValueRequestDTO {
   id: string;
-  novoValor: string;
+  new_value: string;
 }
 
-export interface SkuAttributeValueResponse {
+export interface SkuAttributeValueResponseDTO {
   id: string;
-  skuId: string;
-  atributoId: string;
-  valor: string;
-  updatedAt: Date;
+  sku_id: string;
+  attribute_id: string;
+  value: string;
+  updated_at: Date;
 }

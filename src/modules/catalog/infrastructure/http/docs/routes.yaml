@@ -10,7 +10,7 @@ tags:
 
 components:
   schemas:
-    ErrorResponse:
+    ErrorResponseDTO:
       type: object
       properties:
         status:
@@ -28,7 +28,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/ErrorResponseDTO'
 
 paths:
   # --- Atributos ---
@@ -274,14 +274,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProductInputDto'
+              $ref: '#/components/schemas/CreateProductInputDTO'
       responses:
         '201':
           description: Produto criado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductOutputDto'
+                $ref: '#/components/schemas/ProductOutputDTO'
         '400':
           $ref: '#/components/responses/StandardError'
         '404':
@@ -319,7 +319,7 @@ paths:
                   items:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ProductOutputDto'
+                      $ref: '#/components/schemas/ProductOutputDTO'
                   total: { type: integer }
                   page: { type: integer }
                   limit: { type: integer }
@@ -342,7 +342,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductOutputDto'
+                $ref: '#/components/schemas/ProductOutputDTO'
         '404':
           $ref: '#/components/responses/StandardError'
 
@@ -354,14 +354,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateProductInputDto'
+              $ref: '#/components/schemas/UpdateProductInputDTO'
       responses:
         '200':
           description: Produto atualizado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductOutputDto'
+                $ref: '#/components/schemas/ProductOutputDTO'
         '400':
           $ref: '#/components/responses/StandardError'
         '404':
@@ -390,14 +390,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './schemas.yaml#/components/schemas/CreateSkuInput'
+              $ref: '#/components/schemas/CreateSkuInputDTO'
       responses:
         '201':
           description: SKU criado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkuDetailsOutput'
+                $ref: '#/components/schemas/SkuDetailsOutputDTO'
         '404':
           $ref: '#/components/responses/StandardError'
         '409':
@@ -420,7 +420,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkuDetailsOutput'
+                $ref: '#/components/schemas/SkuDetailsOutputDTO'
         '404':
           $ref: '#/components/responses/StandardError'
 
@@ -459,7 +459,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SkuDetailsOutput'
+                  $ref: '#/components/schemas/SkuDetailsOutputDTO'
 
   /catalog/api/v1/skus/{id}/price:
     patch:
@@ -476,14 +476,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './schemas.yaml#/components/schemas/UpdatePriceInput'
+              $ref: './schemas.yaml#/components/schemas/UpdatePriceInputDTO'
       responses:
         '200':
           description: Preço atualizado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkuDetailsOutput'
+                $ref: '#/components/schemas/SkuDetailsOutputDTO'
 
   /catalog/api/v1/skus/{id}/logistics:
     patch:
@@ -500,14 +500,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './schemas.yaml#/components/schemas/UpdateLogisticsInput'
+              $ref: './schemas.yaml#/components/schemas/UpdateLogisticsInputDTO'
       responses:
         '200':
           description: Dados logísticos atualizados
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkuDetailsOutput'
+                $ref: '#/components/schemas/SkuDetailsOutputDTO'
 
   /catalog/api/v1/sku-attributes:
     post:
@@ -519,14 +519,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateSkuAttributeValueRequest'
+              $ref: '#/components/schemas/CreateSkuAttributeValueRequestDTO'
       responses:
         '201':
           description: Criado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkuAttributeValueResponse'
+                $ref: '#/components/schemas/SkuAttributeValueResponseDTO'
         '400':
           $ref: '#/components/responses/StandardError'
         '409':
@@ -552,7 +552,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SkuAttributeValueResponse'
+                  $ref: '#/components/schemas/SkuAttributeValueResponseDTO'
         '400':
           $ref: '#/components/responses/StandardError'
 
@@ -573,14 +573,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateSkuAttributeValueRequest'
+              $ref: '#/components/schemas/UpdateSkuAttributeValueRequestDTO'
       responses:
         '200':
           description: Atualizado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkuAttributeValueResponse'
+                $ref: '#/components/schemas/SkuAttributeValueResponseDTO'
         '400':
           $ref: '#/components/responses/StandardError'
         '404':

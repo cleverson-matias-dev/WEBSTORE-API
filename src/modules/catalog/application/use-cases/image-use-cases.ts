@@ -14,7 +14,7 @@ export class CreateImageUseCase {
     const image = ImageMapper.toDomain(input);
     const exists = await this.imageRepo.findBy({url: image.url});
     if(exists instanceof EntityImage) throw new AppError('imagem já existe', 409);
-    const product = await this.product_repo.findBy({id: input.produto_id});
+    const product = await this.product_repo.findBy({id: input.product_id});
     if(!(product instanceof Product)) throw new AppError('produto não encontrado', 404);
     const savedImage = await this.imageRepo.save(image);
     return ImageMapper.toDTO(savedImage);
@@ -59,7 +59,7 @@ export class ListImagesUseCase {
     const result = await this.imageRepo.allPaginated(page, limit);
 
     return {
-      data: result.items.map(image => ImageMapper.toDTO(image)),
+      items: result.items.map(image => ImageMapper.toDTO(image)),
       total: result.total,
       page: result.current_page
     };

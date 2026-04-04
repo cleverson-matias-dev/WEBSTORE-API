@@ -2,7 +2,7 @@ import { Url } from "../value-objects/url.vo";
 
 export interface IImage {
   id?: string;
-  produto_id: string;
+  product_id: string;
   url: Url;
   ordem: number;
   created_at?: Date;

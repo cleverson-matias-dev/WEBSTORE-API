@@ -46,9 +46,9 @@ export class TypeOrmSkuAttributeValueRepository implements ISkuAttributeValueRep
    */
   private toDomain(record: SkuAtributoValor): SkuAttributeValue {
     return SkuAttributeValue.create({
-      skuId: record.sku_id,
-      atributoId: record.atributo_id,
-      valor: record.valor,
+      sku_id: record.sku_id,
+      attribute_id: record.atributo_id,
+      value: record.value,
       createdAt: record.created_at,
       updatedAt: record.updated_at
     }, record.id);
@@ -62,7 +62,7 @@ export class TypeOrmSkuAttributeValueRepository implements ISkuAttributeValueRep
       id: entity.id,
       sku_id: entity.skuId,
       atributo_id: entity.atributoId,
-      valor: entity.valor,
+      value: entity.value,
       updated_at: entity.updatedAt
     };
   }

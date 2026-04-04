@@ -52,7 +52,7 @@ export class SkuUseCases {
     const sku = await this.findByIdOrThrow(input.id);
     
     try {
-       sku.changePrice(new Price(input.newPrice, input.currency));
+       sku.changePrice(new Price(input.new_price, input.currency));
        await this.skuRepository.update(sku);
        return SkuMapper.toOutput(sku);
     } catch (error) {

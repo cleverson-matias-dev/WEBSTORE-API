@@ -4,7 +4,7 @@ import { Url } from "@modules/catalog/domain/value-objects/url.vo";
 describe('Image Domain Entity', () => {
   it('deve criar uma instância de imagem válida', () => {
     const url = new Url('http://imagem.com');
-    const image = new ImageDomain({ produto_id: '123', url, ordem: 1 });
+    const image = new ImageDomain({ product_id: '123', url, ordem: 1 });
     
     expect(image).toBeInstanceOf(ImageDomain);
     expect(image.url).toBe('http://imagem.com');

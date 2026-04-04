@@ -18,23 +18,23 @@ describe("SkuAttributeValueService", () => {
   describe("assignAttribute", () => {
     it("deve atribuir um novo valor de atributo com sucesso", async () => {
       const data = {
-        skuId: validSkuId,
-        atributoId: validAtributoId,
-        valor: "Azul",
+        sku_id: validSkuId,
+        attribute_id: validAtributoId,
+        value: "Azul",
       };
 
       const result = await service.assignAttribute(data);
 
       expect(result).toHaveProperty("id");
-      expect(result.valor).toBe("Azul");
+      expect(result.value).toBe("Azul");
       expect(await repository.findAllBySku(validSkuId)).toHaveLength(1);
     });
 
     it("deve lançar erro se o atributo já estiver definido para o SKU", async () => {
       const data = {
-        skuId: validSkuId,
-        atributoId: validAtributoId,
-        valor: "Verde",
+        sku_id: validSkuId,
+        attribute_id: validAtributoId,
+        value: "Verde",
       };
 
       // Simula existência prévia
@@ -50,46 +50,46 @@ describe("SkuAttributeValueService", () => {
     it("deve atualizar o valor de um atributo existente", async () => {
       // Criar um registro inicial
       const original = await service.assignAttribute({
-        skuId: validSkuId,
-        atributoId: validAtributoId,
-        valor: "Pequeno",
+        sku_id: validSkuId,
+        attribute_id: validAtributoId,
+        value: "Pequeno",
       });
 
       const updated = await service.updateValue({
         id: original.id,
-        novoValor: "Grande",
+        new_value: "Grande",
       });
 
-      expect(updated.valor).toBe("Grande");
+      expect(updated.value).toBe("Grande");
       expect(updated.id).toBe(original.id);
     });
 
     it("deve lançar erro ao tentar atualizar um ID inexistente", async () => {
       await expect(
-        service.updateValue({ id: randomUUID(), novoValor: "Novo" })
+        service.updateValue({ id: randomUUID(), new_value: "Novo" })
       ).rejects.toThrow("Atributo de SKU não encontrado.");
     });
   });
 
   describe("listBySku", () => {
     it("deve listar todos os atributos de um SKU específico", async () => {
-      await service.assignAttribute({ skuId: validSkuId, atributoId: randomUUID(), valor: "V1" });
-      await service.assignAttribute({ skuId: validSkuId, atributoId: randomUUID(), valor: "V2" });
-      await service.assignAttribute({ skuId: randomUUID(), atributoId: randomUUID(), valor: "Outro" });
+      await service.assignAttribute({ sku_id: validSkuId, attribute_id: randomUUID(), value: "V1" });
+      await service.assignAttribute({ sku_id: validSkuId, attribute_id: randomUUID(), value: "V2" });
+      await service.assignAttribute({ sku_id: randomUUID(), attribute_id: randomUUID(), value: "Outro" });
 
       const list = await service.listBySku(validSkuId);
 
       expect(list).toHaveLength(2);
-      expect(list[0].valor).toBe("V1");
+      expect(list[0].value).toBe("V1");
     });
   });
 
   describe("remove", () => {
     it("deve remover um atributo com sucesso", async () => {
       const item = await service.assignAttribute({
-        skuId: validSkuId,
-        atributoId: validAtributoId,
-        valor: "Remover",
+        sku_id: validSkuId,
+        attribute_id: validAtributoId,
+        value: "Remover",
       });
 
       await service.remove(item.id);

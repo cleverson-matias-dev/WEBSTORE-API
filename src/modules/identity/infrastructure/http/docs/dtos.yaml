@@ -1,6 +1,6 @@
 components:
   schemas:
-    ErrorResponse:
+    ErrorResponseDTO:
       type: object
       properties:
         status:

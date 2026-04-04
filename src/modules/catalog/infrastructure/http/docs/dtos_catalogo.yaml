@@ -156,11 +156,11 @@ components:
     CreateImageDTO:
       type: object
       required:
-      - produto_id
+      - product_id
       - url
       - ordem
       properties:
-        produto_id:
+        product_id:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
@@ -192,7 +192,7 @@ components:
         id:
           type: string
           format: uuid
-        produto_id:
+        product_id:
           type: string
           format: uuid
         url:
@@ -207,7 +207,7 @@ components:
     PaginatedImagesDTO:
       type: object
       properties:
-        data:
+        items:
           type: array
           items:
             $ref: '#/components/schemas/ImageResponseDTO'
@@ -217,8 +217,16 @@ components:
         page:
           type: integer
           example: 1
+        limit:
+          type: integer
+          example: 10
+      required:
+      - items
+      - total
+      - page
+      - limit
 
-    CreateProductInputDto:
+    CreateProductInputDTO:
       type: object
       required:
       - name
@@ -233,7 +241,7 @@ components:
           type: string
           format: uuid
 
-    ProductOutputDto:
+    ProductOutputDTO:
       type: object
       required:
       - id
@@ -265,7 +273,7 @@ components:
           type: string
           format: date-time
 
-    UpdateProductInputDto:
+    UpdateProductInputDTO:
       type: object
       required:
       - id
@@ -282,14 +290,14 @@ components:
           format: uuid
 
     # --- Inputs (Requests) ---
-    CreateSkuInput:
+    CreateSkuInputDTO:
       type: object
-      required: [ productId, skuCode, price, weight, dimensions ]
+      required: [ product_id, sku_code, price, weight, dimensions ]
       properties:
-        productId:
+        product_id:
           type: string
           format: uuid
-        skuCode:
+        sku_code:
           type: string
           minLength: 3
           example: "TSHIRT-BLUE-LG"
@@ -306,16 +314,16 @@ components:
           type: string
           example: "20x20x10"
 
-    UpdatePriceInput:
+    UpdatePriceInputDTO:
       type: object
-      required: [ newPrice ]
+      required: [ new_price ]
       properties:
-        newPrice:
+        new_price:
           type: number
         currency:
           type: string
 
-    UpdateLogisticsInput:
+    UpdateLogisticsInputDTO:
       type: object
       required: [ weight, dimensions ]
       properties:
@@ -325,16 +333,16 @@ components:
           type: string
 
     # --- Outputs (Responses) ---
-    SkuDetailsOutput:
+    SkuDetailsOutputDTO:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        productId:
+        product_id:
           type: string
           format: uuid
-        skuCode:
+        sku_code:
           type: string
         price:
           type: number
@@ -344,58 +352,58 @@ components:
           type: number
         dimensions:
           type: string
-        createdAt:
+        created_at:
           type: string
           format: date-time
-        updatedAt:
+        updated_at:
           type: string
           format: date-time
 
-    CreateSkuAttributeValueRequest:
+    CreateSkuAttributeValueRequestDTO:
       type: object
       required:
-      - skuId
-      - atributoId
-      - valor
+      - sku_id
+      - attribute_id
+      - value
       properties:
-        skuId:
+        sku_id:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
-        atributoId:
+        attribute_id:
           type: string
           format: uuid
           example: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
-        valor:
+        value:
           type: string
           maxLength: 100
           description: "O valor do atributo (não pode ser vazio)"
           example: "Azul"
 
-    UpdateSkuAttributeValueRequest:
+    UpdateSkuAttributeValueRequestDTO:
       type: object
       required:
-      - novoValor
+      - new_value
       properties:
-        novoValor:
+        new_value:
           type: string
           maxLength: 100
           example: "Vermelho"
 
-    SkuAttributeValueResponse:
+    SkuAttributeValueResponseDTO:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        skuId:
+        sku_id:
           type: string
           format: uuid
-        atributoId:
+        attribute_id:
           type: string
           format: uuid
-        valor:
+        value:
           type: string
-        updatedAt:
+        updated_at:
           type: string
           format: date-time

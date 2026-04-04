@@ -19,11 +19,11 @@ export class SkuController {
 
   async updatePrice(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
-    const { newPrice, currency } = req.body;
+    const { new_price, currency } = req.body;
     
     const output = await this.skuUseCases.updatePrice({ 
       id: id as string, 
-      newPrice: Number(newPrice), 
+      new_price: Number(new_price), 
       currency: currency
     });
     

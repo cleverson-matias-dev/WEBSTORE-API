@@ -11,9 +11,9 @@ export class SkuAttributeValueController {
 
   async update(req: Request, res: Response) {
     const { id } = req.params;
-    const { novoValor } = req.body;
+    const { new_value } = req.body;
     
-    const result = await this.service.updateValue({ id: id as string, novoValor });
+    const result = await this.service.updateValue({ id: id as string, new_value });
     return res.status(200).json(result);
   }
 

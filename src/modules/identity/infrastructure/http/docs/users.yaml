@@ -136,22 +136,22 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/ErrorResponseDTO'
     NotFound:
       description: Recurso não encontrado
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/ErrorResponseDTO'
     InternalError:
       description: Erro interno do servidor
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/ErrorResponseDTO'
 
   schemas:
-    ErrorResponse:
+    ErrorResponseDTO:
       type: object
       properties:
         status:

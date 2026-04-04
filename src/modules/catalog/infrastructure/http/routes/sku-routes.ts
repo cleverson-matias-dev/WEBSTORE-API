@@ -2,7 +2,7 @@ import { SkuUseCases } from "@modules/catalog/application/use-cases/sku-use-case
 import { Request, Response, Router } from "express";
 import { SkuController } from "../contrrollers/SkuController";
 import { validate } from "@shared/middlewares/validator";
-import { createSkuSchema, paramProductUuidSchema, paramUuidSchema } from "../validation-schemas/sku-schemas";
+import { createSkuSchema, paramProductUuidSchema, paramUuidSchema, skuPriceUpdateSchema } from "../validation-schemas/sku-schemas";
 import { TypeOrmSkuRepository } from "../../persistence/TypeORMSkuRepository";
 import { TypeormProductRepository } from "../../persistence/TypeORMProductRepository";
 
@@ -34,7 +34,7 @@ skuRoutes.get(
 
 skuRoutes.patch(
   '/:id/price',
-  validate(paramUuidSchema),
+  validate(skuPriceUpdateSchema),
   (req: Request, res: Response) => skuController.updatePrice(req, res)
 );
 

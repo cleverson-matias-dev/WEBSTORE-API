@@ -1,5 +1,5 @@
 import { Product } from "@modules/catalog/domain/entities/product.entity";
-import { ProductOutputDto } from "../../dtos/product-dtos";
+import { ProductOutputDTO } from "../../dtos/product-dtos";
 
 export interface ProductFilter {
   name?: string;
@@ -8,7 +8,7 @@ export interface ProductFilter {
 }
 
 export interface PagedProductOutput {
-  items: ProductOutputDto[];
+  items: ProductOutputDTO[];
   total: number;
   page: number;
   limit: number;

@@ -37,7 +37,7 @@ describe('CreateImageUseCase Integration', () => {
 
 
     const image: CreateImageDTO = { 
-      produto_id: product.id, 
+      product_id: product.id, 
       url: 'http://aws.s3/img.png', 
       ordem: 1 
     };
@@ -50,7 +50,7 @@ describe('CreateImageUseCase Integration', () => {
 
   it('deve falhar se o produto não existir', async () => {
     productRepo.findBy({id:'not-a-product'}); // Produto não encontrado
-    const dto: CreateImageDTO = { produto_id: 'erro', url: 'http://x.com', ordem: 1 };
+    const dto: CreateImageDTO = { product_id: 'erro', url: 'http://x.com', ordem: 1 };
 
     await expect(useCase.execute(dto)).rejects.toThrow('produto não encontrado');
   });
@@ -59,7 +59,7 @@ describe('CreateImageUseCase Integration', () => {
 describe('DeleteImageUseCase Integration', () => {
   it('deve remover uma imagem existente', async () => {
     const repo = new InMemoryImageRepository();
-    const img = new Image({ id: 'img1', produto_id: 'p1', url: new Url('http://ok.com'), ordem: 1 });
+    const img = new Image({ id: 'img1', product_id: 'p1', url: new Url('http://ok.com'), ordem: 1 });
     await repo.save(img);
 
     const deleteUC = new DeleteImageUseCase(repo);

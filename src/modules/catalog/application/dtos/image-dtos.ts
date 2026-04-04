@@ -1,6 +1,6 @@
 // Create / Save
 export interface CreateImageDTO {
-  produto_id: string;
+  product_id: string;
   url: string;
   ordem: number;
 }
@@ -15,7 +15,7 @@ export interface UpdateImageDTO {
 // Response (Para findById e visualização simples)
 export interface ImageResponseDTO {
   id: string;
-  produto_id: string;
+  product_id: string;
   url: string;
   ordem: number;
   created_at: Date;
@@ -23,7 +23,7 @@ export interface ImageResponseDTO {
 
 // All Paginated
 export interface PaginatedImagesDTO {
-  data: ImageResponseDTO[];
+  items: ImageResponseDTO[];
   total: number;
   page: number;
 }

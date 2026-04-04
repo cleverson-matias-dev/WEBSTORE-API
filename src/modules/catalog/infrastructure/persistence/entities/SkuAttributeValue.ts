@@ -23,7 +23,7 @@ export class SkuAtributoValor {
         type: 'varchar',
         length: '100'
     })
-    valor: string
+    value: string
 
     @ManyToOne(()=>Sku, (sku)=>sku.attributes)
     @JoinColumn({name: 'sku_id'})
