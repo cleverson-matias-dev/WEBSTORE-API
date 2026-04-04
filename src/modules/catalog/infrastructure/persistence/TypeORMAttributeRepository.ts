@@ -45,18 +45,8 @@ export class TypeORMAttributeRepository implements IAttributeRepository {
         return result ? this.toDomain(result) : null;
     }
 
-    async update(id: string, name: string): Promise<boolean> {
-        const voNome: AttributeName = new AttributeName(name);
-        try {
-            const result = await this.repository.update(id, {name: voNome.val()});
-            const success = !!(result.affected && result.affected > 0);
-            if(!success) throw new AppError('recurso não encontrado', 404);
-            return success
-        } catch (error: any) {
-            if(error.code === 'ER_DUP_ENTRY') throw new AppError('Esse nome já existe.', 409)
-        }
-        
-        return false;
+    async update(id: string, name: string): Promise<void> {
+        this.repository.update(id, {name: name});
     }
 
     async delete(id: string): Promise<boolean> {

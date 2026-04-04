@@ -9,9 +9,9 @@ export class MockSkuAttributeValueRepository implements ISkuAttributeValueReposi
     return item || null;
   }
 
-  async findBySkuAndAttribute(skuId: string, atributoId: string): Promise<SkuAttributeValue | null> {
+  async findBySkuAndAttribute(skuId: string, attribute_id: string): Promise<SkuAttributeValue | null> {
     const item = this.items.find(
-      (item) => item.skuId === skuId && item.atributoId === atributoId
+      (item) => item.skuId === skuId && item.attribute_id === attribute_id
     );
     return item || null;
   }

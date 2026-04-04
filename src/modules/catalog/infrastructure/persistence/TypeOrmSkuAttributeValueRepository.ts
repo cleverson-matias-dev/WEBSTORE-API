@@ -14,10 +14,10 @@ export class TypeOrmSkuAttributeValueRepository implements ISkuAttributeValueRep
     return record ? this.toDomain(record) : null;
   }
 
-  async findBySkuAndAttribute(skuId: string, atributoId: string): Promise<SkuAttributeValue | null> {
+  async findBySkuAndAttribute(skuId: string, attribute_id: string): Promise<SkuAttributeValue | null> {
     const record = await this.repository.findOneBy({ 
       sku_id: skuId, 
-      atributo_id: atributoId 
+      atributo_id: attribute_id 
     });
     return record ? this.toDomain(record) : null;
   }
@@ -61,7 +61,7 @@ export class TypeOrmSkuAttributeValueRepository implements ISkuAttributeValueRep
     return {
       id: entity.id,
       sku_id: entity.skuId,
-      atributo_id: entity.atributoId,
+      atributo_id: entity.attribute_id,
       value: entity.value,
       updated_at: entity.updatedAt
     };

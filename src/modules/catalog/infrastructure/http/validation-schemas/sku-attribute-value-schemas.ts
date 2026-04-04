@@ -3,7 +3,7 @@ import z from 'zod';
 export const createAtributeValueSchema = z.object({
     body: z.object({
         sku_id: z.uuid('skuId: uuid inválido'),
-        attribute_id: z.uuid('atributoId: uuid inválido'),
+        attribute_id: z.uuid('attribute_id: uuid inválido'),
         value: z.string('valor inválido')
     })
 })

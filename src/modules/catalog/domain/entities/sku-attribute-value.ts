@@ -11,7 +11,7 @@ export interface SkuAttributeValueProps {
 export class SkuAttributeValue {
   private readonly _id: string;
   private _skuId: string;
-  private _atributoId: string;
+  private _attribute_id: string;
   private _value: string;
   private readonly _createdAt: Date;
   private _updatedAt: Date;
@@ -19,7 +19,7 @@ export class SkuAttributeValue {
   private constructor(props: SkuAttributeValueProps, id?: string) {
     this._id = id ?? randomUUID();
     this._skuId = props.sku_id;
-    this._atributoId = props.attribute_id;
+    this._attribute_id = props.attribute_id;
     this._value = props.value;
     this._createdAt = props.createdAt ?? new Date();
     this._updatedAt = props.updatedAt ?? new Date();
@@ -34,7 +34,7 @@ export class SkuAttributeValue {
 
   get id(): string { return this._id; }
   get skuId(): string { return this._skuId; }
-  get atributoId(): string { return this._atributoId; }
+  get attribute_id(): string { return this._attribute_id; }
   get value(): string { return this._value; }
   get createdAt(): Date { return this._createdAt; }
   get updatedAt(): Date { return this._updatedAt; }
@@ -48,7 +48,7 @@ export class SkuAttributeValue {
 
   private validate(): void {
     if (!this.isValidUUID(this._skuId)) throw new Error("SKU ID inválido.");
-    if (!this.isValidUUID(this._atributoId)) throw new Error("Atributo ID inválido.");
+    if (!this.isValidUUID(this._attribute_id)) throw new Error("Atributo ID inválido.");
     this.validateValue(this._value);
   }
 

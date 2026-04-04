@@ -8,9 +8,18 @@ import { AppError } from "@shared/errors/AppError";
 export class UpdateAttributeUC {
     constructor(private repo: IAttributeRepository) {}
 
-    async execute(uuid: string, dto: UpdateAttributeDTO): Promise<boolean> {
-        const name = new AttributeName(dto.name);
-        return this.repo.update(uuid, name.val());
+    async execute(uuid: string, dto: UpdateAttributeDTO): Promise<void> {
+
+        const exists = await this.repo.findBy(uuid);
+        if(!(exists instanceof Attribute)) throw new AppError('Atributo não encontrado', 404);
+
+        try {
+            const name = new AttributeName(dto.name);
+            await this.repo.update(uuid, name.val());
+        } catch (error) {
+            throw new AppError('Erro a processar requisição');
+        }
+        
     }
 }
 
@@ -19,9 +28,19 @@ export class FindAttributeUC {
 
     async execute(uuid: string): Promise<AttributeDTO> {
                 
-        const attribute = await this.repository.findBy(uuid);
-        if (!(attribute instanceof Attribute)) throw new AppError('recurso não encontrado', 404);
-        return AttributeMapper.toDTO(attribute);
+        try {
+            const attribute = await this.repository.findBy(uuid);
+            if (!(attribute instanceof Attribute)) {
+                throw new AppError('recurso não encontrado', 404);
+            }
+            return AttributeMapper.toDTO(attribute);
+
+        } catch (error) {
+            throw new AppError('Erro na requisição', 400);
+        }
+        
+
+
     }
 }
 

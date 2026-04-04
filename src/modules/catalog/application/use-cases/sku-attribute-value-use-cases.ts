@@ -83,7 +83,7 @@ export class SkuAttributeValueService {
     return {
       id: entity.id,
       sku_id: entity.skuId,
-      attribute_id: entity.atributoId,
+      attribute_id: entity.attribute_id,
       value: entity.value,
       updated_at: entity.updatedAt
     };
