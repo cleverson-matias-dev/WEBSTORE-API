@@ -39,11 +39,8 @@ export class MockAtributoRepository implements IAttributeRepository {
         return item ? item : null;
     }
 
-    async update(id: string, name: string): Promise<boolean> {
+    async update(id: string, name: string): Promise<void> {
         const index = this.items.findIndex(i => i.getProps().id === id);
-        
-        if (index === -1) return false;
-
         const propsAntigas = this.items[index].getProps();
         
         this.items[index] = new Attribute({
@@ -52,7 +49,6 @@ export class MockAtributoRepository implements IAttributeRepository {
             updated_at: new Date()
         });
 
-        return true;
     }
 
     async delete(id: string): Promise<boolean> {
