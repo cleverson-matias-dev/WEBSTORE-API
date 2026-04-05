@@ -5,7 +5,6 @@ import { IImageRepository } from "../interfaces/repository/IImageRepository";
 import { Image as EntityImage } from "@modules/catalog/domain/entities/image.entity";
 import { Url } from "@modules/catalog/domain/value-objects/url.vo";
 import { IProductRepository } from "../interfaces/repository/IProductRepository";
-import { Product } from "@modules/catalog/domain/entities/product.entity";
 
 export class CreateImageUseCase {
   constructor(private imageRepo: IImageRepository, private product_repo: IProductRepository) {}
@@ -13,9 +12,9 @@ export class CreateImageUseCase {
   async execute(input: CreateImageDTO): Promise<ImageResponseDTO> {
     const image = ImageMapper.toDomain(input);
     const exists = await this.imageRepo.findBy({url: image.url});
-    if(exists instanceof EntityImage) throw new AppError('imagem já existe', 409);
+    if(exists) throw new AppError('imagem já existe', 409);
     const product = await this.product_repo.findBy({id: input.product_id});
-    if(!(product instanceof Product)) throw new AppError('produto não encontrado', 404);
+    if(!product) throw new AppError('produto não encontrado', 404);
     const savedImage = await this.imageRepo.save(image);
     return ImageMapper.toDTO(savedImage);
   }

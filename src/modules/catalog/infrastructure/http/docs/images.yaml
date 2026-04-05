@@ -1,0 +1,214 @@
+openapi: 3.0.0
+info:
+  title: Webstore Catalog API - Images
+  description: API para gerenciamento de imagens de produtos do catálogo.
+  version: 1.0.0
+
+components:
+  schemas:
+    # --- DTOs de Entrada ---
+    CreateImageDTO:
+      type: object
+      required:
+      - product_id
+      - url
+      - ordem
+      properties:
+        product_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        url:
+          type: string
+          example: "https://s3.com"
+        ordem:
+          type: integer
+          example: 1
+
+    UpdateImageDTO:
+      type: object
+      properties:
+        url:
+          type: string
+          example: "https://s3.com"
+        ordem:
+          type: integer
+          example: 2
+
+    # --- DTOs de Saída ---
+    ImageResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        url:
+          type: string
+        ordem:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    PaginatedImagesDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageResponseDTO'
+        total:
+          type: integer
+        page:
+          type: integer
+
+    # --- Erros ---
+    ErrorResponseDTO:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "error"
+        errors:
+          type: array
+          items:
+            type: string
+          example: [ "Mensagem de erro detalhada aqui" ]
+
+  responses:
+    BadRequest:
+      description: Erro de validação ou requisição malformada.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    InternalError:
+      description: Erro interno do servidor.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    NotFound:
+      description: Recurso não encontrado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+
+paths:
+  /catalog/api/v1/images:
+    post:
+      summary: Criar nova imagem
+      tags: [ Images ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateImageDTO'
+      responses:
+        '201':
+          description: Imagem criada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageResponseDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Conflito (Imagem já existe).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    get:
+      summary: Listar imagens paginadas
+      tags: [ Images ]
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          default: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          default: 10
+      responses:
+        '200':
+          description: Lista de imagens retornada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImagesDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /catalog/api/v1/images/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    get:
+      summary: Buscar imagem por ID
+      tags: [ Images ]
+      responses:
+        '200':
+          description: Detalhes da imagem.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageResponseDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    put:
+      summary: Atualizar imagem
+      tags: [ Images ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateImageDTO'
+      responses:
+        '204':
+          description: Atualizado com sucesso.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: Deletar imagem
+      tags: [ Images ]
+      responses:
+        '204':
+          description: Removido com sucesso.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'

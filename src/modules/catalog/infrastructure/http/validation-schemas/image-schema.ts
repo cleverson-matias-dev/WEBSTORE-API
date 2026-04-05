@@ -12,7 +12,7 @@ export const saveImageSchema = z.object({
     body: z.object({
         product_id: z.uuid({message: 'id do produto não é uuid válido'}),
         url: z.string(),
-        ordem: z.string().optional()
+        ordem: z.number().optional()
     })
 });
 export type SaveImageSchema = z.infer<typeof saveImageSchema>['body'];
