@@ -1,38 +1,38 @@
 import { ISkuAttributeValueRepository } from '@modules/catalog/application/interfaces/repository/ISkuAttributeValueRepository';
 import { Repository } from 'typeorm';
-import { SkuAtributoValor } from './entities/SkuAttributeValue';
 import { AppDataSource } from '@shared/infra/db/data-source';
-import { SkuAttributeValue } from '@modules/catalog/domain/entities/sku-attribute-value';
+import { SkuAttributeValue as RepositoryEntity, SkuAttributeValue } from './entities/SkuAttributeValue';
+import { SkuAttributeValue as DomainEntity } from '@modules/catalog/domain/entities/sku-attribute-value';
 
 export class TypeOrmSkuAttributeValueRepository implements ISkuAttributeValueRepository {
   
-    private readonly repository: Repository<SkuAtributoValor> = AppDataSource.getRepository(SkuAtributoValor);
+    private readonly repository: Repository<RepositoryEntity> = AppDataSource.getRepository(RepositoryEntity);
   
 
-  async findById(id: string): Promise<SkuAttributeValue | null> {
+  async findById(id: string): Promise<DomainEntity | null> {
     const record = await this.repository.findOneBy({ id });
     return record ? this.toDomain(record) : null;
   }
 
-  async findBySkuAndAttribute(skuId: string, attribute_id: string): Promise<SkuAttributeValue | null> {
+  async findBySkuAndAttribute(sku_id: string, attribute_id: string): Promise<DomainEntity | null> {
     const record = await this.repository.findOneBy({ 
-      sku_id: skuId, 
-      atributo_id: attribute_id 
+      sku_id, 
+      attribute_id 
     });
     return record ? this.toDomain(record) : null;
   }
 
-  async findAllBySku(skuId: string): Promise<SkuAttributeValue[]> {
+  async findAllBySku(skuId: string): Promise<DomainEntity[]> {
     const records = await this.repository.findBy({ sku_id: skuId });
     return records.map(this.toDomain);
   }
 
-  async save(entity: SkuAttributeValue): Promise<void> {
+  async save(entity: DomainEntity): Promise<void> {
     const persistenceModel = this.toPersistence(entity);
     await this.repository.save(persistenceModel);
   }
 
-  async update(entity: SkuAttributeValue): Promise<void> {
+  async update(entity: DomainEntity): Promise<void> {
     const persistenceModel = this.toPersistence(entity);
     await this.repository.save(persistenceModel);
   }
@@ -44,10 +44,10 @@ export class TypeOrmSkuAttributeValueRepository implements ISkuAttributeValueRep
   /**
    * Mapeia do Banco de Dados para o Domínio (Clean Architecture)
    */
-  private toDomain(record: SkuAtributoValor): SkuAttributeValue {
-    return SkuAttributeValue.create({
+  private toDomain(record: RepositoryEntity): DomainEntity {
+    return DomainEntity.create({
       sku_id: record.sku_id,
-      attribute_id: record.atributo_id,
+      attribute_id: record.attribute_id,
       value: record.value,
       createdAt: record.created_at,
       updatedAt: record.updated_at
@@ -57,11 +57,11 @@ export class TypeOrmSkuAttributeValueRepository implements ISkuAttributeValueRep
   /**
    * Mapeia do Domínio para o Banco de Dados (TypeORM)
    */
-  private toPersistence(entity: SkuAttributeValue): Partial<SkuAtributoValor> {
+  private toPersistence(entity: DomainEntity): Partial<RepositoryEntity> {
     return {
       id: entity.id,
       sku_id: entity.skuId,
-      atributo_id: entity.attribute_id,
+      attribute_id: entity.attribute_id,
       value: entity.value,
       updated_at: entity.updatedAt
     };

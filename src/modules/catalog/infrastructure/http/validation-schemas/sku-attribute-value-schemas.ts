@@ -16,9 +16,19 @@ export const attributeSkuIdValueParamUuidSchema = z.object({
 })
 export type AttributeSkuIdValueParamUuidSchema = z.infer<typeof attributeSkuIdValueParamUuidSchema>['params'];
 
-export const attributeValueIdParamUuidSchema = z.object({
+export const uuidParamUuidSchema = z.object({
     params: z.object({
         id: z.uuid('skuId: uuid inválido'),
     })
 })
-export type AttributeValueIdParamUuidSchema = z.infer<typeof attributeValueIdParamUuidSchema>['params'];
+export type UuidParamUuidSchema = z.infer<typeof uuidParamUuidSchema>['params'];
+
+export const attributeValueIdParamUuidSchema = z.object({
+    params: z.object({
+        id: z.uuid('skuId: uuid inválido'),
+    }),
+    body: z.object({
+        new_value: z.string('novo valor inválido')
+    })
+})
+export type AttributeValueIdParamUuidSchema = z.infer<typeof attributeValueIdParamUuidSchema>;

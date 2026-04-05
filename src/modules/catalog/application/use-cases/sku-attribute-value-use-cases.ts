@@ -63,7 +63,7 @@ export class SkuAttributeValueService {
    * Remove o vínculo de um atributo com um SKU (Delete)
    */
   async remove(id: string): Promise<void> {
-    const attributeValue = await this.repo.findById(id);''
+    const attributeValue = await this.repo.findById(id);
     if (!attributeValue) {
       throw new AppError("Atributo de SKU não encontrado para remoção.", 404);
     }

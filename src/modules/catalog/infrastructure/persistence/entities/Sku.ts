@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, ManyToOne, OneToMany, UpdateDateColumn } from "typeorm"
 import { Produto } from "./ProductEntity"
-import { SkuAtributoValor } from "./SkuAttributeValue"
+import { SkuAttributeValue } from "./SkuAttributeValue"
 
 @Entity({database: 'webstore_catalogo', name: 'skus'})
 export class Sku {
@@ -29,8 +29,8 @@ export class Sku {
   @Column({ type: 'varchar', length: 50 })
   dimensoes: string;
 
-  @OneToMany(() => SkuAtributoValor, (skuAtributoValor) => skuAtributoValor.sku)
-  attributes: SkuAtributoValor[];
+  @OneToMany(() => SkuAttributeValue, (skuAtributoValor) => skuAtributoValor.sku)
+  attributes: SkuAttributeValue[];
 
   @CreateDateColumn()
   created_at: Date;

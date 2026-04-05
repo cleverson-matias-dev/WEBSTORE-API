@@ -1,0 +1,190 @@
+openapi: 3.0.3
+info:
+  title: API de Catálogo - Recurso Atributos
+  version: 1.0.0
+  description: Documentação das rotas para gestão de atributos (Nome, ID, Datas).
+
+paths:
+  /catalog/api/v1/attributes:
+    get:
+      summary: Listar atributos com paginação e filtro
+      tags: [ Atributos ]
+      parameters:
+      - name: name
+        in: query
+        schema:
+          type: string
+        description: Filtro parcial pelo nome do atributo
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 10
+      responses:
+        '200':
+          description: Lista de atributos recuperada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAttributesDTO'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+    post:
+      summary: Criar um novo atributo
+      tags: [ Atributos ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ name ]
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+                  maxLength: 100
+      responses:
+        '201':
+          description: Atributo criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeDTO'
+        '409':
+          description: Conflito - Atributo já existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /catalog/api/v1/attributes/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    get:
+      summary: Buscar atributo por ID
+      tags: [ Atributos ]
+      responses:
+        '200':
+          description: Atributo encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeDTO'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '400':
+          $ref: '#/components/responses/Error400'
+
+    patch:
+      summary: Atualizar nome do atributo
+      tags: [ Atributos ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ name ]
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+      responses:
+        '204':
+          description: Atualizado com sucesso
+        '404':
+          $ref: '#/components/responses/Error404'
+        '400':
+          $ref: '#/components/responses/Error400'
+
+    delete:
+      summary: Remover um atributo
+      tags: [ Atributos ]
+      responses:
+        '204':
+          description: Removido com sucesso
+        '404':
+          $ref: '#/components/responses/Error404'
+        '400':
+          $ref: '#/components/responses/Error400'
+
+components:
+  responses:
+    Error400:
+      description: Requisição inválida (Erro de validação ou sintaxe)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    Error404:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    Error500:
+      description: Erro interno do servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+
+  schemas:
+    AttributeDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PaginatedAttributesDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeDTO'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    ErrorResponseDTO:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        errors:
+          type: array
+          items:
+            type: string
+          example: [ "Mensagem de erro detalhada aqui" ]

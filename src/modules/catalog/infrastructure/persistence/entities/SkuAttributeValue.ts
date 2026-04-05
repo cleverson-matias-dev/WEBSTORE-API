@@ -3,8 +3,8 @@ import { Sku } from "./Sku"
 import { AttributeEntity } from "./AttributeEntity"
 
 @Entity('sku_atributo_valor')
-@Unique(['sku_id', 'atributo_id'])
-export class SkuAtributoValor {
+@Unique(['sku_id', 'attribute_id'])
+export class SkuAttributeValue {
 
     @PrimaryGeneratedColumn("uuid")
     id: string
@@ -17,7 +17,7 @@ export class SkuAtributoValor {
     @Column({
         type: 'uuid'
     })
-    atributo_id: string
+    attribute_id: string
 
     @Column({
         type: 'varchar',
@@ -30,7 +30,7 @@ export class SkuAtributoValor {
     sku: Sku
 
     @ManyToOne(()=>AttributeEntity)
-    @JoinColumn({name: 'atributo_id'})
+    @JoinColumn({name: 'attribute_id'})
     attribute: AttributeEntity
 
     @CreateDateColumn()

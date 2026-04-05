@@ -4,7 +4,7 @@ import { SkuAttributeValueController } from '../contrrollers/SkuAttributeValueCo
 import { ISkuAttributeValueRepository } from '@modules/catalog/application/interfaces/repository/ISkuAttributeValueRepository';
 import { TypeOrmSkuAttributeValueRepository } from '../../persistence/TypeOrmSkuAttributeValueRepository';
 import { validate } from '@shared/middlewares/validator';
-import { attributeSkuIdValueParamUuidSchema, attributeValueIdParamUuidSchema, createAtributeValueSchema } from '../validation-schemas/sku-attribute-value-schemas';
+import { attributeSkuIdValueParamUuidSchema, attributeValueIdParamUuidSchema, createAtributeValueSchema, uuidParamUuidSchema } from '../validation-schemas/sku-attribute-value-schemas';
 
 export const skuAttributeRoutes = Router();
 
@@ -32,6 +32,6 @@ skuAttributeRoutes.put(
 
 skuAttributeRoutes.delete(
     '/:id',
-    validate(attributeValueIdParamUuidSchema),
+    validate(uuidParamUuidSchema),
     (req, res) => controller.delete(req, res)
 );
