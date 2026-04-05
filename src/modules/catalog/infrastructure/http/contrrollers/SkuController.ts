@@ -23,8 +23,8 @@ export class SkuController {
     
     const output = await this.skuUseCases.updatePrice({ 
       id: id as string, 
-      new_price: Number(new_price), 
-      currency: currency
+      new_price, 
+      currency
     });
     
     res.status(200).json(output);

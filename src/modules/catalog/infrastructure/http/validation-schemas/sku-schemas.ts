@@ -23,7 +23,7 @@ export const skuPriceUpdateSchema = z.object({
      id: z.uuid('uuid inválido'),
   }),
   body: z.object({
-    new_price: z.string('preço inválido'),
+    new_price: z.number('preço inválido').nonnegative('preço não pode ser negativo'),
     currency: z.string('preço inválido')
   })
 });

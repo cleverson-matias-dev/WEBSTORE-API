@@ -5,10 +5,10 @@ info:
   version: 1.0.0
 
 paths:
-  /sku-attributes:
+  /catalog/api/v1/sku-attribute-values:
     post:
       summary: Associa um atributo a um SKU
-      tags: [ SKU Attributes ]
+      tags: [ SKU Attribute Values ]
       requestBody:
         required: true
         content:
@@ -33,10 +33,10 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /sku-attributes/sku/{skuId}:
+  /catalog/api/v1/sku-attribute-values/sku/{skuId}:
     get:
       summary: Lista todos os atributos de um SKU específico
-      tags: [ SKU Attributes ]
+      tags: [ SKU Attribute Values ]
       parameters:
       - name: skuId
         in: path
@@ -58,10 +58,10 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /sku-attributes/{id}:
+  /catalog/api/v1/sku-attribute-values/{id}:
     put:
       summary: Atualiza o valor de um atributo de SKU
-      tags: [ SKU Attributes ]
+      tags: [ SKU Attribute Values ]
       parameters:
       - name: id
         in: path
@@ -99,7 +99,7 @@ paths:
 
     delete:
       summary: Remove a associação de um atributo com um SKU
-      tags: [ SKU Attributes ]
+      tags: [ SKU Attribute Values ]
       parameters:
       - name: id
         in: path

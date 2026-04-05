@@ -1,0 +1,226 @@
+openapi: 3.0.0
+info:
+  title: Catálogo SKU API
+  version: 1.0.0
+  description: API para gerenciamento de SKUs de produtos.
+
+paths:
+  /skus:
+    post:
+      summary: Cria um novo SKU
+      tags: [ SKUs ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSkuInputDto'
+      responses:
+        201:
+          description: SKU criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuDetailsOutputDto'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        409:
+          $ref: '#/components/responses/Conflict'
+        500:
+          $ref: '#/components/responses/InternalError'
+
+  /skus/product/{product_id}:
+    get:
+      summary: Lista SKUs por ID do Produto
+      tags: [ SKUs ]
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Lista de SKUs retornada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkuDetailsOutputDto'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/InternalError'
+
+  /skus/{id}:
+    get:
+      summary: Busca detalhes de um SKU
+      tags: [ SKUs ]
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: SKU encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuDetailsOutputDto'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Remove um SKU
+      tags: [ SKUs ]
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: SKU deletado
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalError'
+
+  /skus/{id}/price:
+    patch:
+      summary: Atualiza o preço de um SKU
+      tags: [ SKUs ]
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_price:
+                  type: number
+                currency:
+                  type: string
+                  default: BRL
+      responses:
+        200:
+          description: Preço atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuDetailsOutputDto'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/InternalError'
+
+  /skus/{id}/logistics:
+    patch:
+      summary: Atualiza dados logísticos (peso/dimensões)
+      tags: [ SKUs ]
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                weight:
+                  type: number
+                dimensions:
+                  type: string
+      responses:
+        200:
+          description: Dados logísticos atualizados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkuDetailsOutputDto'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/InternalError'
+
+components:
+  responses:
+    BadRequest:
+      description: Erro de validação ou requisição malformada
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    Conflict:
+      description: Conflito de dados (ex. SKU Code já existe)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    InternalError:
+      description: Erro interno no servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+
+  schemas:
+    CreateSkuInputDto:
+      type: object
+      required: [ product_id, sku_code, price, weight, dimensions ]
+      properties:
+        product_id: { type: string, format: uuid }
+        sku_code: { type: string, minLength: 3 }
+        price: { type: number, minimum: 0 }
+        currency: { type: string, default: BRL }
+        weight: { type: number, minimum: 0 }
+        dimensions: { type: string }
+
+    SkuDetailsOutputDto:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        product_id: { type: string, format: uuid }
+        sku_code: { type: string }
+        price: { type: number }
+        currency: { type: string }
+        weight: { type: number }
+        dimensions: { type: string }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    ErrorResponseDTO:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        errors:
+          type: array
+          items:
+            type: string
+          example: [ "Mensagens de erro detalhadas aqui" ]
