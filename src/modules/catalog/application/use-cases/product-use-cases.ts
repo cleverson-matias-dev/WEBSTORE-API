@@ -6,9 +6,16 @@ import { AppError } from "@shared/errors/AppError";
 import { ICategoryRepository } from "../interfaces/repository/ICategoryRepository";
 
 export class CreateProductUseCase {
-  constructor(private productRepository: IProductRepository) {}
+  constructor(private productRepository: IProductRepository, private categoryRepository: ICategoryRepository) {}
 
   async execute(input: CreateProductInputDTO): Promise<ProductOutputDTO> {
+
+    const already_exists = await this.productRepository.findBy({name:input.name});
+    if(already_exists) throw new AppError('Produto já existe', 409);
+
+    const category_exists = await this.categoryRepository.findBy(input.category_id);
+    if(!category_exists) throw new AppError('Categoria não existe', 404);
+
     const product = Product.create({
       name: input.name,
       description: input.description,
@@ -20,8 +27,6 @@ export class CreateProductUseCase {
         const savedProduct = await this.productRepository.save(product);
         return ProductMapper.toOutput(savedProduct);
     } catch (error: any) {
-        if(error.code === 'ER_DUP_ENTRY') throw new AppError('produto já existe', 409)
-        if(error.errno === 1452) throw new AppError('categoria não encontrada', 404)
         throw new AppError('Erro interno do servidor', 400)
     }
     

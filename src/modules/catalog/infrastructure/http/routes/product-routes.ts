@@ -12,7 +12,7 @@ const productRoutes = Router();
 const repository = new TypeormProductRepository();
 const categoryRepo = new TypeORMCategoryRepository();
 const controller = new ProductController(
-  new CreateProductUseCase(repository),
+  new CreateProductUseCase(repository, categoryRepo),
   new ListProductsUseCase(repository),
   new GetProductUseCase(repository),
   new UpdateProductUseCase(repository, categoryRepo),
