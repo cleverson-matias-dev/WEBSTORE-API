@@ -1,0 +1,200 @@
+openapi: 3.0.0
+info:
+  title: Webstore Catálogo API
+  version: 1.0.0
+  description: Documentação das rotas de Categoria do microserviço de catálogo.
+
+tags:
+- name: Categories
+  description: Gerenciamento de categorias e subcategorias
+
+paths:
+  /catalog/api/v1/categories:
+    get:
+      tags: [ Categories ]
+      summary: Lista categorias paginadas
+      parameters:
+      - name: name
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: string
+      responses:
+        200:
+          description: Lista de categorias retornada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoriesDTO'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      tags: [ Categories ]
+      summary: Cria uma nova categoria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryDTO'
+      responses:
+        201:
+          description: Categoria criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDTO'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        409:
+          description: Conflito (Categoria ou Slug já existente)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        500:
+          $ref: '#/components/responses/InternalError'
+
+  /catalog/api/v1/categories/{id}:
+    get:
+      tags: [ Categories ]
+      summary: Busca categoria por ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Categoria encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDTO'
+        404:
+          description: Categoria não encontrada
+        500:
+          $ref: '#/components/responses/InternalError'
+
+    patch:
+      tags: [ Categories ]
+      summary: Atualiza nome de uma categoria
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+      responses:
+        204:
+          description: Atualizado com sucesso
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          description: Categoria não encontrada
+        500:
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      tags: [ Categories ]
+      summary: Remove uma categoria
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: Removido com sucesso
+        404:
+          description: Categoria não encontrada
+        409:
+          description: Categoria possui produtos vinculados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        500:
+          $ref: '#/components/responses/InternalError'
+
+components:
+  responses:
+    BadRequest:
+      description: Erro de validação nos dados de entrada
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    InternalError:
+      description: Erro interno do servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+
+  schemas:
+    CategoryDTO:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        slug: { type: string }
+        parent_id: { type: string, format: uuid, nullable: true }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    CreateCategoryDTO:
+      type: object
+      required: [ name ]
+      properties:
+        name: { type: string, minLength: 3 }
+        parent_id: { type: string, format: uuid, nullable: true }
+        slug: { type: string }
+
+    PaginatedCategoriesDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDTO'
+        total: { type: number }
+        page: { type: number }
+        limit: { type: number }
+
+    ErrorResponseDTO:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        errors:
+          type: array
+          items:
+            type: string
+          example: [ "Mensagens de erro detalhadas aqui" ]
