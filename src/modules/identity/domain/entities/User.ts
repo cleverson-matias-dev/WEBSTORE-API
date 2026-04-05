@@ -31,6 +31,16 @@ export class User {
     return user;
   }
 
+  public update(props: Partial<Omit<UserProps, 'id' | 'createdAt'>>) {
+    if (props.email) (this.props as any).email = props.email;
+    if (props.password) (this.props as any).password = props.password;
+    if (props.firstName) this.props.firstName = props.firstName;
+    if (props.lastName) this.props.lastName = props.lastName;
+    if (props.role) this.props.role = props.role;
+    if (props.isActive !== undefined) this.props.isActive = props.isActive;
+    this.props.updatedAt = new Date();
+  }
+
   get id() { return this.props.id; }
   get email() { return this.props.email.getValue; }
   get fullName() { return `${this.props.firstName} ${this.props.lastName}`; }

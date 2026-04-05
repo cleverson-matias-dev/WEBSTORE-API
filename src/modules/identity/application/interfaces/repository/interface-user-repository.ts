@@ -41,13 +41,6 @@ export interface IUserRepository {
   findById(id: string): Promise<User | null>;
 
   /**
-   * Atualiza dados parciais de um usuário
-   * @param id ID do usuário
-   * @param data Objeto com campos da entidade de domínio a serem alterados
-   */
-  update(id: string, data: Partial<UserProps>): Promise<User>;
-
-  /**
    * Remove um usuário permanentemente ou realiza soft delete
    */
   delete(id: string): Promise<void>;

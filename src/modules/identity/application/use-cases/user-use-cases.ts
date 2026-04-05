@@ -61,23 +61,30 @@ export class UpdateUserUseCase {
   constructor(private userRepository: IUserRepository) {}
 
   async execute(id: string, data: UpdateUserDTO): Promise<UserResponseDTO> {
-
-    const cleanedFilters = Object.fromEntries(
-          Object.entries(data).filter(([_, value]) => value !== undefined && value !== null && value !== '')
-    );
-    
+    // 1. Busca o usuário existente
     const user = await this.userRepository.findById(id);
     if (!user) throw new AppError('Usuário não encontrado', 404);
 
-    if (data.password) {
-      const hashedPassword = await bcrypt.hash(data.password, 10);
-      cleanedFilters.password = Password.create(hashedPassword).getValue;
+    // 2. Prepara os dados de atualização (tratando Value Objects)
+    const updateData: Partial<UserProps> = { ...data } as any;
+
+    if (data.email) {
+      updateData.email = Email.create(data.email);
     }
 
-    const updatedUser = await this.userRepository.update(id, cleanedFilters as Partial<UserProps>);
+    if (data.password) {
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      updateData.password = Password.create(hashedPassword);
+    }
+
+    // 3. Atualiza o objeto de domínio
+    user.update(updateData);
+
+    // 4. Persiste a entidade completa (o Repositório cuida da conversão via Mapper)
+    const updatedUser = await this.userRepository.save(user);
+
     return UserMapper.toDTO(updatedUser);
   }
-
 }
 
 export class DeleteUserUseCase {
