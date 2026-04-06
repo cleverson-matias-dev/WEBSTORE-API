@@ -5,6 +5,39 @@ services:
 - name: node-api
   url: http://api:3000
   routes:
-  - name: api-route
+  # 1. Rota PÚBLICA (Register e Login)
+  - name: auth-route
+    paths:
+    - /identity/api/v1/users/auth/register
+    - /identity/api/v1/users/auth/login
+    strip_path: false
+
+  # 2. Rota PROTEGIDA
+  - name: protected-api-route
     paths:
     - /
+    strip_path: false
+    plugins:
+    - name: jwt
+      config:
+        key_claim_name: iss
+        # Garante que o Kong passe as informações do consumer para os próximos plugins
+        claims_to_verify:
+        - exp
+
+    # Plugin para injetar ID e ROLE nos headers que chegam no Node
+    - name: request-transformer
+      config:
+        add:
+          headers:
+          # O Kong Enterprise facilita isso com o plugin jwt-claims-headers.
+          # No OSS, você pode capturar o ID do Consumer ou usar a estratégia de
+          # decodificação simples no Node (jwt.decode) que é mais performática.
+          - "X-Authenticated-Scope: verified"
+
+consumers:
+- username: api-modular-user
+  jwt_secrets:
+  - key: "api-modular-node"
+    secret: "secret"
+    algorithm: HS256

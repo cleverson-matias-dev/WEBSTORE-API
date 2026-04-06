@@ -8,6 +8,7 @@ import { sanitizeMiddleware } from '@shared/middlewares/sanitizeMiddleware';
 import catalogoRoutes from '@modules/catalog/infrastructure/http/routes/routes';
 import { identityRoutes } from '@modules/identity/infrastructure/http/routes/routes';
 import cors from 'cors'
+import { injectUserMetadata } from '@shared/middlewares/injectUserMetadata';
 
 const app = express();
 app.use(cors());
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use( express.json() );
 app.use( loggerMiddleware );
+app.use(injectUserMetadata);
 app.use( '/catalog/api', sanitizeMiddleware, catalogoRoutes);
 app.use( '/identity/api', sanitizeMiddleware, identityRoutes);
 app.use('/docs/identity/api-docs', 

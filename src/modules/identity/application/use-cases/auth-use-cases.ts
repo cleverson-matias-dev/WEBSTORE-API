@@ -31,10 +31,19 @@ export class LoginUseCase {
     }
 
     const token = jwt.sign(
-      { id: userDomain.id, role: (userDomain as any).props.role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '1d' }
+      { 
+        id: userDomain.id, 
+        role: (userDomain as any).props.role,
+        // O 'iss' deve ser uma string única que identifica este emissor no Kong
+        iss: 'api-modular-node' 
+      },
+      process.env.JWT_SECRET || 'secret', // Este secret deve ser o mesmo no Kong
+      { 
+        expiresIn: '1d',
+        algorithm: 'HS256' // Garanta que o algoritmo seja o mesmo configurado no Gateway
+      }
     );
+
 
     return {
       user: UserMapper.toDTO(userDomain),
