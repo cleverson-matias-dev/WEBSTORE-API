@@ -1,5 +1,4 @@
 .gitignore
-.env
 build/
 node_modules/
 package-lock.json
@@ -7,3 +6,4 @@ Checklist.txt
 Backlog.txt
 merge_tool.js
 *.txt
+.env
