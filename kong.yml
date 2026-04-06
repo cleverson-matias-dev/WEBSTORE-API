@@ -5,14 +5,20 @@ services:
 - name: node-api
   url: http://api:3000
   routes:
-  # 1. Rota PÚBLICA (Register e Login)
+  # 1. Rota PÚBLICA (Register e Login) - Limite por IP para evitar Brute Force
   - name: auth-route
     paths:
     - /identity/api/v1/users/auth/register
     - /identity/api/v1/users/auth/login
     strip_path: false
+    plugins:
+    - name: rate-limiting
+      config:
+        minute: 5 # Máximo de 5 tentativas por minuto
+        policy: local # Armazena os contadores na memória do Kong (use 'redis' para produção/cluster)
+        limit_by: ip # Identifica o usuário pelo endereço IP (já que não há JWT ainda)
 
-  # 2. Rota PROTEGIDA
+  # 2. Rota PROTEGIDA - Limite por Credencial (Consumer)
   - name: protected-api-route
     paths:
     - /
@@ -21,19 +27,20 @@ services:
     - name: jwt
       config:
         key_claim_name: iss
-        # Garante que o Kong passe as informações do consumer para os próximos plugins
         claims_to_verify:
         - exp
-
-    # Plugin para injetar ID e ROLE nos headers que chegam no Node
     - name: request-transformer
       config:
         add:
           headers:
-          # O Kong Enterprise facilita isso com o plugin jwt-claims-headers.
-          # No OSS, você pode capturar o ID do Consumer ou usar a estratégia de
-          # decodificação simples no Node (jwt.decode) que é mais performática.
           - "X-Authenticated-Scope: verified"
+    # Adicionando Rate Limit na rota protegida
+    - name: rate-limiting
+      config:
+        minute: 100 # 100 requisições por minuto
+        hour: 5000 # 5000 requisições por hora
+        policy: local
+        limit_by: consumer # Como o JWT já identificou o usuário, o limite é por 'Consumer'
 
 consumers:
 - username: api-modular-user
