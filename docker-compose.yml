@@ -24,11 +24,29 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_NAME=${DB_NAME}
-    ports:
-      - "3000:3000"
     command: npm run dev # Garante que rode o ts-node-dev ou nodemon
     depends_on:
       - mysql
+
+  kong:
+    image: kong:latest
+    container_name: kong_gateway
+    volumes:
+      - ./kong.yml:/usr/local/kong/declarative/kong.yml
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+    ports:
+      - "8000:8000" # Porta do Proxy (Tráfego vindo de fora)
+      - "8443:8443" # Porta do Proxy SSL
+      - "8001:8001" # Porta da Admin API (Somente leitura no DB-less)
+    depends_on:
+      - api
 
 volumes:
   mysql_data:
