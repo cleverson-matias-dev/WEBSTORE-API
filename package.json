@@ -4,7 +4,7 @@
   "description": "Arquitetura Hexagonal",
   "main": "build/shared/infra/http/server.js",
   "scripts": {
-    "dev": "tsx watch src/shared/infra/http/server.ts",
+    "dev": "nodemon --exec tsx src/shared/infra/http/server.ts --legacy-watch",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "npm run build && node -r tsconfig-paths/register build/shared/infra/http/server.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/shared/infra/db/data-source.ts",
@@ -24,6 +24,7 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "jest": "^30.3.0",
+    "nodemon": "^3.1.14",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",

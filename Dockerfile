@@ -21,4 +21,4 @@ EXPOSE 3000
 
 # 6. Comando para rodar em modo de desenvolvimento
 # O script "dev" deve estar no seu package.json
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
