@@ -5,10 +5,10 @@ dotenv.config({override: true});
 
 export const AppDataSource = new DataSource({
     type: 'mysql',
-    host: 'localhost',
+    host: 'mysql',
     port: 3306,
     username: 'root',
-    password: '',
+    password: 'root',
     database: 'webstore_catalogo',
     entities:[
         path.join(__dirname, "../../../modules/catalog/infrastructure/persistence/entities/**/*.{ts,js}"),
