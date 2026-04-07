@@ -6,7 +6,6 @@ export interface PaginatedAttributesDTO {
     limit: number;
 }
 
-
 export interface CreateAttributeDTO {
     name: string;
 }
