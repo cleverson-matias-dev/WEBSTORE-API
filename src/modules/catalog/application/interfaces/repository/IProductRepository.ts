@@ -16,7 +16,7 @@ export interface PagedProductOutput {
 
 export interface IProductRepository {
   save(product: Product): Promise<Product>;
-  findBy(prop: {}): Promise<Product | null>;
+  findBy(prop: object): Promise<Product | null>;
   allPaginated(
     page?: number, 
     limit?: number, 

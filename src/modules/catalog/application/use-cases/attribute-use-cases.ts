@@ -17,6 +17,7 @@ export class UpdateAttributeUC {
             const name = new AttributeName(dto.name);
             await this.repo.update(uuid, name.val());
         } catch (error) {
+            console.log(error)
             throw new AppError('Erro a processar requisição');
         }
         
@@ -36,6 +37,7 @@ export class FindAttributeUC {
             return AttributeMapper.toDTO(attribute);
 
         } catch (error) {
+            console.log(error)
             throw new AppError('Erro na requisição', 400);
         }
         
@@ -48,13 +50,16 @@ export class saveAttributeUC {
     constructor(private repository: IAttributeRepository) {}
 
     async execute(dto: CreateAttributeDTO): Promise<AttributeDTO> {
+        const exists = await this.repository.findByName(dto.name);
+        if(exists) throw new AppError('Attributo já existe', 409);
+
         const name = new AttributeName(dto.name);
         const attribute = new Attribute({ name: name });
         try {
             const saved = await this.repository.save(attribute);
             return AttributeMapper.toDTO(saved);
-        } catch (error: any) {
-            if(error?.code == 'ER_DUP_ENTRY') throw new AppError('esse atributo já existe', 409);
+        } catch (error) {
+            console.log(error)
             throw new AppError('Erro ao salvar atributo', 400);
         }
        
