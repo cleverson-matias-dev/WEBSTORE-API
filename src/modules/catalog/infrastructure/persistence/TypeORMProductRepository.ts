@@ -1,4 +1,4 @@
-import { Repository, Like, DataSource } from "typeorm";
+import { Repository, Like } from "typeorm";
 import { Product } from "@modules/catalog/domain/entities/product.entity";
 import { Produto as ProdutoEntity } from "@modules/catalog/infrastructure/persistence/entities/ProductEntity";
 import { IProductRepository, PagedProductOutput, ProductFilter } from "@modules/catalog/application/interfaces/repository/IProductRepository";
@@ -10,14 +10,15 @@ export class TypeormProductRepository implements IProductRepository {
   private readonly ormRepository: Repository<ProdutoEntity> = AppDataSource.getRepository(ProdutoEntity);
 
   async save(product: Product): Promise<Product> {
+    console.log('chegou aqui save')
     const raw = ProductMapper.toPersistence(product);
     const saved = await this.ormRepository.save(raw);
     return ProductMapper.toDomain(saved);
   }
 
-  async findBy(prop: {}): Promise<Product | null> {
+  async findBy(prop: object): Promise<Product | null> {
     const raw = await this.ormRepository.findOne({ 
-      where: {...prop} as any, 
+      where: {...prop}, 
       relations: {
         images: true,
         category: { parent: true }
@@ -32,6 +33,7 @@ export class TypeormProductRepository implements IProductRepository {
   ): Promise<PagedProductOutput> {
     const skip = (page - 1) * limit;
     
+    // eslint-disable-next-line
     const where: any = {};
     if (filter?.name) where.name = Like(`%${filter.name}%`);
     if (filter?.slug) where.slug = filter.slug;
@@ -41,7 +43,7 @@ export class TypeormProductRepository implements IProductRepository {
       where,
       take: limit,
       skip,
-      order: { created_at: "DESC" } as any,
+      order: { created_at: "DESC" },
       relations: {
         images: true,
         category: {

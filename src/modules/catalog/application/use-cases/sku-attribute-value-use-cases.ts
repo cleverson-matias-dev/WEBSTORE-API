@@ -23,6 +23,7 @@ export class SkuAttributeValueService {
 
       return this.mapToResponse(attributeValue);
     } catch (error) {
+      console.log(error)
       throw new AppError('Falha ao processar requisição');
     }
     
@@ -41,6 +42,7 @@ export class SkuAttributeValueService {
 
       return this.mapToResponse(attributeValue);
     } catch (error) {
+      console.log(error)
       throw new AppError('Erro ao processar requisição');
     }
     
@@ -54,6 +56,7 @@ export class SkuAttributeValueService {
       const items = await this.repo.findAllBySku(skuId);
       return items.map(item => this.mapToResponse(item));
     } catch (error) {
+       console.log(error)
        throw new AppError('Erro ao processar requisição');
     }
     
@@ -71,6 +74,7 @@ export class SkuAttributeValueService {
     try {
       await this.repo.delete(id);
     } catch (error) {
+      console.log(error)
       throw new AppError('Erro ao processar requisição')
     }
     

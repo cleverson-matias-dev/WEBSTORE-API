@@ -26,7 +26,8 @@ export class CreateProductUseCase {
     try {
         const savedProduct = await this.productRepository.save(product);
         return ProductMapper.toOutput(savedProduct);
-    } catch (error: any) {
+    } catch (error) {
+        console.log(error)
         throw new AppError('Erro interno do servidor', 400)
     }
     
@@ -36,7 +37,7 @@ export class CreateProductUseCase {
 export class GetProductUseCase {
   constructor(private productRepository: IProductRepository) {}
 
-  async execute(prop: {}): Promise<ProductOutputDTO> {
+  async execute(prop: object): Promise<ProductOutputDTO> {
     const product = await this.productRepository.findBy(prop);
 
     if (!product) {
