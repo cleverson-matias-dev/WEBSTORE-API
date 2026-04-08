@@ -26,7 +26,7 @@ describe('AttributeName Value Object', () => {
 
     test('deve invalidar strings vazias ou nulas', () => {
         expect(() => AttributeName.create('')).toThrow();
-        // @ts-ignore
+        // @ts-expect-error null
         expect(() => AttributeName.create(null)).toThrow();
     });
 });

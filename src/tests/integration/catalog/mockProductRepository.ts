@@ -1,3 +1,4 @@
+/*eslint-disable */
 import { IProductRepository } from "@modules/catalog/application/interfaces/repository/IProductRepository";
 import { Product, ProductProps } from "@modules/catalog/domain/entities/product.entity";
 

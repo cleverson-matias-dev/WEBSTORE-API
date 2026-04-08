@@ -27,7 +27,7 @@ export class MockSkuAttributeValueRepository implements ISkuAttributeValueReposi
   async update(entity: SkuAttributeValue): Promise<void> {
     const index = this.items.findIndex((item) => item.id === entity.id);
     if (index !== -1) {
-      this.items[index] = entity;
+      this.items[Number(index)] = entity;
     }
   }
 

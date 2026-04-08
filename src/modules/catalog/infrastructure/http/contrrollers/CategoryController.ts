@@ -61,7 +61,7 @@ export class CategoryController {
            const uc = new UpdateCategoryUC(this.repo);
            const { id } = req.params;
            const { name } = req.body;
-           const result = await uc.execute(id as string, { name });
+           await uc.execute(id as string, { name });
            return res.status(204).send();
     }
 

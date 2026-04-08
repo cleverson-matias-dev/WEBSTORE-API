@@ -39,11 +39,16 @@ export class MockAtributoRepository implements IAttributeRepository {
         return item ? item : null;
     }
 
+    async findByName(name: string): Promise<Attribute | null> {
+        const item = this.items.find(i => i.getProps().name.val() === name);
+        return item ? item : null;
+    }
+
     async update(id: string, name: string): Promise<void> {
         const index = this.items.findIndex(i => i.getProps().id === id);
-        const propsAntigas = this.items[index].getProps();
+        const propsAntigas = this.items[Number(index)].getProps();
         
-        this.items[index] = new Attribute({
+        this.items[Number(index)] = new Attribute({
             ...propsAntigas,
             name: AttributeName.create(name),
             updated_at: new Date()

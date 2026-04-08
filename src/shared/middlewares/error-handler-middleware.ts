@@ -1,7 +1,7 @@
 import { ILogger } from "@modules/catalog/application/interfaces/logs/ILogger";
 import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
 import { AppError } from "@shared/errors/AppError";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 const logger: ILogger = new PinoLoggerAdapter();
 
@@ -9,7 +9,6 @@ export const errorHandlerMiddleware = (
     error: Error,
     req: Request,
     res: Response,
-    next: NextFunction
 ) => {
     // Log do erro original
     logger.error(error.message, error.message, {});

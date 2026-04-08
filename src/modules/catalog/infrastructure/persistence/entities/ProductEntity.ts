@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, OneToMany, UpdateDateColumn, Unique, ManyToOne } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, CreateDateColumn, OneToMany, UpdateDateColumn, ManyToOne } from "typeorm"
 import { CategoryEntity } from "./CategoryEntity"
 import { Sku } from "./Sku"
 import { ImageEntity } from "./ImageEntity"

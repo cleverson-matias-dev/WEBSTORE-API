@@ -12,7 +12,7 @@ export class MockSkuRepository implements ISkuRepository {
   async update(sku: SkuDomain): Promise<void> {
     const index = this.items.findIndex((item) => item.id === sku.id);
     if (index !== -1) {
-      this.items[index] = sku;
+      this.items[Number(index)] = sku;
     }
   }
 

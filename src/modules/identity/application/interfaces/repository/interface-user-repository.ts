@@ -1,10 +1,10 @@
-import { User, UserRole } from "@modules/identity/domain/entities/User";
+import { User } from "@modules/identity/domain/entities/User";
 
 export interface UserFilters {
   id?: string;
   email?: string;
-  role?: UserRole;
-  isActive?: boolean;
+  role?: string;
+  isActive?: string;
 }
 
 export interface PaginationParams {

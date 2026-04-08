@@ -17,7 +17,7 @@ export class CategoryName {
             return false;
         }
 
-        const regexValido = /^[a-zA-Z0-9À-ÿ\s!@#$%&*()\-=_+[\]{};:,.?\/\\|]+$/;
+        const regexValido = /^[a-zA-Z0-9À-ÿ\s!@#$%&*()\-=_+[\]{};:,.?/\\|]+$/;
 
         return regexValido.test(value);
     }

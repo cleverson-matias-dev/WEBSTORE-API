@@ -9,7 +9,7 @@ const baseLogger = pino({
 });
 
 export const logger = new Proxy(baseLogger, {
-  get(target, property, receiver) {
+  get(target, property) {
     const store = loggerStorage.getStore();
     const provider = store || target;
     const value = Reflect.get(provider, property);

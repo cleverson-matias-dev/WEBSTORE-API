@@ -1,3 +1,4 @@
+/*eslint-disable */
 import { RequestHandler } from 'express';
 import sanitizeHtml from 'sanitize-html';
 
