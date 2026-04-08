@@ -22,12 +22,12 @@ export class UserMapper {
   static toPersistence(domain: DomainUser): Partial<PersistenceUser> {
     return {
       id: domain.id,
-      password: (domain as any).props.password.getValue,
+      password: domain.password,
       email: domain.email,
-      firstName: (domain as any).props.firstName,
-      lastName: (domain as any).props.lastName,
-      role: (domain as any).props.role,
-      isActive: (domain as any).props.isActive,
+      firstName: domain.firstName,
+      lastName: domain.lastName,
+      role: domain.role,
+      isActive: domain.isActive,
     };
   }
 
@@ -36,9 +36,9 @@ export class UserMapper {
       id: domain.id!,
       email: domain.email,
       fullName: domain.fullName,
-      role: (domain as any).props.role,
-      isActive: (domain as any).props.isActive,
-      createdAt: (domain as any).props.createdAt,
+      role: domain.role,
+      isActive: domain.isActive,
+      createdAt: domain.createdAt,
     };
   }
 }

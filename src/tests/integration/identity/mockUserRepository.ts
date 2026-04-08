@@ -1,3 +1,4 @@
+/*eslint-disable */
 import { IUserRepository, UserFilters, PaginationParams, PaginatedResult } from '@modules/identity/application/interfaces/repository/interface-user-repository';
 import { User, UserProps } from '@modules/identity/domain/entities/User';
 

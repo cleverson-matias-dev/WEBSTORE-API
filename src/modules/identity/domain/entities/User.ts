@@ -14,7 +14,7 @@ export interface UserProps {
   lastName: string;
   role: UserRole;
   isActive: boolean;
-  createdAt?: Date;
+  createdAt: Date;
   updatedAt?: Date;
 }
 
@@ -44,6 +44,11 @@ export class User {
     this.props.isActive = false;
     this.props.updatedAt = new Date();
   }
+
+  get password(): string { return this.props.password.getValue }
+  get firstName(): string { return this.props.firstName }
+  get lastName(): string { return this.props.lastName }
+  get createdAt(): Date { return this.props.createdAt }
 
   // Getters explícitos
   get id(): string | undefined { return this.props.id; }

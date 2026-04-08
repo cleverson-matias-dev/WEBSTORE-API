@@ -38,6 +38,7 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
             const saved = await this.repository.save(data);
             return this.toDomain(saved);
         } catch (error) {
+            console.log(error)
             throw new AppError('registro já existe', 409);
         }
        

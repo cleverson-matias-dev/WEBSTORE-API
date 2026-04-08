@@ -19,21 +19,21 @@ export class LoginUseCase {
 
     const isPasswordValid = await bcrypt.compare(
       data.password, 
-      (userDomain as any).props.password.getValue 
+      userDomain.password
     );
 
     if (!isPasswordValid) {
       throw new AppError('Credenciais inválidas', 401);
     }
 
-    if (!(userDomain as any).props.isActive) {
+    if (!userDomain.isActive) {
       throw new Error('Usuário desativado');
     }
 
     const token = jwt.sign(
       { 
         id: userDomain.id, 
-        role: (userDomain as any).props.role,
+        role: userDomain.role,
         // O 'iss' deve ser uma string única que identifica este emissor no Kong
         iss: 'api-modular-node' 
       },

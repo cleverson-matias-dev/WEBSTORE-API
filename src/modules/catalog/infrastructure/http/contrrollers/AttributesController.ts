@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { UpdateAttributeUC, FindAttributeUC, saveAttributeUC, DeleteAttributeUC, GetAllAttributesUC } from "@modules/catalog/application/use-cases/attribute-use-cases";
 import { IAttributeRepository } from "@modules/catalog/application/interfaces/repository/IAttributeRepository";
 import { ILogger } from "@modules/catalog/application/interfaces/logs/ILogger";
-import { AppError } from "@shared/errors/AppError";
 
 export class AttributesController {
 

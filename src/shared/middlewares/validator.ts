@@ -10,7 +10,8 @@ export const validate = (schema: ZodObject) =>
         params: req.params,
       })
       return next();
-    } catch (error: any) {
+    } catch (error) {
+      console.log(error)
       if (error instanceof ZodError) {
         return res.status(400).json({
           status: 'error',

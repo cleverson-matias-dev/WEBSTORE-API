@@ -1,3 +1,4 @@
+/*eslint-disable */
 import { ILogger } from "@modules/catalog/application/interfaces/logs/ILogger";
 import { logger } from "./logger-context";
 

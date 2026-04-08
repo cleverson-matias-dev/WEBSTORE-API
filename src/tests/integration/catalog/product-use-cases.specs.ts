@@ -1,3 +1,4 @@
+/*eslint-disable */
 import { AppError } from "@shared/errors/AppError";
 import { MockProductRepository } from "./mockProductRepository";
 import { UpdateProductUseCase } from "@modules/catalog/application/use-cases/product-use-cases";

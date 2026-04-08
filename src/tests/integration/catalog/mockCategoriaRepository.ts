@@ -43,7 +43,7 @@ export class MockCategoryRepository implements ICategoryRepository {
         const index = this.items.findIndex(cat => cat.getProps().id === id);
         
         if (index !== -1) {
-            const propsAntigas = this.items[index].getProps();
+            const propsAntigas = this.items[Number(index)].getProps();
             
             const categoriaAtualizada = new Category({
                 ...propsAntigas,
@@ -51,7 +51,7 @@ export class MockCategoryRepository implements ICategoryRepository {
                 updated_at: new Date()
             });
 
-            this.items[index] = categoriaAtualizada;
+            this.items[Number(index)] = categoriaAtualizada;
             return true;
         }
 

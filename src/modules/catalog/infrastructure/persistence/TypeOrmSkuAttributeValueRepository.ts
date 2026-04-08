@@ -1,7 +1,7 @@
 import { ISkuAttributeValueRepository } from '@modules/catalog/application/interfaces/repository/ISkuAttributeValueRepository';
 import { Repository } from 'typeorm';
 import { AppDataSource } from '@shared/infra/db/data-source';
-import { SkuAttributeValue as RepositoryEntity, SkuAttributeValue } from './entities/SkuAttributeValue';
+import { SkuAttributeValue as RepositoryEntity } from './entities/SkuAttributeValue';
 import { SkuAttributeValue as DomainEntity } from '@modules/catalog/domain/entities/sku-attribute-value';
 
 export class TypeOrmSkuAttributeValueRepository implements ISkuAttributeValueRepository {

@@ -6,8 +6,7 @@ import {
   UpdateUserUseCase, 
   DeleteUserUseCase 
 } from '@modules/identity/application/use-cases/user-use-cases';
-
-CreateUserUseCase
+import type { PaginationParams, UserFilters } from '@modules/identity/application/interfaces/repository/interface-user-repository';
 
 export class UserController {
   constructor(
@@ -24,12 +23,24 @@ export class UserController {
   }
 
   async allPaginated(req: Request, res: Response) {
-    const result = await this.listUsersUC.execute(req.query as any);
+    const paginationParams: PaginationParams = {
+      limit: Number(req.query.limit),
+      page: Number(req.query.page),
+      search: String(req.query.search)
+    }
+    const result = await this.listUsersUC.execute(paginationParams);
     return res.json(result);
   }
 
   async findBy(req: Request, res: Response) {
-    const result = await this.findUsersUC.execute(req.query as any);
+    const userFilters: UserFilters = {
+      email: String(req.query.email),
+      id: String(req.query.id),
+      isActive: String(req.query.isActive),
+      role: String(req.query.role)
+    }
+    console.log(userFilters)
+    const result = await this.findUsersUC.execute(userFilters);
     return res.json(result);
   }
 
