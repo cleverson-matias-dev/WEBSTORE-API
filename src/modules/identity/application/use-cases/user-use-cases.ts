@@ -49,6 +49,7 @@ export class FindUsersUseCase {
 
   async execute(filters: UserFilters): Promise<UserResponseDTO[]> {
     const cleanedFilters = Object.fromEntries(
+      // eslint-disable-next-line
           Object.entries(filters).filter(([_, value]) => value !== undefined && value !== null && value !== '')
       );
     const users = await this.userRepository.findBy(cleanedFilters);
@@ -66,7 +67,7 @@ export class UpdateUserUseCase {
     if (!user) throw new AppError('Usuário não encontrado', 404);
 
     // 2. Prepara os dados de atualização (tratando Value Objects)
-    const updateData: Partial<UserProps> = { ...data } as any;
+    const updateData: Partial<UserProps> = { ...data } as Partial<UserProps>;
 
     if (data.email) {
       updateData.email = Email.create(data.email);

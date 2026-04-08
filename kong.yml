@@ -14,7 +14,7 @@ services:
     plugins:
     - name: rate-limiting
       config:
-        minute: 5 # Máximo de 5 tentativas por minuto
+        minute: 20 # Máximo de 5 tentativas por minuto
         policy: local # Armazena os contadores na memória do Kong (use 'redis' para produção/cluster)
         limit_by: ip # Identifica o usuário pelo endereço IP (já que não há JWT ainda)
 

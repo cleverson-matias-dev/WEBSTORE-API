@@ -10,7 +10,13 @@ export default defineConfig([
     plugins: { 
       js,
       security 
-    }, 
+    },
+    ignores: [
+      "/*",         // Ignora arquivos na raiz (como vite.config.ts, etc)
+      "!/src",      // Não ignora a pasta src
+      "dist/",      // Pastas comuns de build
+      "node_modules/"
+    ],
     rules: {
       ...js.configs.recommended.rules,
       ...security.configs.recommended.rules,

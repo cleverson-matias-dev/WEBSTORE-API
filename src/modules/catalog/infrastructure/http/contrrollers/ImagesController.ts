@@ -29,7 +29,7 @@ export class ImageController {
   }
 
   async update(req: Request, res: Response) {
-    const success = await this.updateUC.execute({
+    await this.updateUC.execute({
       id: req.params.id,
       ...req.body
     });

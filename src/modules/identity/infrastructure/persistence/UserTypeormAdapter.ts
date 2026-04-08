@@ -4,7 +4,6 @@ import { User as PersistenceUser } from './entities/user-entity';
 import { UserMapper } from '@modules/identity/application/dtos/user-mappers'; 
 import { IUserRepository, UserFilters, PaginationParams, PaginatedResult } from '@modules/identity/application/interfaces/repository/interface-user-repository';
 import { AppDataSource } from '@shared/infra/db/data-source';
-import { AppError } from '@shared/errors/AppError';
 
 export class TypeOrmUserRepository implements IUserRepository {
   private repository = AppDataSource.getRepository(PersistenceUser);
@@ -27,7 +26,7 @@ export class TypeOrmUserRepository implements IUserRepository {
       ] : {},
       take: limit,
       skip: skip,
-      order: { createdAt: 'DESC' } as any
+      order: { createdAt: 'DESC' }
     });
 
     return {
@@ -43,7 +42,7 @@ export class TypeOrmUserRepository implements IUserRepository {
   }
 
   async findById(id: string): Promise<DomainUser | null> {
-    const user = await this.repository.findOne({ where: { id } as any });
+    const user = await this.repository.findOne({ where: { id } });
     return user ? UserMapper.toDomain(user) : null;
   }
 

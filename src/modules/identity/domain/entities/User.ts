@@ -19,33 +19,42 @@ export interface UserProps {
 }
 
 export class User {
-  private constructor(private props: UserProps) {}
+  // Uso de 'readonly' para garantir que a referência de props não mude
+  private constructor(private readonly props: UserProps) {}
 
   public static create(props: UserProps): User {
-    const user = new User({
+    return new User({
       ...props,
       isActive: props.isActive ?? true,
       role: props.role ?? UserRole.CLIENT,
+      createdAt: props.createdAt ?? new Date(),
+      updatedAt: props.updatedAt ?? new Date(),
     });
-    
-    return user;
   }
 
-  public update(props: Partial<Omit<UserProps, 'id' | 'createdAt'>>) {
-    if (props.email) (this.props as any).email = props.email;
-    if (props.password) (this.props as any).password = props.password;
-    if (props.firstName) this.props.firstName = props.firstName;
-    if (props.lastName) this.props.lastName = props.lastName;
-    if (props.role) this.props.role = props.role;
-    if (props.isActive !== undefined) this.props.isActive = props.isActive;
+  // Refatorado para evitar 'as any' e garantir type safety
+  public update(props: Partial<Omit<UserProps, 'id' | 'createdAt' | 'updatedAt'>>): void {
+    Object.assign(this.props, {
+      ...props,
+      updatedAt: new Date()
+    });
+  }
+
+  public deactivate(): void {
+    this.props.isActive = false;
     this.props.updatedAt = new Date();
   }
 
-  get id() { return this.props.id; }
-  get email() { return this.props.email.getValue; }
-  get fullName() { return `${this.props.firstName} ${this.props.lastName}`; }
+  // Getters explícitos
+  get id(): string | undefined { return this.props.id; }
   
-  public deactivate() {
-    this.props.isActive = false;
+  // Segurança: acesso ao valor real do VO depende da implementação do Email VO
+  get email(): string { return this.props.email.getValue; }
+  
+  get fullName(): string { 
+    return `${this.props.firstName} ${this.props.lastName}`.trim(); 
   }
+
+  get role(): UserRole { return this.props.role; }
+  get isActive(): boolean { return this.props.isActive; }
 }
