@@ -49,7 +49,7 @@ export class ProductController {
 
   async delete(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
-    const output = await this.deleteProductUseCase.execute(id as string);
+    await this.deleteProductUseCase.execute(id as string);
     res.status(204).send();
   }
 }

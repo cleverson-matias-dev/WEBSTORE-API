@@ -32,6 +32,7 @@ export class SkuUseCases {
        await this.skuRepository.create(sku);
        return SkuMapper.toOutput(sku);
     } catch (error) {
+       console.log(error)
        throw new AppError('Erro na requisição');
     }
     
@@ -43,6 +44,7 @@ export class SkuUseCases {
       const skus = await this.skuRepository.findByProductId(productId);
       return skus.map(sku => SkuMapper.toOutput(sku));
     } catch (error) {
+      console.log(error)
       throw new AppError('Erro na requisição');
     }
     
@@ -56,6 +58,7 @@ export class SkuUseCases {
        await this.skuRepository.update(sku);
        return SkuMapper.toOutput(sku);
     } catch (error) {
+      console.log(error)
       throw new AppError('Falha na requisição');
     }
    
@@ -69,6 +72,7 @@ export class SkuUseCases {
       await this.skuRepository.update(sku);
       return SkuMapper.toOutput(sku);
     } catch (error) {
+      console.log(error)
       throw new AppError("Falha na requisição");
     }
     
@@ -80,6 +84,7 @@ export class SkuUseCases {
     try {
       await this.skuRepository.delete(id);
     } catch (error) {
+      console.log(error)
       throw new AppError('Erro na requisição')
     }
     

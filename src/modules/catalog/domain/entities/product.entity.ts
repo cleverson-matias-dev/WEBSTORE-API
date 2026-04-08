@@ -1,5 +1,7 @@
 import { Slug } from '../value-objects/slug.vo';
 import { v4 as uuidv4 } from 'uuid';
+import type { Image } from './image.entity';
+import type { Category } from './category.entity';
 
 export interface ProductProps {
   id?: string;
@@ -7,8 +9,8 @@ export interface ProductProps {
   slug: string;
   description: string;
   category_id: string;
-  images?: any[],
-  category?: any,
+  images?: Image[],
+  category?: Category,
   created_at?: Date;
   deleted_at?: Date;
 }
