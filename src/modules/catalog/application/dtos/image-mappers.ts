@@ -1,6 +1,7 @@
 import { Image } from "@modules/catalog/domain/entities/image.entity";
 import { CreateImageDTO, ImageResponseDTO } from "./image-dtos";
 import { Url } from "@modules/catalog/domain/value-objects/url.vo";
+import type { ImageEntity } from "@modules/catalog/infrastructure/persistence/entities/ImageEntity";
 
 export class ImageMapper {
   
@@ -23,14 +24,14 @@ export class ImageMapper {
     };
   }
 
-  static toDomainFromPersistence(raw: any): Image {
+  static toDomainFromPersistence(image: ImageEntity): Image {
     return new Image({
-      id: raw.id,
-      product_id: raw.product_id,
-      url: new Url(raw.url),
-      ordem: raw.ordem,
-      created_at: raw.created_at,
-      updated_at: raw.updated_at
+      id: image.id,
+      product_id: image.product_id,
+      url: new Url(image.url),
+      ordem: image.ordem,
+      created_at: image.created_at,
+      updated_at: image.updated_at
     });
   }
 }

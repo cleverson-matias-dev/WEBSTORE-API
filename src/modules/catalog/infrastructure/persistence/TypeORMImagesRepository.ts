@@ -42,7 +42,7 @@ export class TypeOrmImageRepository implements IImageRepository {
     };
   }
 
-  async findBy(prop:{}): Promise<Image | null> {
+  async findBy(prop:object): Promise<Image | null> {
     const found = await this.ormRepository.findOneBy({ ...prop });
     
     if (!found) return null;

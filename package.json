@@ -5,6 +5,7 @@
   "main": "build/shared/infra/http/server.js",
   "scripts": {
     "dev": "nodemon --exec tsx src/shared/infra/http/server.ts --legacy-watch",
+    "lint": "eslint .",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "npm run build && node -r tsconfig-paths/register build/shared/infra/http/server.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/shared/infra/db/data-source.ts",

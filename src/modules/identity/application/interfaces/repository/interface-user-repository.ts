@@ -1,4 +1,4 @@
-import { User, UserProps, UserRole } from "@modules/identity/domain/entities/User";
+import { User, UserRole } from "@modules/identity/domain/entities/User";
 
 export interface UserFilters {
   id?: string;
