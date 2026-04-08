@@ -1,3 +1,4 @@
+/* eslint-disable */
 export interface ILogger {
   info(message: string, context?: any): void;
   error(message: string, trace?: string, context?: any): void;

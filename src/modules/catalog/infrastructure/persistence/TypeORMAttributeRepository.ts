@@ -45,6 +45,11 @@ export class TypeORMAttributeRepository implements IAttributeRepository {
         return result ? this.toDomain(result) : null;
     }
 
+    async findByName(name: string): Promise<Attribute | null> {
+        const result = await this.repository.findOneBy({name});
+        return result ? this.toDomain(result) : null;
+    }
+
     async update(id: string, name: string): Promise<void> {
         this.repository.update(id, {name: name});
     }
