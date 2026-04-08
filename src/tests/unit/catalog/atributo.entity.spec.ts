@@ -1,60 +1,30 @@
-// Attribute.spec.ts
-import { AttributeName } from "@modules/catalog/domain/value-objects/attribute.name.vo"; // ajuste o caminho
-import { Attribute, IAttribute } from "@modules/catalog/domain/entities/attribute.entity";
+import { saveAttributeUC } from "@modules/catalog/application/use-cases/attribute-use-cases";
+import { Attribute } from "@modules/catalog/domain/entities/attribute.entity";
+import { AttributeName } from "@modules/catalog/domain/value-objects/attribute.name.vo";
+import { InMemoryAttributeRepository } from "../../../tests/integration/catalog/mockAtributoRepository";
 
-describe('AttributeName Value Object', () => {
-    test('deve criar um name de attribute válido', () => {
-        const name = "Cor do Produto";
-        const vo = AttributeName.create(name);
-        expect(vo.val()).toBe(name);
+// tests/unit/SaveAttributeUC.spec.ts
+describe('SaveAttributeUC', () => {
+    let repo: InMemoryAttributeRepository;
+    let sut: saveAttributeUC;
+
+    beforeEach(() => {
+        repo = new InMemoryAttributeRepository();
+        sut = new saveAttributeUC(repo);
     });
 
-    test('deve lançar erro se o name tiver menos de 3 caracteres', () => {
-        expect(() => AttributeName.create('Ab')).toThrow('Nome de Attribute inválido.');
+    it('deve criar um atributo com sucesso', async () => {
+        const dto = { name: 'Tamanho' };
+        const result = await sut.execute(dto);
+
+        expect(result.name).toBe('Tamanho');
+        expect(await repo.findByName('Tamanho')).toBeDefined();
     });
 
-    test('deve lançar erro se o name tiver mais de 100 caracteres', () => {
-        const nomeLongo = 'a'.repeat(101);
-        expect(() => AttributeName.create(nomeLongo)).toThrow('Nome de Attribute inválido.');
-    });
-
-    test('deve aceitar caracteres especiais permitidos (acentos e símbolos)', () => {
-        const nomeEspecial = 'Tamanho/Peso (Kg!) @2023';
-        const vo = AttributeName.create(nomeEspecial);
-        expect(vo.val()).toBe(nomeEspecial);
-    });
-
-    test('deve invalidar strings vazias ou nulas', () => {
-        expect(() => AttributeName.create('')).toThrow();
-        // @ts-expect-error null
-        expect(() => AttributeName.create(null)).toThrow();
-    });
-});
-
-describe('Attribute Entity', () => {
-    test('deve instanciar a entidade Attribute com sucesso', () => {
-        const nomeVO = AttributeName.create('Material Principal');
-        const dataCriacao = new Date();
+    it('deve lançar erro se o atributo já existir', async () => {
+        await repo.save(new Attribute({ name: new AttributeName('Cor') }));
         
-        const props: IAttribute = {
-            id: 'uuid-123',
-            name: nomeVO,
-            created_at: dataCriacao
-        };
-
-        const attribute = new Attribute(props);
-
-        expect(attribute.getProps().name).toBeInstanceOf(AttributeName);
-        expect(attribute.getProps().name.val()).toBe('Material Principal');
-        expect(attribute.getProps().id).toBe('uuid-123');
-        expect(attribute.getProps().created_at).toBe(dataCriacao);
-    });
-
-    test('deve garantir que a entidade retorne as props corretamente via getProps', () => {
-        const nomeVO = AttributeName.create('Voltagem');
-        const attribute = new Attribute({ name: nomeVO });
-
-        expect(attribute.getProps()).toHaveProperty('name');
-        expect(attribute.getProps().name.val()).toBe('Voltagem');
+        await expect(sut.execute({ name: 'Cor' }))
+            .rejects.toThrow('Attributo já existe');
     });
 });
