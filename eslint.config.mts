@@ -12,7 +12,8 @@ export default defineConfig([
       security 
     },
     ignores: [
-      "/*",         // Ignora arquivos na raiz (como vite.config.ts, etc)
+      "/*",
+      ".github/workflows/*",
       "!/src",      // Não ignora a pasta src
       "dist/",      // Pastas comuns de build
       "node_modules/"
