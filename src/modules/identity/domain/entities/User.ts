@@ -49,6 +49,7 @@ export class User {
   get firstName(): string { return this.props.firstName }
   get lastName(): string { return this.props.lastName }
   get createdAt(): Date { return this.props.createdAt }
+  get updatedAt(): Date | undefined { return this.props.updatedAt }
 
   // Getters explícitos
   get id(): string | undefined { return this.props.id; }
@@ -57,7 +58,7 @@ export class User {
   get email(): string { return this.props.email.getValue; }
   
   get fullName(): string { 
-    return `${this.props.firstName} ${this.props.lastName}`.trim(); 
+    return `${this.props.firstName.trim()} ${this.props.lastName.trim()}`.trim(); 
   }
 
   get role(): UserRole { return this.props.role; }
