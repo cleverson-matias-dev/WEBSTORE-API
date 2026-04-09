@@ -25,7 +25,7 @@ jobs:
         run: npm run lint
 
       - name: Executar Testes
-        run: npm tests
+        run: npm run tests
 
       # Novo passo: Build da Imagem Docker
       - name: Set up Docker Buildx
