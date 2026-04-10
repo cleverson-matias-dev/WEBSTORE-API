@@ -1,4 +1,4 @@
-import { User as DomainUser } from '@modules/identity/domain/entities/User';
+import { User as DomainUser, type UserRole } from '@modules/identity/domain/entities/User';
 import { Email } from '@modules/identity/domain/value-objects/email-vo';
 import { Password } from '@modules/identity/domain/value-objects/password-vo';
 import { User as PersistenceUser } from '@modules/identity/infrastructure/persistence/entities/user-entity';
@@ -12,7 +12,7 @@ export class UserMapper {
       password: Password.create(raw.password),
       firstName: raw.firstName,
       lastName: raw.lastName,
-      role: raw.role,
+      role: raw.role as UserRole,
       isActive: raw.isActive,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,

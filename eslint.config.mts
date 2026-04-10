@@ -14,8 +14,9 @@ export default defineConfig([
     ignores: [
       "/*",
       ".github/workflows/*",
-      "!/src",      // Não ignora a pasta src
-      "dist/",      // Pastas comuns de build
+      "!/src",
+      "dist/", 
+      "build/",
       "node_modules/"
     ],
     rules: {

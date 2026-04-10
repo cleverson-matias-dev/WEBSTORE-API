@@ -39,7 +39,6 @@ export class UserController {
       isActive: String(req.query.isActive),
       role: String(req.query.role)
     }
-    console.log(userFilters)
     const result = await this.findUsersUC.execute(userFilters);
     return res.json(result);
   }
