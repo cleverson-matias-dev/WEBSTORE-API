@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
     "types": ["jest"],
-    "module": "commonjs",
+    "module": "nodenext",
     "outDir": "./build",
     "rootDir": "./src",
-    "baseUrl": "./src",
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
@@ -12,12 +11,13 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "lib": ["es5", "es6", "dom"],  
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "target": "es6",
     "paths": {
-      "@modules/*": ["modules/*"],
-      "@shared/*": ["shared/*"],
-      "@tests/*": ["tests/*"]
+      "@modules/*": ["./src/modules/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@tests/*": ["./src/tests/*"],
+      "@config/*": ["./src/config/*"],
     }
   },
   "exclude": [

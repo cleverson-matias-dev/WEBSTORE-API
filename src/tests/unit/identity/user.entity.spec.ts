@@ -14,7 +14,7 @@ describe('User Domain Entity', () => {
     email: makeEmail('joao@example.com'),
     password: makePassword('hash123'),
     role: UserRole.CLIENT,
-    isActive: true,
+    isActive: "1",
     createdAt: new Date(),
   };
 
