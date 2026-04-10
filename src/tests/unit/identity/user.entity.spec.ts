@@ -23,7 +23,7 @@ describe('User Domain Entity', () => {
 
     expect(user.id).toBeUndefined(); // ID geralmente vem da persistência ou é gerado
     expect(user.fullName).toBe('João Silva');
-    expect(user.isActive).toBe(true);
+    expect(user.isActive).toBe("1");
     expect(user.role).toBe(UserRole.CLIENT);
   });
 
@@ -37,7 +37,7 @@ describe('User Domain Entity', () => {
     });
 
     expect(user.role).toBe(UserRole.CLIENT);
-    expect(user.isActive).toBe(true);
+    expect(user.isActive).toBe("1");
     expect(user.createdAt).toBeInstanceOf(Date);
   });
 
@@ -57,7 +57,7 @@ describe('User Domain Entity', () => {
     
     user.deactivate();
 
-    expect(user.isActive).toBe(false);
+    expect(user.isActive).toBe("0");
   });
 
   it('deve formatar o fullName corretamente removendo espaços extras', () => {
