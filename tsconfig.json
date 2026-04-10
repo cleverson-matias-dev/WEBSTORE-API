@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
     "types": ["jest"],
     "module": "commonjs",
     "outDir": "./build",

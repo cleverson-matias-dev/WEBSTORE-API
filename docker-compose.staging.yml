@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_staging
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    # Sem portas expostas para o host, apenas interna
+    volumes:
+      - mysql_staging_data:/var/lib/mysql
+
+  api:
+    build: 
+      context: .
+      target: production # Se usar multi-stage
+    container_name: node_api_staging
+    restart: unless-stopped
+    # SEM volumes de código (./:/usr/src/app)
+    environment:
+      - NODE_ENV=staging
+      - DB_HOST=mysql
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    depends_on:
+      - mysql
+
+  kong:
+    image: kong:latest
+    container_name: kong_staging
+    # ... configurações de env iguais ...
+    ports:
+      - "80:8000"  # Homologação geralmente usa porta padrão HTTP
+      - "443:8443"
+    # Remova a porta 8001 (Admin) do acesso público
+    depends_on:
+      - api
+
+volumes:
+  mysql_staging_data:

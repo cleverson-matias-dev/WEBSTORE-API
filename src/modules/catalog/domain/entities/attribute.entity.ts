@@ -18,4 +18,5 @@ export class Attribute {
     getProps(): IAttribute {
         return this.props;
     }
+    
 }

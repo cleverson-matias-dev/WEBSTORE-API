@@ -13,7 +13,7 @@ export interface UserProps {
   firstName: string;
   lastName: string;
   role: UserRole;
-  isActive: boolean;
+  isActive: string;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -25,7 +25,7 @@ export class User {
   public static create(props: UserProps): User {
     return new User({
       ...props,
-      isActive: props.isActive ?? true,
+      isActive: props.isActive ?? "1",
       role: props.role ?? UserRole.CLIENT,
       createdAt: props.createdAt ?? new Date(),
       updatedAt: props.updatedAt ?? new Date(),
@@ -41,7 +41,7 @@ export class User {
   }
 
   public deactivate(): void {
-    this.props.isActive = false;
+    this.props.isActive = "0";
     this.props.updatedAt = new Date();
   }
 
@@ -62,5 +62,5 @@ export class User {
   }
 
   get role(): UserRole { return this.props.role; }
-  get isActive(): boolean { return this.props.isActive; }
+  get isActive(): string { return this.props.isActive; }
 }
