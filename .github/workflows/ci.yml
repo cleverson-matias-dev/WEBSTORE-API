@@ -53,7 +53,7 @@ jobs:
           IMAGE_TAG: ${{ env.IMAGE_BASE }}:${{ github.sha }}
         run: |
           # 1. Builda a imagem usando a tag do commit (SHA)
-          docker-compose -f docker-compose.staging.yml build
+          docker compose -f docker-compose.staging.yml build
           
           # 2. Cria a tag 'latest' localmente a partir da que acabou de buildar
           docker tag ${{ env.IMAGE_TAG }} ${{ env.IMAGE_BASE }}:latest

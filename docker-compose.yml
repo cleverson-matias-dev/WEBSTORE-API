@@ -14,7 +14,9 @@ services:
 
   # API Monolito (Node + TS)
   api:
-    build: .
+    build:
+     context: .
+     target: development
     container_name: node_api_dev
     volumes:
       - .:/usr/src/app
