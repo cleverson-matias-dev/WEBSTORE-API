@@ -1,24 +1,29 @@
-# 1. Imagem base leve
-FROM node:22.20-alpine
-
-# 2. Criar diretório da aplicação
+# --- Estágio 1: Base (Comum) ---
+FROM node:22-alpine AS base
 WORKDIR /usr/src/app
-
-# 3. Instalar dependências primeiro (aproveita o cache do Docker)
-# Copiamos apenas os arquivos de manifesto primeiro
 COPY package*.json ./
 
-# Instala todas as dependências (incluindo as de dev como typescript e ts-node-dev)
+# --- Estágio 2: Dependências de Desenvolvimento ---
+# Usado para o ambiente de DEV (roda o npm install completo)
+FROM base AS development
 RUN npm install
-
-# 4. Copiar o restante do código
-# Nota: No Docker Compose, o volume vai sobrescrever isso, 
-# mas é boa prática para builds isolados.
 COPY . .
+# O comando padrão de dev continua sendo o que você já usa
+CMD ["npm", "run", "dev"]
 
-# 5. Expor a porta da API
+# --- Estágio 3: Build (Compilação) ---
+# Estágio intermediário para gerar o código JS
+FROM development AS builder
+RUN npm run build
+
+# --- Estágio 4: Homologação/Produção ---
+# Imagem final: limpa, leve e sem código TS ou node_modules de dev
+FROM base AS production
+# Instala apenas o necessário para rodar (ignora devDependencies)
+RUN npm install --omit=dev
+# Copia apenas o que foi compilado do estágio builder
+COPY --from=builder /usr/src/app/build ./build
+# Expor a porta
 EXPOSE 3000
-
-# 6. Comando para rodar em modo de desenvolvimento
-# O script "dev" deve estar no seu package.json
-CMD ["npm", "run", "start"]
+# Roda o código compilado
+CMD ["node", "build/main.js"]

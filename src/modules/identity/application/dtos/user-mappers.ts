@@ -13,7 +13,7 @@ export class UserMapper {
       firstName: raw.firstName,
       lastName: raw.lastName,
       role: raw.role as UserRole,
-      isActive: raw.isActive,
+      isActive: String(raw.isActive),
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });
@@ -27,7 +27,7 @@ export class UserMapper {
       firstName: domain.firstName,
       lastName: domain.lastName,
       role: domain.role,
-      isActive: domain.isActive,
+      isActive: String(domain.isActive),
     };
   }
 
@@ -37,7 +37,7 @@ export class UserMapper {
       email: domain.email,
       fullName: domain.fullName,
       role: domain.role,
-      isActive: domain.isActive,
+      isActive: Boolean(domain.isActive),
       createdAt: domain.createdAt,
     };
   }
