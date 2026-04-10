@@ -19,7 +19,6 @@ export interface UserProps {
 }
 
 export class User {
-  // Uso de 'readonly' para garantir que a referência de props não mude
   private constructor(private readonly props: UserProps) {}
 
   public static create(props: UserProps): User {

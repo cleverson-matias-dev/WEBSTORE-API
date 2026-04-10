@@ -1,7 +1,7 @@
 import express from 'express';
 import { AppDataSource } from '../db/data-source';
 import swaggerUi from 'swagger-ui-express';
-import { createOption } from 'config/swagger';
+import { createOption } from '@config/swagger';
 import { errorHandlerMiddleware } from '@shared/middlewares/error-handler-middleware';
 import { loggerMiddleware } from '@shared/middlewares/loggerMiddleware';
 import { sanitizeMiddleware } from '@shared/middlewares/sanitizeMiddleware';
