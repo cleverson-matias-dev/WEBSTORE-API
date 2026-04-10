@@ -11,6 +11,7 @@ services:
       - mysql_staging_data:/var/lib/mysql
 
   api:
+    image: ${IMAGE_TAG}
     build: 
       context: .
       target: production # Se usar multi-stage
