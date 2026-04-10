@@ -26,4 +26,4 @@ COPY --from=builder /usr/src/app/build ./build
 # Expor a porta
 EXPOSE 3000
 # Roda o código compilado
-CMD ["node", "build/main.js"]
+CMD ["node", "build/shared/infra/http/server.js"]
