@@ -9,8 +9,8 @@
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "npm run build && node -r tsconfig-paths/register build/shared/infra/http/server.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/shared/infra/db/data-source.ts",
-    "tests": "jest",
-    "merge": "node merge_tool.js -p src/ -o context.txt "
+    "typeorm:prod": "node ./node_modules/typeorm/cli.js -d build/shared/infra/db/data-source.js",
+    "tests": "jest"
   },
   "keywords": [],
   "author": "Cleverson Matias",
