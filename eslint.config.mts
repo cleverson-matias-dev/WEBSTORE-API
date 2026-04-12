@@ -16,7 +16,7 @@ export default defineConfig([
       ".github/workflows/*",
       "!/src",
       "dist/", 
-      "build/",
+      "build/*",
       "node_modules/"
     ],
     rules: {
