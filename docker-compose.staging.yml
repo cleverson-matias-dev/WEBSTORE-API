@@ -1,53 +1,7 @@
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_staging
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    # Sem portas expostas para o host, apenas interna
-    volumes:
-      - mysql_staging_data:/var/lib/mysql
-
   api:
     image: ${IMAGE_TAG}
-    build: 
+    build:
       context: .
-      target: production # Se usar multi-stage
-    container_name: node_api_staging
-    restart: unless-stopped
-    # SEM volumes de código (./:/usr/src/app)
-    environment:
-      - NODE_ENV=staging
-      - DB_HOST=mysql
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_NAME=${DB_NAME}
-    depends_on:
-      - mysql
+      target: production
 
-  kong:
-    image: kong:latest
-    container_name: kong_staging
-    volumes:
-      - ./kong.yml:/usr/local/kong/declarative/kong.yml
-    environment:
-      KONG_DATABASE: "off"
-      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
-      KONG_PROXY_ACCESS_LOG: /dev/stdout
-      KONG_ADMIN_ACCESS_LOG: /dev/stdout
-      KONG_PROXY_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
-    # ... configurações de env iguais ...
-    ports:
-      - "8000:8000" # Porta do Proxy (Tráfego vindo de fora)
-      - "8443:8443" # Porta do Proxy SSL
-      - "8001:8001" # Porta da Admin API (Somente leitura no DB-less)
-    # Remova a porta 8001 (Admin) do acesso público
-    depends_on:
-      - api
-
-volumes:
-  mysql_staging_data:
