@@ -25,7 +25,7 @@ Api completa para lojas virtuais.
    ```
 
 3 . Variáveis de ambiente:
-   Renomear .env_development para .env   
+   - Renomear .env_development para .env   
 
 4 . Cria os contêineres [Kong, MySQL, Api] e inicia o servidor
    ```bash
