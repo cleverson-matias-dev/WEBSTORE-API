@@ -16,19 +16,19 @@ Api completa para lojas virtuais.
 ## 🔧 Instalação e Execução (desenvolvimento)
 
 1 . Clone o repositório:
-   ```bash
+  ```bash
    git clone https://github.com/cleverson-matias-dev/WEBSTORE-API.git && cd WEBSTORE-API/
   ```
 2 . Instalar dependências:
-```bash
+   ```bash
    npm install
-```
+   ```
 
 3 . Variáveis de ambiente:
-   Renomear .env_development para .env   
+   - Renomear .env_development para .env   
 
 4 . Cria os contêineres [Kong, MySQL, Api] e inicia o servidor
    ```bash
    docker compose up
-  ```
+   ```
 
