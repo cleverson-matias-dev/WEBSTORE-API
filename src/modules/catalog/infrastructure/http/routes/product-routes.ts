@@ -5,6 +5,7 @@ import { CreateProductUseCase, DeleteProductUseCase, GetProductUseCase, ListProd
 import { validate } from "@shared/middlewares/validator";
 import { createProductSchema, filterProductSchema, paramsUuidSchema } from "../validation-schemas/product-schema";
 import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepository";
+import { authorize, UserRole } from "@shared/middlewares/authorization-middleware";
 
 
 const productRoutes = Router();
@@ -19,10 +20,10 @@ const controller = new ProductController(
   new DeleteProductUseCase(repository)
 );
 
-productRoutes.post("/", validate(createProductSchema), (req, res) => controller.create(req, res));
+productRoutes.post("/", authorize([UserRole.ADMIN]), validate(createProductSchema), (req, res) => controller.create(req, res));
 productRoutes.get("/", validate(filterProductSchema), (req, res) => controller.list(req, res));
 productRoutes.get("/:id", validate(paramsUuidSchema), (req, res) => controller.getById(req, res));
-productRoutes.put("/:id", validate(paramsUuidSchema), (req, res) => controller.update(req, res));
-productRoutes.delete("/:id", validate(paramsUuidSchema), (req, res) => controller.delete(req, res));
+productRoutes.put("/:id", authorize([UserRole.ADMIN]), validate(paramsUuidSchema), (req, res) => controller.update(req, res));
+productRoutes.delete("/:id", authorize([UserRole.ADMIN]), validate(paramsUuidSchema), (req, res) => controller.delete(req, res));
 
 export { productRoutes };
