@@ -11,7 +11,8 @@ export class AuthController {
 
   // Rota: POST /auth/register
   async register(req: Request, res: Response) {
-    const result = await this.registerUC.execute(req.body);
+    const { user } = req;
+    const result = await this.registerUC.execute(req.body, user);
     return res.status(201).json(result);
   }
 

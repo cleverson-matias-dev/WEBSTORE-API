@@ -5,6 +5,7 @@ import { validate } from "@shared/middlewares/validator";
 import { createSkuSchema, paramProductUuidSchema, paramUuidSchema, skuPriceUpdateSchema } from "../validation-schemas/sku-schemas";
 import { TypeOrmSkuRepository } from "../../persistence/TypeORMSkuRepository";
 import { TypeormProductRepository } from "../../persistence/TypeORMProductRepository";
+import { authorize, UserRole } from "@shared/middlewares/authorization-middleware";
 
 
 const skuRoutes = Router();
@@ -16,6 +17,7 @@ const skuController = new SkuController(skuUseCases);
 
 skuRoutes.post(
   '/',
+  authorize([UserRole.ADMIN]),
   validate(createSkuSchema),
   (req: Request, res: Response) => skuController.create(req, res)
 );
@@ -34,18 +36,21 @@ skuRoutes.get(
 
 skuRoutes.patch(
   '/:id/price',
+  authorize([UserRole.ADMIN]),
   validate(skuPriceUpdateSchema),
   (req: Request, res: Response) => skuController.updatePrice(req, res)
 );
 
 skuRoutes.patch(
   '/:id/logistics',
+  authorize([UserRole.ADMIN]),
   validate(paramUuidSchema),
   (req: Request, res: Response) => skuController.updateLogistics(req, res)
 );
 
 skuRoutes.delete(
   '/:id',
+  authorize([UserRole.ADMIN]),
   validate(paramUuidSchema),
   (req: Request, res: Response) => skuController.delete(req, res)
 );

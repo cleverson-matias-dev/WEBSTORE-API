@@ -7,12 +7,20 @@ import { User, UserProps } from "@modules/identity/domain/entities/User";
 import { UserMapper } from "../dtos/user-mappers";
 import * as bcrypt from 'bcrypt';
 import { AppError } from "@shared/errors/AppError";
+import { UserRole } from "@shared/middlewares/authorization-middleware";
 
+type user_creator = { id:string, role: UserRole } | undefined
 
 export class CreateUserUseCase {
   constructor(private userRepository: IUserRepository) {}
 
-  async execute(data: CreateUserDTO): Promise<UserResponseDTO> {
+  async execute(data: CreateUserDTO, user_creator: user_creator): Promise<UserResponseDTO> {
+
+    if (data.role === UserRole.ADMIN) {
+        if((!user_creator) || (user_creator && user_creator.role !== UserRole.ADMIN)){
+          throw new AppError('Acesso negado. somente usuarios admin podem criar outros admins', 403);
+        } 
+    }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const password = Password.create(hashedPassword);
