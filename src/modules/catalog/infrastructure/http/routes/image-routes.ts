@@ -5,6 +5,7 @@ import { CreateImageUseCase, DeleteImageUseCase, GetImageByIdUseCase, ListImages
 import { getAllImagesSchema, getImageSchema, saveImageSchema, updateImageSchema } from '../validation-schemas/image-schema';
 import { validate } from '@shared/middlewares/validator';
 import { TypeormProductRepository } from '../../persistence/TypeORMProductRepository';
+import { authorize, UserRole } from '@shared/middlewares/authorization-middleware';
 
 export const imagesRoutes = Router();
 
@@ -20,6 +21,7 @@ const imageController = new ImageController(createUC, getByIdUC, listUC, updateU
 
 imagesRoutes.post(
   '/', 
+  authorize([UserRole.ADMIN]),
   validate(saveImageSchema), 
   (req, res) => imageController.create(req, res)
 );
@@ -38,12 +40,14 @@ imagesRoutes.get(
 
 imagesRoutes.put(
   '/:id', 
+  authorize([UserRole.ADMIN]),
   validate(updateImageSchema), 
   (req, res) => imageController.update(req, res)
 );
 
 imagesRoutes.delete(
   '/:id', 
+  authorize([UserRole.ADMIN]),
   validate(getImageSchema), 
   (req, res) => imageController.delete(req, res)
 );

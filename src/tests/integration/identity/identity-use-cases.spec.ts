@@ -22,7 +22,7 @@ describe('Identity module use cases', () => {
         firstName: 'John',
         lastName: 'Doe',
         role: UserRole.CLIENT,
-      });
+      }, {id: '', role: UserRole.ADMIN});
 
       expect(user).toHaveProperty('id');
       expect(user.email).toBe('john.doe@example.com');
@@ -46,7 +46,7 @@ describe('Identity module use cases', () => {
         firstName: 'Jane',
         lastName: 'Doe',
         role: UserRole.CLIENT,
-      });
+      }, {id: '', role: UserRole.ADMIN});
 
       const updated = await updateUser.execute(user.id, {
         firstName: 'Janet',
@@ -68,7 +68,7 @@ describe('Identity module use cases', () => {
         firstName: 'Bye',
         lastName: 'User',
         role: UserRole.CLIENT,
-      });
+      }, {id: '', role: UserRole.ADMIN});
 
       expect(repository.items.length).toBe(1);
 
@@ -90,7 +90,7 @@ describe('Identity module use cases', () => {
         firstName: 'Auth',
         lastName: 'User',
         role: UserRole.CLIENT,
-      });
+      }, {id: '', role: UserRole.ADMIN});
 
       const result = await login.execute({ email: user.email, password: 'authpass123' });
 
@@ -113,7 +113,7 @@ describe('Identity module use cases', () => {
         firstName: 'Auth2',
         lastName: 'User2',
         role: UserRole.CLIENT,
-      });
+      }, {id: '', role: UserRole.ADMIN});
 
       await expect(login.execute({ email: 'auth.user2@example.com', password: 'wrong_pwd' })).rejects.toThrow('Credenciais inválidas');
     });

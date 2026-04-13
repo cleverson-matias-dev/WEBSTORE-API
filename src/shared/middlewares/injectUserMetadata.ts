@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import type { UserRole } from './authorization-middleware';
 
 export const injectUserMetadata = (req: Request, res: Response, next: NextFunction): void => {
     try {
@@ -7,7 +8,7 @@ export const injectUserMetadata = (req: Request, res: Response, next: NextFuncti
 
         if (authHeader?.startsWith('Bearer ')) {
             const token = authHeader.split(' ')[1];
-            const payload = jwt.decode(token) as { id: string; role: string } | null;
+            const payload = jwt.decode(token) as { id: string; role: UserRole } | null;
 
             if (payload) {
                 // Injeta nos headers (garante que sejam strings)

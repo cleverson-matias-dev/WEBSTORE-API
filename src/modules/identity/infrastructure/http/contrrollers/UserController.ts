@@ -18,7 +18,7 @@ export class UserController {
   ) {}
 
   async save(req: Request, res: Response) {
-    const result = await this.createUserUC.execute(req.body);
+    const result = await this.createUserUC.execute(req.body, req.user);
     return res.status(201).json(result);
   }
 

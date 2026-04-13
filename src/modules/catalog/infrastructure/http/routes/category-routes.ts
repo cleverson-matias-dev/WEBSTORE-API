@@ -5,6 +5,7 @@ import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepo
 import { PinoLoggerAdapter } from "@shared/logger/PinoLoggerAdapter";
 import { validate } from "@shared/middlewares/validator";
 import { TypeormProductRepository } from "../../persistence/TypeORMProductRepository";
+import { authorize, UserRole } from "@shared/middlewares/authorization-middleware";
 
 export const categoryRoutes = Router();
 const controller = new CategoryController(
@@ -17,7 +18,9 @@ const controller = new CategoryController(
 
 categoryRoutes.get('/', validate(getAllCategoriesInputSchema), (req, res) => controller.all(req, res));
 
-categoryRoutes.post('/', validate(saveCategorySchema), 
+categoryRoutes.post('/', 
+    authorize([UserRole.ADMIN]), 
+    validate(saveCategorySchema), 
     (req, res) => controller.save(req, res)
 );
 
@@ -29,11 +32,13 @@ categoryRoutes.get(
 
 categoryRoutes.delete(
     '/:id', 
+    authorize([UserRole.ADMIN]),
     validate(deleteCategorySchema),
     (req, res) => controller.delete(req, res)
 );
 
 categoryRoutes.patch(
     '/:id', validate(updateCategorySchema),
+    authorize([UserRole.ADMIN]),
     (req, res) => controller.update(req, res)
 );
