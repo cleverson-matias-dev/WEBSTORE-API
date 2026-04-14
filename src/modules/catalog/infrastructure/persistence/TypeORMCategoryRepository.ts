@@ -5,9 +5,14 @@ import { Category } from "@modules/catalog/domain/entities/category.entity";
 import { CategoryEntity } from "./entities/CategoryEntity";
 import { CategoryName } from "@modules/catalog/domain/value-objects/category.name.vo";
 import { AppError } from "@shared/errors/AppError";
+import { BaseCacheRepository } from "./BaseCacheRepository";
+import redisClient from "@shared/infra/cache/redis";
 
-export class TypeORMCategoryRepository implements ICategoryRepository {
+export class TypeORMCategoryRepository
+extends BaseCacheRepository
+implements ICategoryRepository {
     private repository: Repository<CategoryEntity> = AppDataSource.getRepository(CategoryEntity);
+    protected CACHE_TAG: string = "category";
 
     private toDomain(val: CategoryEntity): Category {
         return new Category({
@@ -36,6 +41,7 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
 
         try {
             const saved = await this.repository.save(data);
+            this.invalidateCache();
             return this.toDomain(saved);
         } catch (error) {
             console.log(error)
@@ -47,6 +53,14 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
     async allPaginated(options: CategoryFilterOptions): Promise<[Category[], number]> {
         const { limit, offset, name } = options;
 
+        const cacheKey = await this.getCacheKey(`l:${limit}o:${offset}n:${name || 'all'}`);
+        const cachedResult = await redisClient.get(cacheKey);
+
+        if(cachedResult) {
+            const [entities, total] = JSON.parse(cachedResult);
+            return [entities.map(this.toDomain), total];
+        }
+
         const [entities, total] = await this.repository.findAndCount({
             where: name ? { name: Like(`%${name}%`)} : {},
             take: limit,
@@ -54,9 +68,9 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
             order: { name: 'ASC' }
         });
 
-        const domainCategories = entities.map(this.toDomain);
+        await redisClient.set(cacheKey, JSON.stringify([entities, total]), { EX: this.TTL});
 
-        return [domainCategories, total];
+        return [entities.map(this.toDomain), total];
     }
 
     async findBy(id: string): Promise<Category | null> {
@@ -75,6 +89,7 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
 
         const success = !!(result.affected && result.affected > 0);
         if(!success) throw new AppError('recurso não encontrado', 404);
+        this.invalidateCache();
         return success;
     }
 
@@ -82,6 +97,7 @@ export class TypeORMCategoryRepository implements ICategoryRepository {
         const result = await this.repository.delete(id);
         const success = !!(result.affected && result.affected > 0);
         if(!success) throw new AppError('recurso não encontrado', 404);
+        this.invalidateCache();
         return success
     }
 }
