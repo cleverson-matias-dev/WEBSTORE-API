@@ -4,12 +4,16 @@ import { IImageRepository, SearchResult } from "@modules/catalog/application/int
 import { ImageEntity } from "./entities/ImageEntity";
 import { ImageMapper } from "@modules/catalog/application/dtos/image-mappers";
 import { AppDataSource } from "@shared/infra/db/data-source";
+import { BaseCacheRepository } from "./BaseCacheRepository";
+import redisClient from "@shared/infra/cache/redis";
 
-export class TypeOrmImageRepository implements IImageRepository {
+export class TypeOrmImageRepository
+extends BaseCacheRepository
+implements IImageRepository {
 
-    private readonly ormRepository: Repository<ImageEntity> = AppDataSource.getRepository(ImageEntity);
+  private readonly ormRepository: Repository<ImageEntity> = AppDataSource.getRepository(ImageEntity);
+  protected CACHE_TAG: string = "image";
   
-
   async save(image: Image): Promise<Image> {
     const props = image.props_read_only;
 
@@ -23,16 +27,32 @@ export class TypeOrmImageRepository implements IImageRepository {
     });
 
     const saved = await this.ormRepository.save(imageEntity);
+    this.invalidateCache();
 
     return ImageMapper.toDomainFromPersistence(saved);
   }
 
   async allPaginated(page: number, limit: number): Promise<SearchResult<Image>> {
+
+    const cacheKey = await this.getCacheKey(`p:${page}l:${limit}`);
+    const cachedResult = await redisClient.get(cacheKey);
+    if(cachedResult) {
+      const [items, total] = JSON.parse(cachedResult);
+      return {
+        items: items.map( (item: ImageEntity) => ImageMapper.toDomainFromPersistence(item)),
+        total,
+        current_page: page,
+        limit
+      }
+    }
+
     const [items, total] = await this.ormRepository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
       order: { ordem: "ASC" }
     });
+
+    await redisClient.set(cacheKey, JSON.stringify([items, total]), {EX: this.TTL});
 
     return {
       items: items.map(item => ImageMapper.toDomainFromPersistence(item)),
@@ -60,11 +80,14 @@ export class TypeOrmImageRepository implements IImageRepository {
       ordem: props.ordem,
     });
 
+    this.invalidateCache();
+
     return result.affected !== undefined && result.affected > 0;
   }
 
   async delete(id: string): Promise<boolean> {
     const result = await this.ormRepository.delete(id);
+    this.invalidateCache();
     return !!(result.affected && result.affected > 0);
   }
 }
