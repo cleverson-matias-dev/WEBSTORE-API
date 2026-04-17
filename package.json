@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --exec tsx src/shared/infra/http/server.ts --legacy-watch",
     "lint": "eslint .",
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && copyfiles -u 1 \"src/modules/**/*.yaml\" build/",
     "start": "npm run build && node -r tsconfig-paths/register build/shared/infra/http/server.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/shared/infra/db/data-source.ts",
     "typeorm:prod": "node ./node_modules/typeorm/cli.js -d build/shared/infra/db/data-source.js",
@@ -28,6 +28,7 @@
     "@types/sanitize-html": "^2.16.1",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "copyfiles": "^2.4.1",
     "eslint": "^10.2.0",
     "eslint-plugin-security": "^4.0.0",
     "globals": "^17.4.0",
