@@ -195,6 +195,8 @@ components:
       properties:
         product_id: { type: string, format: uuid }
         sku_code: { type: string, minLength: 3 }
+        warehouse_id: { type: string }
+        initial_quantity: { type: number }
         price: { type: number, minimum: 0 }
         currency: { type: string, default: BRL }
         weight: { type: number, minimum: 0 }

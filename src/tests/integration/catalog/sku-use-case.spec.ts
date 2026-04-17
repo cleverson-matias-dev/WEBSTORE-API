@@ -7,17 +7,31 @@ import { Product } from "@modules/catalog/domain/entities/product.entity";
 import { Category } from "@modules/catalog/domain/entities/category.entity";
 import { CategoryName } from "@modules/catalog/domain/value-objects/category.name.vo";
 import { InMemoryCategoryRepository } from "./mockCategoryRepository";
+import RabbitMQServer from "@shared/infra/messaging/RabbitMQServer";
 
+jest.mock('@shared/infra/messaging/RabbitMQServer', () => {
+  return {
+    __esModule: true,
+    default: {
+      getInstance: jest.fn().mockReturnValue({
+        // Simulamos o método que você usa no código
+        publishInExchange: jest.fn().mockResolvedValue(true)
+      })
+    }
+  };
+});
 
 describe('SkuUseCases (Unit Tests)', () => {
   let skuRepository: InMemorySkuRepository;
-  const productRepository = new MockProductRepository(); // Mock simplificado
+  const productRepository = new MockProductRepository();
   const categoryRepository = new InMemoryCategoryRepository();
   let sut: SkuUseCases;
 
   beforeEach(async () => {
+
     skuRepository = new InMemorySkuRepository();
     sut = new SkuUseCases(skuRepository, productRepository);
+    
   });
 
   const makeValidInput = async (): Promise<CreateSkuInputDto> => {
@@ -35,13 +49,22 @@ describe('SkuUseCases (Unit Tests)', () => {
     price: 50,
     currency: 'BRL',
     weight: 300,
-    dimensions: '10x10x10'
+    dimensions: '10x10x10',
+    initial_quantity: 0,
+    warehouse_id: 'jçalkdsjf-çalsdjkf-alsdkfj-asdfaaa'
   }};
 
   describe('create', () => {
     it('deve criar um SKU com sucesso', async () => {
       const input = await makeValidInput();
       const output = await sut.create(input);
+
+      const rabbitInstance = RabbitMQServer.getInstance();
+      expect(rabbitInstance.publishInExchange).toHaveBeenCalledWith(
+        'catalog.sku',
+        'sku.created',
+        expect.objectContaining({ warehouse_id: 'jçalkdsjf-çalsdjkf-alsdkfj-asdfaaa' })
+      );
 
       expect(output).toBeDefined();
       expect(output.sku_code).toBe('TSHIRT-BLACK-G');
@@ -67,7 +90,9 @@ describe('SkuUseCases (Unit Tests)', () => {
         price: 50,
         currency: 'BRL',
         weight: 300,
-        dimensions: '10x10x10'
+        dimensions: '10x10x10',
+        warehouse_id: 'açdslkf-alsdkf-açlsdkf-alsdfas',
+        initial_quantity: 0
       }
 
       await expect(sut.create(input)).rejects.toThrow(

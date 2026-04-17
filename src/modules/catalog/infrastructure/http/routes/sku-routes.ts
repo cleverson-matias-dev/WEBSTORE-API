@@ -7,7 +7,6 @@ import { TypeOrmSkuRepository } from "../../persistence/TypeORMSkuRepository";
 import { TypeormProductRepository } from "../../persistence/TypeORMProductRepository";
 import { authorize, UserRole } from "@shared/middlewares/authorization-middleware";
 
-
 const skuRoutes = Router();
 
 const skuRepository = new TypeOrmSkuRepository();

@@ -4,6 +4,8 @@ export const createSkuSchema = z.object({
   body: z.object({
      product_id: z.uuid('uuid inválido'),
      sku_code: z.string('sku code inválido').min(1),
+     warehouse_id: z.uuid('warehouse Id obrigatório'),
+     initial_quantity: z.number('quantidade inicial inválido').nonnegative().default(0),
      price: z.number('preco inválido').nonnegative(),
      currency: z.string('moeda inválida').length(3).optional().default('BRL'),
      weight: z.number('peso inválido').nonnegative('peso negativo'),
