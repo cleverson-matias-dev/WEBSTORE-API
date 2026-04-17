@@ -1,11 +1,12 @@
 import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
-import { CreateSkuInputDto, CreateSkuOutputDto, SkuDetailsOutputDto, UpdateLogisticsInputDto, UpdatePriceInputDto } from "../dtos/sku-dtos";
+import { CreateSkuInputDto, CreateSkuOutputDto, SkuDetailsOutputDto, UpdateLogisticsInputDto, UpdatePriceInputDto, type SkuCreatedEventDTO } from "../dtos/sku-dtos";
 import { ISkuRepository } from "../interfaces/repository/ISkuRepository";
 import { Price, SkuCode, Weight } from "@modules/catalog/domain/value-objects/sku.vo";
 import { SkuMapper } from "../dtos/sku-mapper";
 import { AppError } from "@shared/errors/AppError";
 import { IProductRepository } from "../interfaces/repository/IProductRepository";
 import { Product } from "@modules/catalog/domain/entities/product.entity";
+import RabbitMQServer from "@shared/infra/messaging/RabbitMQServer";
 
 export class SkuUseCases {
   constructor(
@@ -30,6 +31,15 @@ export class SkuUseCases {
 
     try {
        await this.skuRepository.create(sku);
+
+       const skuCreatedEvent: SkuCreatedEventDTO = {
+           sku: sku.id,
+           warehouse_id: input.warehouse_id,
+           initial_quantity: input.initial_quantity
+       }
+       await RabbitMQServer.getInstance()
+       .publishInExchange('catalog.sku', 'sku.created', skuCreatedEvent);
+
        return SkuMapper.toOutput(sku);
     } catch (error) {
        console.log(error)

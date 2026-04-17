@@ -5,10 +5,11 @@ services:
 - name: node-api
   url: http://api:3000
   routes:
-  # 1. Rota PÚBLICA (Register, Login e Health) - Limite por IP para evitar Brute Force
+  # 1. Rota PÚBLICA (Register, Login, Docs e Health) - Limite por IP para evitar Brute Force
   - name: auth-route
     paths:
     - /health
+    - /docs
     - /identity/api/v1/users/auth/register
     - /identity/api/v1/users/auth/login
     strip_path: false

@@ -1,6 +1,8 @@
 export interface CreateSkuInputDto {
   product_id: string;
   sku_code: string;
+  warehouse_id: string;
+  initial_quantity: number;
   price: number;
   currency?: string;
   weight: number;
@@ -53,4 +55,10 @@ export interface SkuDetailsOutputDto {
   dimensions: string;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface SkuCreatedEventDTO {
+  sku: string;
+  warehouse_id: string;
+  initial_quantity: number;
 }
