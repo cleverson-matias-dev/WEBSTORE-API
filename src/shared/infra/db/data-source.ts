@@ -14,5 +14,6 @@ export const AppDataSource = new DataSource({
     entities:[
         path.join(__dirname, "../../../modules/catalog/infrastructure/persistence/entities/**/*.{ts,js}"),
         path.join(__dirname, "../../../modules/identity/infrastructure/persistence/entities/**/*.{ts,js}"),
+        path.join(__dirname, "../../../modules/stock/infrastructure/persistence/entities/**/*.{ts,js}"),
     ]
 })

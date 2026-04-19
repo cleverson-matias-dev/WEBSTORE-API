@@ -1,13 +1,3 @@
-openapi: 3.0.0
-info:
-  title: Catálogo de Produtos API
-  version: 1.0.0
-  description: API para gerenciamento de produtos e categorias do catálogo.
-
-servers:
-- url: /catalog/api/v1
-  description: Servidor Principal
-
 tags:
 - name: Produtos
   description: Endpoints relacionados ao gerenciamento de produtos

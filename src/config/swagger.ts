@@ -1,5 +1,5 @@
 import swaggerJSDoc from 'swagger-jsdoc';
-
+const isProd = process.env.NODE_ENV === 'production';
 
 export const createOption = (moduleName: string) => swaggerJSDoc({
   definition: {
@@ -10,10 +10,10 @@ export const createOption = (moduleName: string) => swaggerJSDoc({
     },
     servers: [
       {
-        url: `http://localhost:3000`,
+        url: `http://localhost:8000`,
         description: 'Servidor de Desenvolvimento',
       }
     ],
   },
-  apis: [`./src/modules/${moduleName.toLocaleLowerCase()}/**/*.yaml`], 
+  apis: [`./${isProd ? 'build' : 'src'}/modules/${moduleName.toLocaleLowerCase()}/**/*.yaml`], 
 })

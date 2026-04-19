@@ -1,6 +1,5 @@
-openapi: 3.0.0
 paths:
-  /users/auth/register:
+  /identity/api/v1/users/auth/register:
     post:
       summary: Registrar um novo usuário
       tags:
@@ -31,7 +30,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
 
-  /users/auth/login:
+  /identity/api/v1/users/auth/login:
     post:
       summary: Autenticar usuário
       tags:
