@@ -1,9 +1,3 @@
-openapi: 3.0.0
-info:
-  title: SKU Attribute Value API
-  description: API para gerenciamento de valores de atributos vinculados a SKUs.
-  version: 1.0.0
-
 paths:
   /catalog/api/v1/sku-attribute-values:
     post:

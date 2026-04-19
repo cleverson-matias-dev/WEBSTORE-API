@@ -1,9 +1,3 @@
-openapi: 3.0.0
-info:
-  title: Webstore Catalog API - Images
-  description: API para gerenciamento de imagens de produtos do catálogo.
-  version: 1.0.0
-
 components:
   schemas:
     # --- DTOs de Entrada ---
