@@ -25,6 +25,14 @@ components:
           type: string
           format: password
           example: "senha123"
+    RefreshDTO:
+      type: object
+      required:
+      - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          example: "açdfkkja21fa5fewafadsf3a5dsfa2..."
 
     AuthResponseDTO:
       type: object
@@ -32,6 +40,9 @@ components:
         user:
           $ref: '#/components/schemas/UserResponseDTO'
         token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken:
           type: string
           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
