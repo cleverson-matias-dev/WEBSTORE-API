@@ -12,6 +12,8 @@ services:
     - /docs
     - /identity/api/v1/users/auth/register
     - /identity/api/v1/users/auth/login
+    - /identity/api/v1/users/auth/refresh
+
     strip_path: false
     plugins:
     - name: rate-limiting

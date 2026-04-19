@@ -2,12 +2,15 @@ import { CreateUserUseCase, DeleteUserUseCase, ListUsersUseCase, UpdateUserUseCa
 import { LoginUseCase } from '@modules/identity/application/use-cases/auth-use-cases';
 import { InMemoryUserRepository } from './mockUserRepository';
 import { UserRole } from '@modules/identity/domain/entities/User';
+import { InMemoryRefreshTokenRepository } from './mockRefreshRepository';
 
 describe('Identity module use cases', () => {
   let repository: InMemoryUserRepository;
+  let refreshRespository: InMemoryRefreshTokenRepository;
 
   beforeEach(() => {
     repository = new InMemoryUserRepository();
+    refreshRespository = new InMemoryRefreshTokenRepository();
   });
 
   describe('Create/List/Find/Delete/Update User', () => {
@@ -82,7 +85,7 @@ describe('Identity module use cases', () => {
   describe('Auth use case', () => {
     it('should login with valid user and credentials', async () => {
       const createUser = new CreateUserUseCase(repository);
-      const login = new LoginUseCase(repository);
+      const login = new LoginUseCase(repository, refreshRespository);
 
       const user = await createUser.execute({
         email: 'auth.user@example.com',
@@ -99,13 +102,13 @@ describe('Identity module use cases', () => {
     });
 
     it('should fail login with invalid credentials', async () => {
-      const login = new LoginUseCase(repository);
+      const login = new LoginUseCase(repository, refreshRespository);
       await expect(login.execute({ email: 'nobody@example.com', password: 'wrong' })).rejects.toThrow('Credenciais inválidas');
     });
 
     it('should fail login if password is wrong', async () => {
       const createUser = new CreateUserUseCase(repository);
-      const login = new LoginUseCase(repository);
+      const login = new LoginUseCase(repository, refreshRespository);
 
       await createUser.execute({
         email: 'auth.user2@example.com',
