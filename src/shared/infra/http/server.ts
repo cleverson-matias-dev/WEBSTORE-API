@@ -36,12 +36,26 @@ app.use(  '/stock/api', sanitizeMiddleware, stockRoutes);
 app.use('/docs/identity/api-docs', 
     swaggerUi.serveFiles(createOption('Identity')), 
     swaggerUi.setup(createOption('Identity')));
+app.get('/docs/identity/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(createOption('Identity'));
+});
+
 app.use('/docs/catalog/api-docs', 
     swaggerUi.serveFiles(createOption('Catalog')), 
     swaggerUi.setup(createOption('Catalog')));
+app.get('/docs/catalog/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(createOption('Catalog'));
+});
+
 app.use('/docs/stock/api-docs', 
     swaggerUi.serveFiles(createOption('Stock')), 
     swaggerUi.setup(createOption('Stock')));
+app.get('/docs/stock/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(createOption('Stock'));
+});
 
 
 // Erros

@@ -1,9 +1,3 @@
-openapi: 3.0.3
-info:
-  title: API de Catálogo - Recurso Atributos
-  version: 1.0.0
-  description: Documentação das rotas para gestão de atributos (Nome, ID, Datas).
-
 paths:
   /catalog/api/v1/attributes:
     get:
