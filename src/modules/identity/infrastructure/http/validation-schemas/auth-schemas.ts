@@ -6,3 +6,9 @@ export const LoginSchema = z.object({
     password: z.string(),
   })
 });
+
+export const RefreshSchema = z.object({
+  body: z.object({
+    refreshToken: z.string(),
+  })
+});

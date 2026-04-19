@@ -8,5 +8,6 @@ export interface LoginDTO {
 export interface AuthResponseDTO {
   user: UserResponseDTO;
   token: string;
+  refreshToken: string;
 }
 
