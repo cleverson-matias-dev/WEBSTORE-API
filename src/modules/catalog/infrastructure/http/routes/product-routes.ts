@@ -6,15 +6,18 @@ import { validate } from "@shared/middlewares/validator";
 import { createProductSchema, filterProductSchema, paramsUuidSchema } from "../validation-schemas/product-schema";
 import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepository";
 import { authorize, UserRole } from "@shared/middlewares/authorization-middleware";
+import { StockServiceAdapter } from "../../external-services/stock-adapter-service";
+import { StockModule } from "@modules/stock/stock.module";
 
 
 const productRoutes = Router();
 
 const repository = new TypeormProductRepository();
 const categoryRepo = new TypeORMCategoryRepository();
+const stockService = new StockServiceAdapter(StockModule.getFacade());
 const controller = new ProductController(
   new CreateProductUseCase(repository, categoryRepo),
-  new ListProductsUseCase(repository),
+  new ListProductsUseCase(repository, stockService),
   new GetProductUseCase(repository),
   new UpdateProductUseCase(repository, categoryRepo),
   new DeleteProductUseCase(repository)

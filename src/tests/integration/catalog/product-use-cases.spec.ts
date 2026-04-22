@@ -17,6 +17,10 @@ describe("Product Use Cases", () => {
     let deleteProductUseCase: DeleteProductUseCase;
     let categoryId = '';
 
+    const mockStockService = {
+        getStocksBySkus: jest.fn().mockResolvedValue([{sku:'', quantity: 0}])
+    }
+
     beforeEach(async () => {
         productRepo = new MockProductRepository();
         categoryRepo = new InMemoryCategoryRepository();
@@ -30,7 +34,7 @@ describe("Product Use Cases", () => {
 
         createProductUseCase = new CreateProductUseCase(productRepo, categoryRepo);
         getProductUseCase = new GetProductUseCase(productRepo);
-        listProductsUseCase = new ListProductsUseCase(productRepo);
+        listProductsUseCase = new ListProductsUseCase(productRepo, mockStockService);
         updateProductUseCase = new UpdateProductUseCase(productRepo, categoryRepo);
         deleteProductUseCase = new DeleteProductUseCase(productRepo);
     });
@@ -88,7 +92,7 @@ describe("Product Use Cases", () => {
 
         it("deve lançar erro ao tentar atualizar produto inexistente", async () => {
             await expect(updateProductUseCase.execute({ id: "non-existent", name: "Novo" }))
-                .rejects.toThrow("Produto não encontrado"); // Baseado na sua AppError de 'Produto não encontrado'
+                .rejects.toThrow("Produto não encontrado");
         });
     });
 

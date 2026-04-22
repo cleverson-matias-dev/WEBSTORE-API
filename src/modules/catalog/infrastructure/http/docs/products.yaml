@@ -195,7 +195,97 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/ProductOutput'
+            $ref: '#/components/schemas/ProductOutputDTO'
         total: { type: integer, example: 50 }
         page: { type: integer, example: 1 }
         limit: { type: integer, example: 10 }
+
+    CategoryDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        parent_id:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SkuDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        sku_code:
+          type: string
+        quantity:
+          type: integer
+          description: Saldo consolidado vindo do serviço de estoque
+        price:
+          type: number
+          format: float
+        currency:
+          type: string
+          example: "BRL"
+        weight:
+          type: number
+        dimensions:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ProductImageDTO:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        ordem:
+          type: integer
+          description: Ordem de exibição da imagem
+        created_at:
+          type: string
+          format: date-time
+
+    ProductOutputDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImageDTO'
+        category:
+          $ref: '#/components/schemas/CategoryDTO'
+        skus:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkuDTO'
