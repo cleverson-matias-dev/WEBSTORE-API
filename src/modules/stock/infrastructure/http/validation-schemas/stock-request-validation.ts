@@ -8,6 +8,12 @@ export const CreateWarehouseSchema = z.object({
     })
 });
 
+export const GetDetailsSchema = z.object({
+    params: z.object({
+        sku: z.uuid(),
+    })
+});
+
 export const UpdateWarehouseSchema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
   isActive: z.boolean().optional(),

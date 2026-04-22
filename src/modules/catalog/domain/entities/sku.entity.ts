@@ -36,6 +36,21 @@ export class SkuDomain {
     this._updated_at = new Date();
   }
 
+  toJSON() {
+    return {
+      id: this._id,
+      skuCode: this.props.skuCode.val,
+      productId: this.props.productId,
+      price: this.props.price.val,
+      currency: this.props.price.curr,
+      weight: this.props.weight.val,
+      dimensions: this.props.dimensions,
+      created_at: this._created_at,
+      updated_at: this._updated_at
+    }
+  }
+
+
   get id() { return this._id; }
   get productId() { return this.props.productId; }
   get skuCode() { return this.props.skuCode.val; }

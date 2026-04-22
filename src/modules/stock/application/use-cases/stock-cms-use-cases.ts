@@ -1,6 +1,7 @@
 import { AppError } from "@shared/errors/AppError";
 import type { IStockItemRepository } from "../interfaces/repository/stock-item-repository-interface";
 import type { AdjustStockInputDTO, StockDetailOutputDTO } from "../dtos/stock-item-dtos";
+import type { StockItem } from "@modules/stock/domain/entities/stock-item";
 
 export class CmsStockUseCases {
   constructor(private readonly itemRepo: IStockItemRepository) {}
@@ -15,6 +16,10 @@ export class CmsStockUseCases {
     
     // Dica: Aqui você poderia disparar um evento "StockAdjusted" para auditoria
     await this.itemRepo.save(item);
+  }
+
+  async getBySkuList(skus: string[]): Promise<StockItem[]> {
+    return this.itemRepo.findAllBySkuList(skus);
   }
 
   // Detalhes completos para a tela de gerenciar estoque
