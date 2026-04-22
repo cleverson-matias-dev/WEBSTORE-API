@@ -1,5 +1,5 @@
 import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
-import { CreateSkuInputDto, CreateSkuOutputDto, SkuDetailsOutputDto, UpdateLogisticsInputDto, UpdatePriceInputDto, type SkuCreatedEventDTO } from "../dtos/sku-dtos";
+import { CreateSkuInputDto, CreateSkuOutputDto, SkuDetailsOutputDto, UpdateLogisticsInputDto, UpdatePriceInputDto, type DomainWithStock, type SkuCreatedEventDTO } from "../dtos/sku-dtos";
 import { ISkuRepository } from "../interfaces/repository/ISkuRepository";
 import { Price, SkuCode, Weight } from "@modules/catalog/domain/value-objects/sku.vo";
 import { SkuMapper } from "../dtos/sku-mapper";
@@ -7,11 +7,13 @@ import { AppError } from "@shared/errors/AppError";
 import { IProductRepository } from "../interfaces/repository/IProductRepository";
 import { Product } from "@modules/catalog/domain/entities/product.entity";
 import RabbitMQServer from "@shared/infra/messaging/RabbitMQServer";
+import type { IStockService } from "../interfaces/repository/stock-service.port";
 
 export class SkuUseCases {
   constructor(
     private readonly skuRepository: ISkuRepository,
-    private readonly productRepository: IProductRepository
+    private readonly productRepository: IProductRepository,
+    private readonly stockService: IStockService
   ) {}
 
   async create(input: CreateSkuInputDto): Promise<CreateSkuOutputDto> {
@@ -40,7 +42,7 @@ export class SkuUseCases {
        await RabbitMQServer.getInstance()
        .publishInExchange('catalog.sku', 'sku.created', skuCreatedEvent);
 
-       return SkuMapper.toOutput(sku);
+       return SkuMapper.toOutput(sku, input.initial_quantity);
     } catch (error) {
        console.log(error)
        throw new AppError('Erro na requisição');
@@ -52,7 +54,8 @@ export class SkuUseCases {
 
     try {
       const skus = await this.skuRepository.findByProductId(productId);
-      return skus.map(sku => SkuMapper.toOutput(sku));
+      const skusWithStock = await this.getStockData(skus);
+      return skusWithStock.map(sku => SkuMapper.toOutputWithStock(sku));
     } catch (error) {
       console.log(error)
       throw new AppError('Erro na requisição');
@@ -66,7 +69,8 @@ export class SkuUseCases {
     try {
        sku.changePrice(new Price(input.new_price, input.currency));
        await this.skuRepository.update(sku);
-       return SkuMapper.toOutput(sku);
+       const skusWithStock = await this.getStockData([sku]);
+       return SkuMapper.toOutputWithStock(skusWithStock[0]);
     } catch (error) {
       console.log(error)
       throw new AppError('Falha na requisição');
@@ -80,7 +84,8 @@ export class SkuUseCases {
     try {
       sku.updateLogistics(new Weight(input.weight), input.dimensions);
       await this.skuRepository.update(sku);
-      return SkuMapper.toOutput(sku);
+      const skusWithStock = await this.getStockData([sku]);
+      return SkuMapper.toOutputWithStock(skusWithStock[0]);
     } catch (error) {
       console.log(error)
       throw new AppError("Falha na requisição");
@@ -101,14 +106,32 @@ export class SkuUseCases {
   }
 
   async getById(id: string): Promise<SkuDetailsOutputDto> {
-    const sku = await this.findByIdOrThrow(id);
-    return SkuMapper.toOutput(sku);
+    try {
+      const sku = await this.findByIdOrThrow(id);
+      if(!sku) throw new AppError("SKU não encontrado.", 404);
+      const skusWithStock = await this.getStockData([sku]);
+      return SkuMapper.toOutputWithStock(skusWithStock[0]);
+    } catch(error) {
+      console.log(error);
+      throw new AppError('Erro ao buscar SKUs');
+    }
+    
   }
 
   private async findByIdOrThrow(id: string): Promise<SkuDomain> {
     const sku = await this.skuRepository.findById(id);
     if (!sku) throw new AppError("SKU não encontrado.", 404);
     return sku;
+  }
+
+  private async getStockData(skus: SkuDomain[]): Promise<DomainWithStock[]> {
+    const stockData = await this.stockService.getStocksBySkus(skus.map(sku => sku.id));
+      const stockMap = new Map(stockData.map(s=>[s.sku, s.quantity]));
+      return  skus.map(sku => ({
+        ...sku.toJSON(),
+        quantity: stockMap.get(sku.id) ?? 0
+      } as unknown as DomainWithStock))
+
   }
 
 }

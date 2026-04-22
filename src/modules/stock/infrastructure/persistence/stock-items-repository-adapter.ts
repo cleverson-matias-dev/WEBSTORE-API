@@ -7,6 +7,10 @@ import { AppDataSource } from "@shared/infra/db/data-source";
 export class TypeOrmStockItemRepository implements IStockItemRepository {
   private repository: Repository<StockItemSchema> = AppDataSource.getRepository(StockItemSchema);
 
+  async findAllBySkuList(skus: string[]): Promise<StockItem[]> {
+      const models = await this.repository.find({where: {sku: In(skus)}});
+      return models.map(model => StockItem.restore(model));
+  }
 
   async findBySkuAndWarehouse(sku: string, warehouseId: string): Promise<StockItem | null> {
     const model = await this.repository.findOne({ where: { sku, warehouseId } });

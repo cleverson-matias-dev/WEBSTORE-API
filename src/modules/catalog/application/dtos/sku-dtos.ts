@@ -1,3 +1,5 @@
+import type { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
+
 export interface CreateSkuInputDto {
   product_id: string;
   sku_code: string;
@@ -49,6 +51,7 @@ export interface SkuDetailsOutputDto {
   id: string;
   product_id: string;
   sku_code: string;
+  quantity?: number;
   price: number;
   currency: string;
   weight: number;
@@ -61,4 +64,8 @@ export interface SkuCreatedEventDTO {
   sku: string;
   warehouse_id: string;
   initial_quantity: number;
+}
+
+export type DomainWithStock = SkuDomain & {
+  quantity?: number
 }

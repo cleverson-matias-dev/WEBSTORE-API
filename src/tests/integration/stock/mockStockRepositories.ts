@@ -7,7 +7,19 @@ import { StockWarehouse } from "@modules/stock/domain/entities/stock-warehouse";
 
 // Mock para IStockItemRepository
 export class InMemoryStockItemRepository implements IStockItemRepository {
+  
   private items: StockItem[] = [];
+
+  async findAllBySkuList(skus: string[]): Promise<StockItem[]> {
+    // 1. Filtra os itens cujos SKUs estão incluídos na lista recebida
+    const filteredItems = this.items.filter(item => 
+      skus.includes(item.values.sku)
+    );
+
+    // 2. Mapeia os itens encontrados restaurando a instância da entidade de domínio
+    return filteredItems.map(item => StockItem.restore(item.values));
+  }
+
 
   async findBySkuAndWarehouse(sku: string, warehouseId: string): Promise<StockItem | null> {
     const item = this.items.find(i => i.values.sku === sku && i.values.warehouseId === warehouseId);
