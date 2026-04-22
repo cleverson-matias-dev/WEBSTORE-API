@@ -9,7 +9,7 @@ import { StoreStockUseCases } from "@modules/stock/application/use-cases/stock-s
 import { TypeOrmStockReservationRepository } from "../../persistence/stock-reservation-repository-adapter";
 import { authorize, UserRole } from "@shared/middlewares/authorization-middleware";
 import { validate } from "@shared/middlewares/validator";
-import { AdjustStockSchema, CheckAvailabilitySchema, CreateWarehouseSchema, ReserveStockSchema } from "../validation-schemas/stock-request-validation";
+import { AdjustStockSchema, CheckAvailabilitySchema, CreateWarehouseSchema, GetDetailsSchema, ReserveStockSchema } from "../validation-schemas/stock-request-validation";
 
 const stockRoutes = Router();
 const cmsUseCases = new CmsStockUseCases(new TypeOrmStockItemRepository());
@@ -34,5 +34,12 @@ stockRoutes.post('/v1/warehouses',
     authorize([UserRole.ADMIN]),
     validate(CreateWarehouseSchema),
     (req, res) => cmsController.createWarehouse(req, res));
+stockRoutes.get('/v1/details/:sku', 
+    authorize([UserRole.ADMIN, UserRole.CLIENT]),
+    validate(GetDetailsSchema),
+    (req, res) => cmsController.getDetails(req, res));
+stockRoutes.get('/v1/warehouses', 
+    authorize([UserRole.ADMIN, UserRole.CLIENT]),
+    (req, res) => cmsController.listWarehouses(req, res));
 
 export { stockRoutes };
