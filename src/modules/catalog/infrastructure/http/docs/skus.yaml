@@ -202,6 +202,7 @@ components:
         id: { type: string, format: uuid }
         product_id: { type: string, format: uuid }
         sku_code: { type: string }
+        quantity: { type: number }
         price: { type: number }
         currency: { type: string }
         weight: { type: number }

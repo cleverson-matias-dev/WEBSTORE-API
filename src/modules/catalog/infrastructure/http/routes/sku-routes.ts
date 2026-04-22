@@ -6,12 +6,15 @@ import { createSkuSchema, paramProductUuidSchema, paramUuidSchema, skuPriceUpdat
 import { TypeOrmSkuRepository } from "../../persistence/TypeORMSkuRepository";
 import { TypeormProductRepository } from "../../persistence/TypeORMProductRepository";
 import { authorize, UserRole } from "@shared/middlewares/authorization-middleware";
+import { StockServiceAdapter } from "../../external-services/stock-adapter-service";
+import { StockModule } from "@modules/stock/stock.module";
 
 const skuRoutes = Router();
 
 const skuRepository = new TypeOrmSkuRepository();
 const productRepository = new TypeormProductRepository();
-const skuUseCases = new SkuUseCases(skuRepository, productRepository);
+const stockService = new StockServiceAdapter(StockModule.getFacade());
+const skuUseCases = new SkuUseCases(skuRepository, productRepository, stockService);
 const skuController = new SkuController(skuUseCases);
 
 skuRoutes.post(

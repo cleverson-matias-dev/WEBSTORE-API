@@ -1,7 +1,7 @@
 import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
 import { Price, SkuCode, Weight } from "@modules/catalog/domain/value-objects/sku.vo";
 import { Sku } from "@modules/catalog/infrastructure/persistence/entities/Sku";
-import { SkuDetailsOutputDto } from "./sku-dtos";
+import { SkuDetailsOutputDto, type DomainWithStock } from "./sku-dtos";
 
 export class SkuMapper {
   static toDomain(raw: Sku): SkuDomain {
@@ -21,6 +21,21 @@ export class SkuMapper {
     );
   }
 
+  static toOutputWithStock(sku: DomainWithStock): SkuDetailsOutputDto {
+      return {
+        id: sku.id,
+        product_id: sku.productId,
+        sku_code: sku.skuCode,
+        quantity: sku.quantity,
+        price: sku.price,
+        currency: sku.currency,
+        weight: sku.weight,
+        dimensions: sku.dimensions,
+        created_at: sku.created_at,
+        updated_at: sku.updated_at,
+      };
+  }
+
   static toPersistence(domain: SkuDomain): Partial<Sku> {
     return {
       id: domain.id,
@@ -33,11 +48,12 @@ export class SkuMapper {
     };
   }
 
-  static toOutput(sku: SkuDomain): SkuDetailsOutputDto {
+  static toOutput(sku: SkuDomain, quantity: number = 0): SkuDetailsOutputDto {
     return {
       id: sku.id,
       product_id: sku.productId,
       sku_code: sku.skuCode,
+      quantity,
       price: sku.price,
       currency: sku.currency,
       weight: sku.weight,

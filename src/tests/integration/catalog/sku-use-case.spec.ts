@@ -14,12 +14,15 @@ jest.mock('@shared/infra/messaging/RabbitMQServer', () => {
     __esModule: true,
     default: {
       getInstance: jest.fn().mockReturnValue({
-        // Simulamos o método que você usa no código
         publishInExchange: jest.fn().mockResolvedValue(true)
       })
     }
   };
 });
+
+const stockServiceMock = {
+  getStocksBySkus: jest.fn().mockResolvedValue([{sku:'', quantity: 0}]),
+};
 
 describe('SkuUseCases (Unit Tests)', () => {
   let skuRepository: InMemorySkuRepository;
@@ -30,7 +33,7 @@ describe('SkuUseCases (Unit Tests)', () => {
   beforeEach(async () => {
 
     skuRepository = new InMemorySkuRepository();
-    sut = new SkuUseCases(skuRepository, productRepository);
+    sut = new SkuUseCases(skuRepository, productRepository, stockServiceMock);
     
   });
 
