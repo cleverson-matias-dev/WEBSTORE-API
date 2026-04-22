@@ -4,6 +4,7 @@ import { IProductRepository, PagedProductOutput, ProductFilter } from "../interf
 import { ProductMapper } from "../dtos/product-mappers";
 import { AppError } from "@shared/errors/AppError";
 import { ICategoryRepository } from "../interfaces/repository/ICategoryRepository";
+import type { IStockService } from "../interfaces/repository/stock-service.port";
 
 export class CreateProductUseCase {
   constructor(private productRepository: IProductRepository, private categoryRepository: ICategoryRepository) {}
@@ -49,14 +50,41 @@ export class GetProductUseCase {
 }
 
 export class ListProductsUseCase {
-  constructor(private productRepository: IProductRepository) {}
+  constructor(private productRepository: IProductRepository, private stockService: IStockService) {}
 
   async execute(
     page?: number, 
     limit?: number, 
     filter?: ProductFilter
   ): Promise<PagedProductOutput> {
-    return await this.productRepository.allPaginated(page, limit, filter);
+    const products = await this.productRepository.allPaginated(page, limit, filter);
+    const skus = products.items?.flatMap(item => 
+      item.skus?.map(sku => sku.id) ?? []
+    ) ?? [];
+
+    const stockData = await this.stockService.getStocksBySkus(skus);
+    const stockMap = new Map(stockData.map(s=>[s.sku, s.quantity]));
+
+    console.log(stockMap)
+
+    const updatedProducts = products.items.map(product => {
+      return {
+        ...product,
+        skus: (product.skus || []).map(sku => {
+          return {
+            ...sku,
+            quantity: stockMap.get(sku.id) ?? 0
+          }
+        })
+      }
+    });
+
+    return {
+      items: updatedProducts,
+      page: products.page,
+      limit: products.limit,
+      total: products.total,
+    }
   }
 }
 

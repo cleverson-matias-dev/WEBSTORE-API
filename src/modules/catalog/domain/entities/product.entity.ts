@@ -2,6 +2,7 @@ import { Slug } from '../value-objects/slug.vo';
 import { v4 as uuidv4 } from 'uuid';
 import type { Image } from './image.entity';
 import type { Category } from './category.entity';
+import type { SkuDomain } from './sku.entity';
 
 export interface ProductProps {
   id?: string;
@@ -9,8 +10,9 @@ export interface ProductProps {
   slug: string;
   description: string;
   category_id: string;
-  images?: Image[],
-  category?: Category,
+  images?: Image[];
+  category?: Category;
+  skus?: SkuDomain[];
   created_at?: Date;
   deleted_at?: Date;
 }
