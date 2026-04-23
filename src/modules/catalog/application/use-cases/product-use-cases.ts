@@ -65,8 +65,6 @@ export class ListProductsUseCase {
     const stockData = await this.stockService.getStocksBySkus(skus);
     const stockMap = new Map(stockData.map(s=>[s.sku, s.quantity]));
 
-    console.log(stockMap)
-
     const updatedProducts = products.items.map(product => {
       return {
         ...product,

@@ -15,7 +15,6 @@ export class RefreshTokenUseCase {
 
   async execute(oldRefreshToken: string): Promise<AuthResponseDTO> {
     const storedToken = await this.refreshRepository.findByToken(oldRefreshToken);
-    console.log(storedToken)
 
     if (!storedToken || storedToken.expiresAt < new Date()) {
       throw new AppError('Refresh token inválido ou expirado', 401);
