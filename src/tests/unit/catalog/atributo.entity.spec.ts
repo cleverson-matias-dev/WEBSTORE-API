@@ -1,6 +1,5 @@
 import { saveAttributeUC } from "@modules/catalog/application/use-cases/attribute-use-cases";
 import { Attribute } from "@modules/catalog/domain/entities/attribute.entity";
-import { AttributeName } from "@modules/catalog/domain/value-objects/attribute.name.vo";
 import { InMemoryAttributeRepository } from "../../../tests/integration/catalog/mockAtributoRepository";
 
 // tests/unit/SaveAttributeUC.spec.ts
@@ -22,7 +21,7 @@ describe('SaveAttributeUC', () => {
     });
 
     it('deve lançar erro se o atributo já existir', async () => {
-        await repo.save(new Attribute({ name: new AttributeName('Cor') }));
+        await repo.save(Attribute.create("Cor"));
         
         await expect(sut.execute({ name: 'Cor' }))
             .rejects.toThrow('Attributo já existe');
