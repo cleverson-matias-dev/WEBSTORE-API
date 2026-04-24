@@ -203,7 +203,7 @@ components:
 
     ProductOutputDTO:
       type: object
-      required: [ id, name, slug, description, category ] # Images e SKUs são opcionais
+      required: [ id, name, slug, description, category, images, skus ] # Images e SKUs são opcionais
       properties:
         id: { type: string, format: uuid }
         name: { type: string }

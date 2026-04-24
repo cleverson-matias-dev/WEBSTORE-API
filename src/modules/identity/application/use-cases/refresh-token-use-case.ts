@@ -29,7 +29,7 @@ export class RefreshTokenUseCase {
     await this.refreshRepository.deleteByUserId(user.id!);
 
     // Gerar novos tokens
-    const newToken = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: '15m' });
+    const newToken = jwt.sign({ id: user.id, role: user.role, iss: 'api-modular-node' }, process.env.JWT_SECRET!, { expiresIn: '15m', algorithm: 'HS256' });
     const newRefreshToken = crypto.randomBytes(40).toString('hex');
     
     const expiresAt = new Date();
