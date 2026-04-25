@@ -3,7 +3,7 @@
 ## Módulos \[identity, catalog, stock]
 
 [Ver tecnologias](#características) | 
-[Instalação dev](#-instalação-e-execução-desenvolvimento)
+[Instalação dev](#-pré-requisitos-desenvolvimento)
 
 **Descrição:** Essa api permite o gerenciamento completo de um e-commerce 
 
