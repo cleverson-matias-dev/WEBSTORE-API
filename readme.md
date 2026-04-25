@@ -12,7 +12,7 @@ docker cria suas próprias dependências como banco de dados, gateway, mensageri
 
 Abaixo segue uma lista de características e tecnologias usadas nesse projeto: 
 
-[Ver Características](#caracteristicas)
+[Ver Características](#características)
 
 
 ## 🛠 Tecnologias
@@ -43,6 +43,7 @@ Abaixo segue uma lista de características e tecnologias usadas nesse projeto:
 4 . Cria os contêineres [Kong, MySQL, Api] e inicia o servidor com hot reload.
    ```bash
    docker compose up
+   ```
 
 
 ##### Características:
