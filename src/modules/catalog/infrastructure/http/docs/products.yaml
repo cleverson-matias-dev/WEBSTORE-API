@@ -184,14 +184,35 @@ components:
 
     SkuDTO:
       type: object
-      required: [ id, sku_code, quantity, price ]
+      required: [ id, product_id, sku_code, quantity, price, currency, weight, dimensions ]
       properties:
-        id: { type: string, format: uuid }
-        product_id: { type: string, format: uuid }
-        sku_code: { type: string }
-        quantity: { type: integer }
-        price: { type: number }
-        currency: { type: string, default: "BRL" }
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        sku_code:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+        currency:
+          type: string
+          default: "BRL"
+        weight:
+          type: number
+          description: "Peso do SKU em gramas ou kg"
+        dimensions:
+          type: string
+          example: "45x25"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
 
     ProductImageDTO:
       type: object
