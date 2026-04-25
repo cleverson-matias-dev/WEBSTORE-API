@@ -2,7 +2,8 @@
 
 ## Módulos \[identity, catalog, stock]
 
-
+[Ver tecnologias](#características)
+[Instalação dev](#-instalação-e-execução-desenvolvimento)
 
 **Descrição:** Essa api permite o gerenciamento completo de um e-commerce 
 
@@ -11,8 +12,6 @@ com produtos, estoques, pedidos, vendas, notificações e mais. Construida no ec
 docker cria suas próprias dependências como banco de dados, gateway, mensageria e cache.
 
 Abaixo segue uma lista de características e tecnologias usadas nesse projeto: 
-
-[Ver Características](#características)
 
 
 ## 🛠 Tecnologias
