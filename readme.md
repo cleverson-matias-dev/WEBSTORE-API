@@ -46,7 +46,7 @@ Abaixo segue uma lista de características e tecnologias usadas nesse projeto:
    ```
 
 
-##### Características:
+## Características:
 
 
 **DOCUMENTAÇÃO** \[swagger]
