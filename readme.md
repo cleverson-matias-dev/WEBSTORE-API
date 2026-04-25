@@ -1,6 +1,19 @@
-# Webstore API 🚀
+# **Web Store Api \[monolito modular]** 🚀
 
-Api completa para lojas virtuais.
+## Módulos \[identity, catalog, stock]
+
+
+
+**Descrição:** Essa api permite o gerenciamento completo de um e-commerce 
+
+com produtos, estoques, pedidos, vendas, notificações e mais. Construida no ecossistema
+
+docker cria suas próprias dependências como banco de dados, gateway, mensageria e cache.
+
+Abaixo segue uma lista de características e tecnologias usadas nesse projeto: 
+
+[Ver Características](#caracteristicas)
+
 
 ## 🛠 Tecnologias
 - [Node.js](https://nodejs.org)
@@ -30,5 +43,40 @@ Api completa para lojas virtuais.
 4 . Cria os contêineres [Kong, MySQL, Api] e inicia o servidor com hot reload.
    ```bash
    docker compose up
+
+
+##### Características:
+
+
+**DOCUMENTAÇÃO** \[swagger]
+
+**VERSÃO** \[path]
+
+**PADRÃO** \[REST]
+
+**AUTENTICAÇÃO/AUTORIZAÇÃO** \[jwt, roles]
+
+**SEGURANÇA** TLS/HTTPS \[jwt, sanitize-html, zod]
+
+**INPUT VALIDATION** \[zod, sanitize-html]
+
+**RATE LIMIT** \[kong]
+
+**CORS** \[cors]
+
+**TESTES** - UNITARIO INTEGRAÇÃO CONTRATO SEGURANÇA(SAST/DAST) CARGA/PERFORMANCE \[jest]
+
+**MENSAGERIA** - DESACOPLAMENTO TRATAMENTO-ERRO-FILA IDEMPOTÊNCIA MONITORAMENTO \[rabbitMQ]
+
+**OBSERVABILIDADE** - LOG-ESTRUTURADO METRICA TRACING-DISTRIBUIDO ALERTAS \[pino]
+
+**CACHE** - CLIENTE-CDN SERVIDOR INVALIDAÇÃO \[redis]
+
+**SECRET-MANAGERS** - EX-HASHICORP \[]
+
+**CI/CD** \[github-actions]
+
+**HEALTH CHECK** \[rota]
+
    ```
 
