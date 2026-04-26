@@ -43,13 +43,17 @@ describe('SkuUseCases (Unit Tests)', () => {
       category_id: cat.id,
       name: 'produto A',
       description: 'Descrição A',
-      slug: ''
+      slug: '',
+      has_variants: true,
+      product_type: "digital",
+      visibility: "catalog"
     }));
 
     return {
     product_id: prod.id,
     sku_code: 'TSHIRT-BLACK-G',
     price: 50,
+    is_default: "1",
     currency: 'BRL',
     weight: 300,
     dimensions: '10x10x10',
@@ -91,6 +95,7 @@ describe('SkuUseCases (Unit Tests)', () => {
         product_id: 'qualquer um ',
         sku_code: 'TSHIRT-BLACK-G',
         price: 50,
+        is_default: "1",
         currency: 'BRL',
         weight: 300,
         dimensions: '10x10x10',

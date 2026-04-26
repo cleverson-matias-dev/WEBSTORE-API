@@ -1,5 +1,5 @@
 paths:
-  /skus:
+  /catalog/api/v1/skus:
     post:
       operationId: createSku
       summary: Cria um novo SKU
@@ -24,7 +24,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
-  /skus/product/{product_id}:
+  /catalog/api/v1/skus/product/{product_id}:
     get:
       operationId: listSkusByProduct
       summary: Lista SKUs por ID do Produto
@@ -50,7 +50,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalError'
 
-  /skus/{id}:
+  /catalog/api/v1/skus/{id}:
     get:
       operationId: getSkuById
       summary: Busca detalhes de um SKU
@@ -92,7 +92,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalError'
 
-  /skus/{id}/price:
+  /catalog/api/v1/skus/{id}/price:
     patch:
       operationId: updateSkuPrice
       summary: Atualiza o preço de um SKU
@@ -129,7 +129,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalError'
 
-  /skus/{id}/logistics:
+  /catalog/api/v1/skus/{id}/logistics:
     patch:
       operationId: updateSkuLogistics
       summary: Atualiza dados logísticos
@@ -164,6 +164,34 @@ paths:
           $ref: '#/components/responses/BadRequest'
         500:
           $ref: '#/components/responses/InternalError'
+
+  /catalog/api/v1/skus/product/{product_id}/sku_id/{sku_id}/set-default:
+    patch:
+      operationId: setSkuAsDefault
+      summary: Marca esse sku como default para o produto
+      tags: [ SKUs ]
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: sku_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: Sku marcado com sucesso
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/InternalError'
+        404:
+          $ref: '#/components/responses/NotFound'
 
 components:
   responses:

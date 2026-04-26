@@ -8,6 +8,16 @@ export class InMemorySkuRepository implements ISkuRepository {
     this.items.push(sku);
   }
 
+  async markAsDefault(sku_id: string, product_id: string): Promise<void> {
+    this.items = this.items.map(item => {
+      if (item.productId !== product_id) return item;
+
+      item.setDefault(item.id === sku_id);
+      return item;
+    });
+  }
+
+
   async update(sku: SkuDomain): Promise<void> {
     const index = this.items.findIndex((item) => item.id === sku.id);
     if (index !== -1) {

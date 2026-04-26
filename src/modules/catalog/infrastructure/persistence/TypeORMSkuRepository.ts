@@ -20,6 +20,21 @@ implements ISkuRepository {
     this.invalidateCache();
   }
 
+  async markAsDefault(sku_id: string, product_id: string): Promise<void> {
+    await this.repository.manager.transaction( async (transactionManager) => {
+        await transactionManager.update(Sku, 
+          {product_id}, 
+          {is_default: false}
+        );
+
+        await transactionManager.update(Sku, 
+          {id: sku_id},
+          {is_default: true}
+        )
+    })
+    this.invalidateCache();
+  }
+
   async update(sku: SkuDomain): Promise<void> {
     const raw = SkuMapper.toPersistence(sku);
     await this.repository.save(raw);

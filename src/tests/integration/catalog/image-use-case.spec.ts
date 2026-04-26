@@ -13,7 +13,11 @@ const criarProduto = async (categoryRepo: InMemoryCategoryRepository, productRep
         category_id: category.id,
         name: 'Product A',
         description: 'Descrição A',
-        slug: ''
+        slug: '',
+        has_variants: true,
+        product_type: 'digital',
+        visibility: "catalog",
+        brand: "brand"
       }))
 
       return {

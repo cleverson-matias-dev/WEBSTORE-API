@@ -26,6 +26,7 @@ export class SkuUseCases {
     const sku = new SkuDomain({
       productId: input.product_id,
       skuCode: new SkuCode(input.sku_code),
+      is_default: Boolean(input.is_default),
       price: new Price(input.price, input.currency),
       weight: new Weight(input.weight),
       dimensions: input.dimensions,
@@ -48,6 +49,15 @@ export class SkuUseCases {
        throw new AppError('Erro na requisição');
     }
     
+  }
+
+  async markAsDefault(sku_id: string, product_id: string): Promise<void> {
+     try {
+        this.skuRepository.markAsDefault(sku_id, product_id);
+     } catch (error) {
+        console.log(error);
+        throw new AppError('Erro ao definir sku como padrão');
+     }
   }
 
   async getByProductId(productId: string): Promise<SkuDetailsOutputDto[]> {

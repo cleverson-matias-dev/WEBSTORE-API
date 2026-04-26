@@ -1,7 +1,3 @@
-tags:
-- name: Produtos
-  description: Endpoints relacionados ao gerenciamento de produtos
-
 paths:
   /catalog/api/v1/products:
     get:
@@ -17,12 +13,6 @@ paths:
         schema: { type: integer, default: 10 }
       - in: query
         name: name
-        schema: { type: string }
-      - in: query
-        name: slug
-        schema: { type: string }
-      - in: query
-        name: description
         schema: { type: string }
       responses:
         '200':
@@ -87,16 +77,16 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
-    put:
-      operationId: updateProduct
+    patch:
+      operationId: patchProduct
       tags: [ Produtos ]
-      summary: Atualizar dados de um produto
+      summary: Atualizar parcialmente os dados de um produto
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateProductInput'
+              $ref: '#/components/schemas/PatchProductInput'
       responses:
         '200':
           description: Produto atualizado com sucesso.
@@ -104,12 +94,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductOutputDTO'
-        '400':
-          $ref: '#/components/responses/ErrorResponse'
         '404':
           $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
 
     delete:
       operationId: deleteProduct
@@ -120,8 +106,6 @@ paths:
           description: Removido com sucesso.
         '404':
           $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
 
 components:
   responses:
@@ -129,49 +113,55 @@ components:
       description: Erro de validação
       content:
         application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponseDTO'
+          schema: { $ref: '#/components/schemas/ErrorResponseDTO' }
     NotFound:
       description: Não encontrado
       content:
         application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponseDTO'
+          schema: { $ref: '#/components/schemas/ErrorResponseDTO' }
     InternalError:
       description: Erro interno
       content:
         application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponseDTO'
+          schema: { $ref: '#/components/schemas/ErrorResponseDTO' }
 
   schemas:
     ErrorResponseDTO:
       type: object
       required: [ status, errors ]
       properties:
-        status:
-          type: string
-          example: error
-        errors:
-          type: array
-          items:
-            type: string
+        status: { type: string, example: error }
+        errors: { type: array, items: { type: string } }
 
     CreateProductInput:
       type: object
-      required: [ name, description, category_id ]
+      required: [ name, description, category_id, product_type, visibility, has_variants ]
       properties:
         name: { type: string, minLength: 2 }
-        description: { type: string, minLength: 2 }
+        description: { type: string }
+        short_description: { type: string }
         category_id: { type: string, format: uuid }
+        collection_id: { type: string, format: uuid, nullable: true }
+        brand: { type: string }
+        slug: { type: string }
+        product_type: { type: string, enum: [ simple, variable ] }
+        visibility: { type: string, enum: [ catalog, hidden, search ] }
+        has_variants: { type: boolean }
+        video_url: { type: string, format: uri }
+        meta_description_title: { type: string }
 
-    UpdateProductInput:
+    PatchProductInput:
       type: object
-      required: [ name, description, category_id ]
       properties:
         name: { type: string }
         description: { type: string }
+        short_description: { type: string }
+        brand: { type: string }
         category_id: { type: string, format: uuid }
+        visibility: { type: string, enum: [ catalog, hidden, search ] }
+        product_type: { type: string, enum: [ simple, variable ] }
+        video_url: { type: string, format: uri }
+        meta_description_title: { type: string }
 
     CategoryDTO:
       type: object
@@ -182,69 +172,48 @@ components:
         slug: { type: string }
         parent_id: { type: string, format: uuid, nullable: true }
 
-    SkuDTO:
-      type: object
-      required: [ id, product_id, sku_code, quantity, price, currency, weight, dimensions ]
-      properties:
-        id:
-          type: string
-          format: uuid
-        product_id:
-          type: string
-          format: uuid
-        sku_code:
-          type: string
-        quantity:
-          type: integer
-        price:
-          type: number
-        currency:
-          type: string
-          default: "BRL"
-        weight:
-          type: number
-          description: "Peso do SKU em gramas ou kg"
-        dimensions:
-          type: string
-          example: "45x25"
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-
-    ProductImageDTO:
-      type: object
-      required: [ url, ordem ]
-      properties:
-        product_id: { type: string, format: uuid }
-        url: { type: string, format: uri }
-        ordem: { type: integer }
-
     ProductOutputDTO:
       type: object
-      required: [ id, name, slug, description, category, images, skus ] # Images e SKUs são opcionais
+      required: [ id, name, slug, description, category, category_id, images, skus, has_variants, product_type, visibility, created_at ]
       properties:
         id: { type: string, format: uuid }
         name: { type: string }
         slug: { type: string }
         description: { type: string }
+        short_description: { type: string, nullable: true }
+        category_id: { type: string, format: uuid }
         category: { $ref: '#/components/schemas/CategoryDTO' }
-        images:
-          type: array
-          items: { $ref: '#/components/schemas/ProductImageDTO' }
-        skus:
-          type: array
-          items: { $ref: '#/components/schemas/SkuDTO' }
+        brand: { type: string, nullable: true }
+        product_type: { type: string }
+        visibility: { type: string }
+        has_variants: { type: boolean }
+        video_url: { type: string, format: uri, nullable: true }
+        meta_description_title: { type: string, nullable: true }
+        images: { type: array, items: { $ref: '#/components/schemas/ProductImageDTO' } }
+        skus: { type: array, items: { $ref: '#/components/schemas/SkuDTO' } }
+        created_at: { type: string, format: date-time }
+
+    SkuDTO:
+      type: object
+      required: [ id, product_id, sku_code, price ]
+      properties:
+        id: { type: string, format: uuid }
+        product_id: { type: string, format: uuid }
+        sku_code: { type: string }
+        price: { type: number }
+
+    ProductImageDTO:
+      type: object
+      required: [ url, ordem ]
+      properties:
+        url: { type: string, format: uri }
+        ordem: { type: integer }
 
     PagedProductOutput:
       type: object
       required: [ items, total, page, limit ]
       properties:
-        items:
-          type: array
-          items: { $ref: '#/components/schemas/ProductOutputDTO' }
+        items: { type: array, items: { $ref: '#/components/schemas/ProductOutputDTO' } }
         total: { type: integer }
         page: { type: integer }
         limit: { type: integer }

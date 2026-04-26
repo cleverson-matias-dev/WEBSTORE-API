@@ -71,7 +71,7 @@ describe("Product Use Cases", () => {
     });
 
     describe("UpdateProductUseCase", () => {
-        it("deve atualizar o nome e o slug do produto", async () => {
+        it("deve atualizar o nome sem alterar slug do produto", async () => {
             // Primeiro cria um produto
             const created = await createProductUseCase.execute({
                 name: "Nome Antigo",
@@ -81,13 +81,14 @@ describe("Product Use Cases", () => {
 
             const updateInput = {
                 id: created.id,
-                name: "Nome Novo"
+                name: "Nome Novo",
+                slug: "nome-novo"
             };
 
             const result = await updateProductUseCase.execute(updateInput);
 
             expect(result.name).toBe("Nome Novo");
-            expect(result.slug).toBe("nome-novo");
+            expect(result.slug).toBe("nome-antigo");
         });
 
         it("deve lançar erro ao tentar atualizar produto inexistente", async () => {
