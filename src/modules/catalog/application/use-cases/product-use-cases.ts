@@ -1,5 +1,5 @@
 import { CreateProductInputDTO, ProductOutputDTO, UpdateProductInputDTO } from "../dtos/product-dtos";
-import { Product } from "../../domain/entities/product.entity";
+import { Product, type ProductType, type Visibility } from "../../domain/entities/product.entity";
 import { IProductRepository, PagedProductOutput, ProductFilter } from "../interfaces/repository/IProductRepository";
 import { ProductMapper } from "../dtos/product-mappers";
 import { AppError } from "@shared/errors/AppError";
@@ -17,11 +17,21 @@ export class CreateProductUseCase {
     const category_exists = await this.categoryRepository.findBy(input.category_id);
     if(!category_exists) throw new AppError('Categoria não existe', 404);
 
+    
+    
     const product = Product.create({
       name: input.name,
       description: input.description,
       category_id: input.category_id,
-      slug: "" 
+      slug: "",
+      has_variants: Boolean(input.has_variants),
+      product_type: input.product_type as ProductType,
+      visibility: input.visibility as Visibility,
+      brand: input.brand,
+      collection_id: input.collection_id,
+      meta_description_title: input.meta_description_title,
+      short_description: input.short_description,
+      video_url: input.video_url
     });
 
     try {
@@ -64,8 +74,6 @@ export class ListProductsUseCase {
 
     const stockData = await this.stockService.getStocksBySkus(skus);
     const stockMap = new Map(stockData.map(s=>[s.sku, s.quantity]));
-
-    console.log(stockMap)
 
     const updatedProducts = products.items.map(product => {
       return {

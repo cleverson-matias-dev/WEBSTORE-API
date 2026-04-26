@@ -30,6 +30,12 @@ export class SkuController {
     res.status(200).json(output);
   }
 
+  async setDefaultSku(req: Request, res: Response) {
+     const { sku_id, product_id } = req.params;
+     await this.skuUseCases.markAsDefault(sku_id as string, product_id as string);
+     res.status(204).send();
+  }
+
   async updateLogistics(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const { weight, dimensions } = req.body;

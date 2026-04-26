@@ -28,6 +28,8 @@ export interface ISkuRepository {
    */
   findByProductId(productId: string): Promise<SkuDomain[]>;
 
+  markAsDefault(sku_id: string, product_id: string): Promise<void>;
+
   /**
    * Remove um SKU do sistema.
    */

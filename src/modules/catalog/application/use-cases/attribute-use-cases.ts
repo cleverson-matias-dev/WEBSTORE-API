@@ -53,8 +53,7 @@ export class saveAttributeUC {
         const exists = await this.repository.findByName(dto.name);
         if(exists) throw new AppError('Attributo já existe', 409);
 
-        const name = new AttributeName(dto.name);
-        const attribute = new Attribute({ name: name });
+        const attribute = Attribute.create(dto.name);
         try {
             const saved = await this.repository.save(attribute);
             return AttributeMapper.toDTO(saved);

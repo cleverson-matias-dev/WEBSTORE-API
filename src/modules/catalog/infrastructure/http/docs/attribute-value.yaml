@@ -1,6 +1,7 @@
 paths:
   /catalog/api/v1/sku-attribute-values:
     post:
+      operationId: createSkuAttributeValue
       summary: Associa um atributo a um SKU
       tags: [ SKU Attribute Values ]
       requestBody:
@@ -19,7 +20,7 @@ paths:
         400:
           $ref: '#/components/responses/BadRequestError'
         409:
-          description: Conflito - Atributo já definido para este SKU
+          description: Conflito
           content:
             application/json:
               schema:
@@ -29,6 +30,7 @@ paths:
 
   /catalog/api/v1/sku-attribute-values/sku/{skuId}:
     get:
+      operationId: listSkuAttributeValuesBySku
       summary: Lista todos os atributos de um SKU específico
       tags: [ SKU Attribute Values ]
       parameters:
@@ -54,6 +56,7 @@ paths:
 
   /catalog/api/v1/sku-attribute-values/{id}:
     put:
+      operationId: updateSkuAttributeValue
       summary: Atualiza o valor de um atributo de SKU
       tags: [ SKU Attribute Values ]
       parameters:
@@ -69,6 +72,7 @@ paths:
           application/json:
             schema:
               type: object
+              required: [ new_value ] # Garante que não venha undefined no front
               properties:
                 new_value:
                   type: string
@@ -80,19 +84,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SkuAttributeValueResponseDTO'
-        400:
-          $ref: '#/components/responses/BadRequestError'
         404:
-          description: Atributo não encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponseDTO'
+          $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalServerError'
 
     delete:
-      summary: Remove a associação de um atributo com um SKU
+      operationId: deleteSkuAttributeValue
+      summary: Remove a associação de um atributo
       tags: [ SKU Attribute Values ]
       parameters:
       - name: id
@@ -104,14 +103,8 @@ paths:
       responses:
         204:
           description: Removido com sucesso
-        400:
-          $ref: '#/components/responses/BadRequestError'
         404:
-          description: Atributo não encontrado para remoção
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponseDTO'
+          $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalServerError'
 
@@ -120,6 +113,7 @@ components:
     CreateSkuAttributeValueRequestDTO:
       type: object
       required:
+      # Campos obrigatórios no TS
       - sku_id
       - attribute_id
       - value
@@ -136,6 +130,12 @@ components:
 
     SkuAttributeValueResponseDTO:
       type: object
+      required:
+      - id
+      - sku_id
+      - attribute_id
+      - value
+      - updated_at
       properties:
         id:
           type: string
@@ -154,6 +154,7 @@ components:
 
     ErrorResponseDTO:
       type: object
+      required: [ status, errors ]
       properties:
         status:
           type: string
@@ -162,17 +163,22 @@ components:
           type: array
           items:
             type: string
-          example: [ "Mensagem de erro detalhada aqui" ]
 
   responses:
     BadRequestError:
-      description: Erro de validação ou requisição malformada
+      description: Erro de validação
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    NotFoundError:
+      description: Registro não encontrado
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponseDTO'
     InternalServerError:
-      description: Erro interno do servidor
+      description: Erro interno
       content:
         application/json:
           schema:

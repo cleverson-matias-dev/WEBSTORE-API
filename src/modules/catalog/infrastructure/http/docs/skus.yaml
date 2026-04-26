@@ -1,6 +1,7 @@
 paths:
-  /skus:
+  /catalog/api/v1/skus:
     post:
+      operationId: createSku
       summary: Cria um novo SKU
       tags: [ SKUs ]
       requestBody:
@@ -10,21 +11,22 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateSkuInputDto'
       responses:
-        201:
+        '201':
           description: SKU criado com sucesso
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SkuDetailsOutputDto'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        409:
+        '409':
           $ref: '#/components/responses/Conflict'
-        500:
+        '500':
           $ref: '#/components/responses/InternalError'
 
-  /skus/product/{product_id}:
+  /catalog/api/v1/skus/product/{product_id}:
     get:
+      operationId: listSkusByProduct
       summary: Lista SKUs por ID do Produto
       tags: [ SKUs ]
       parameters:
@@ -48,8 +50,9 @@ paths:
         500:
           $ref: '#/components/responses/InternalError'
 
-  /skus/{id}:
+  /catalog/api/v1/skus/{id}:
     get:
+      operationId: getSkuById
       summary: Busca detalhes de um SKU
       tags: [ SKUs ]
       parameters:
@@ -71,6 +74,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalError'
     delete:
+      operationId: deleteSku
       summary: Remove um SKU
       tags: [ SKUs ]
       parameters:
@@ -88,8 +92,9 @@ paths:
         500:
           $ref: '#/components/responses/InternalError'
 
-  /skus/{id}/price:
+  /catalog/api/v1/skus/{id}/price:
     patch:
+      operationId: updateSkuPrice
       summary: Atualiza o preço de um SKU
       tags: [ SKUs ]
       parameters:
@@ -100,10 +105,12 @@ paths:
           type: string
           format: uuid
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [ new_price ]
               properties:
                 new_price:
                   type: number
@@ -122,9 +129,10 @@ paths:
         500:
           $ref: '#/components/responses/InternalError'
 
-  /skus/{id}/logistics:
+  /catalog/api/v1/skus/{id}/logistics:
     patch:
-      summary: Atualiza dados logísticos (peso/dimensões)
+      operationId: updateSkuLogistics
+      summary: Atualiza dados logísticos
       tags: [ SKUs ]
       parameters:
       - name: id
@@ -134,10 +142,12 @@ paths:
           type: string
           format: uuid
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [ weight, dimensions ]
               properties:
                 weight:
                   type: number
@@ -155,28 +165,56 @@ paths:
         500:
           $ref: '#/components/responses/InternalError'
 
+  /catalog/api/v1/skus/product/{product_id}/sku_id/{sku_id}/set-default:
+    patch:
+      operationId: setSkuAsDefault
+      summary: Marca esse sku como default para o produto
+      tags: [ SKUs ]
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: sku_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: Sku marcado com sucesso
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/InternalError'
+        404:
+          $ref: '#/components/responses/NotFound'
+
 components:
   responses:
     BadRequest:
-      description: Erro de validação ou requisição malformada
+      description: Erro de validação
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponseDTO'
     NotFound:
-      description: Recurso não encontrado
+      description: Não encontrado
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponseDTO'
     Conflict:
-      description: Conflito de dados (ex. SKU Code já existe)
+      description: Conflito de dados
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponseDTO'
     InternalError:
-      description: Erro interno no servidor
+      description: Erro interno
       content:
         application/json:
           schema:
@@ -198,6 +236,7 @@ components:
 
     SkuDetailsOutputDto:
       type: object
+      required: [ id, product_id, sku_code, quantity, price, currency, weight, dimensions, created_at, updated_at ]
       properties:
         id: { type: string, format: uuid }
         product_id: { type: string, format: uuid }
@@ -212,12 +251,11 @@ components:
 
     ErrorResponseDTO:
       type: object
+      required: [ status, errors ]
       properties:
         status:
           type: string
           example: error
         errors:
           type: array
-          items:
-            type: string
-          example: [ "Mensagens de erro detalhadas aqui" ]
+          items: { type: string }

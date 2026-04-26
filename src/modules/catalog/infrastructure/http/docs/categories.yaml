@@ -1,25 +1,25 @@
-tags:
-- name: Categories
-  description: Gerenciamento de categorias e subcategorias
-
 paths:
   /catalog/api/v1/categories:
     get:
+      operationId: listCategories
       tags: [ Categories ]
       summary: Lista categorias paginadas
       parameters:
       - name: name
         in: query
+        required: false
         schema:
           type: string
       - name: limit
         in: query
         schema:
-          type: string
+          type: integer # Alterado para integer para tipagem correta no TS
+          default: 10
       - name: page
         in: query
         schema:
-          type: string
+          type: integer # Alterado para integer para tipagem correta no TS
+          default: 1
       responses:
         200:
           description: Lista de categorias retornada com sucesso
@@ -33,6 +33,7 @@ paths:
           $ref: '#/components/responses/InternalError'
 
     post:
+      operationId: createCategory
       tags: [ Categories ]
       summary: Cria uma nova categoria
       requestBody:
@@ -51,7 +52,7 @@ paths:
         400:
           $ref: '#/components/responses/BadRequest'
         409:
-          description: Conflito (Categoria ou Slug já existente)
+          description: Conflito
           content:
             application/json:
               schema:
@@ -61,6 +62,7 @@ paths:
 
   /catalog/api/v1/categories/{id}:
     get:
+      operationId: getCategoryById
       tags: [ Categories ]
       summary: Busca categoria por ID
       parameters:
@@ -78,11 +80,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/CategoryDTO'
         404:
-          description: Categoria não encontrada
+          $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalError'
 
     patch:
+      operationId: updateCategory
       tags: [ Categories ]
       summary: Atualiza nome de uma categoria
       parameters:
@@ -98,6 +101,7 @@ paths:
           application/json:
             schema:
               type: object
+              required: [ name ] # Garante que o body não seja vazio no TS
               properties:
                 name:
                   type: string
@@ -108,11 +112,12 @@ paths:
         400:
           $ref: '#/components/responses/BadRequest'
         404:
-          description: Categoria não encontrada
+          $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalError'
 
     delete:
+      operationId: deleteCategory
       tags: [ Categories ]
       summary: Remove uma categoria
       parameters:
@@ -126,9 +131,9 @@ paths:
         204:
           description: Removido com sucesso
         404:
-          description: Categoria não encontrada
+          $ref: '#/components/responses/NotFoundError'
         409:
-          description: Categoria possui produtos vinculados
+          description: Conflito (vínculos existentes)
           content:
             application/json:
               schema:
@@ -139,13 +144,19 @@ paths:
 components:
   responses:
     BadRequest:
-      description: Erro de validação nos dados de entrada
+      description: Erro de validação
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+    NotFoundError:
+      description: Recurso não encontrado
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponseDTO'
     InternalError:
-      description: Erro interno do servidor
+      description: Erro interno
       content:
         application/json:
           schema:
@@ -154,6 +165,7 @@ components:
   schemas:
     CategoryDTO:
       type: object
+      required: [ id, name, slug, created_at, updated_at ] # parent_id fica fora pois pode ser null/ausente
       properties:
         id: { type: string, format: uuid }
         name: { type: string }
@@ -164,7 +176,7 @@ components:
 
     CreateCategoryDTO:
       type: object
-      required: [ name ]
+      required: [ name, slug ] # Adicionado slug como obrigatório se sua API exigir
       properties:
         name: { type: string, minLength: 3 }
         parent_id: { type: string, format: uuid, nullable: true }
@@ -172,6 +184,7 @@ components:
 
     PaginatedCategoriesDTO:
       type: object
+      required: [ items, total, page, limit ] # Garante data.items.map no front sem erro
       properties:
         items:
           type: array
@@ -183,6 +196,7 @@ components:
 
     ErrorResponseDTO:
       type: object
+      required: [ status, errors ]
       properties:
         status:
           type: string

@@ -3,7 +3,7 @@ import { TypeormProductRepository } from "../../persistence/TypeORMProductReposi
 import { ProductController } from "../contrrollers/ProductController"; 
 import { CreateProductUseCase, DeleteProductUseCase, GetProductUseCase, ListProductsUseCase, UpdateProductUseCase } from "@modules/catalog/application/use-cases/product-use-cases";
 import { validate } from "@shared/middlewares/validator";
-import { createProductSchema, filterProductSchema, paramsUuidSchema } from "../validation-schemas/product-schema";
+import { createProductSchema, filterProductSchema, paramsUuidSchema, updateProductSchema } from "../validation-schemas/product-schema";
 import { TypeORMCategoryRepository } from "../../persistence/TypeORMCategoryRepository";
 import { authorize, UserRole } from "@shared/middlewares/authorization-middleware";
 import { StockServiceAdapter } from "../../external-services/stock-adapter-service";
@@ -23,10 +23,28 @@ const controller = new ProductController(
   new DeleteProductUseCase(repository)
 );
 
-productRoutes.post("/", authorize([UserRole.ADMIN]), validate(createProductSchema), (req, res) => controller.create(req, res));
-productRoutes.get("/", validate(filterProductSchema), (req, res) => controller.list(req, res));
-productRoutes.get("/:id", validate(paramsUuidSchema), (req, res) => controller.getById(req, res));
-productRoutes.put("/:id", authorize([UserRole.ADMIN]), validate(paramsUuidSchema), (req, res) => controller.update(req, res));
-productRoutes.delete("/:id", authorize([UserRole.ADMIN]), validate(paramsUuidSchema), (req, res) => controller.delete(req, res));
+productRoutes.post("/", 
+  authorize([UserRole.ADMIN]), 
+  validate(createProductSchema), 
+  (req, res) => controller.create(req, res));
+
+productRoutes.get("/", 
+  validate(filterProductSchema), 
+  (req, res) => controller.list(req, res));
+
+productRoutes.get("/:id", 
+  validate(paramsUuidSchema), 
+  (req, res) => controller.getById(req, res));
+
+productRoutes.patch("/:id", 
+  authorize([UserRole.ADMIN]), 
+  validate(paramsUuidSchema),
+  validate(updateProductSchema),
+  (req, res) => controller.update(req, res));
+
+productRoutes.delete("/:id", 
+  authorize([UserRole.ADMIN]), 
+  validate(paramsUuidSchema), 
+  (req, res) => controller.delete(req, res));
 
 export { productRoutes };

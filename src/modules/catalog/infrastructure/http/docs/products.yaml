@@ -1,14 +1,9 @@
-tags:
-- name: Produtos
-  description: Endpoints relacionados ao gerenciamento de produtos
-
 paths:
-  /produtos:
+  /catalog/api/v1/products:
     get:
-      tags:
-      - Produtos
+      operationId: listProducts
+      tags: [ Produtos ]
       summary: Listar produtos de forma paginada
-      description: Retorna uma lista de produtos com suporte a paginação e filtros por nome, slug ou descrição.
       parameters:
       - in: query
         name: page
@@ -19,15 +14,9 @@ paths:
       - in: query
         name: name
         schema: { type: string }
-      - in: query
-        name: slug
-        schema: { type: string }
-      - in: query
-        name: description
-        schema: { type: string }
       responses:
         '200':
-          description: Lista de produtos recuperada com sucesso.
+          description: Lista de produtos recuperada.
           content:
             application/json:
               schema:
@@ -38,10 +27,9 @@ paths:
           $ref: '#/components/responses/InternalError'
 
     post:
-      tags:
-      - Produtos
+      operationId: createProduct
+      tags: [ Produtos ]
       summary: Criar um novo produto
-      description: Registra um novo produto no catálogo e gera automaticamente um slug baseado no nome.
       requestBody:
         required: true
         content:
@@ -54,11 +42,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductOutput'
+                $ref: '#/components/schemas/ProductOutputDTO'
         '400':
           $ref: '#/components/responses/ErrorResponse'
         '409':
-          description: Conflito - Produto com este nome já existe.
+          description: Conflito
           content:
             application/json:
               schema:
@@ -66,7 +54,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
-  /produtos/{id}:
+  /catalog/api/v1/products/{id}:
     parameters:
     - name: id
       in: path
@@ -74,218 +62,158 @@ paths:
       schema: { type: string, format: uuid }
 
     get:
-      tags:
-      - Produtos
+      operationId: getProductById
+      tags: [ Produtos ]
       summary: Obter detalhes de um produto
-      description: Retorna os dados completos de um produto específico através do seu ID (UUID).
       responses:
         '200':
-          description: Dados do produto retornados com sucesso.
+          description: Dados do produto retornados.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductOutput'
+                $ref: '#/components/schemas/ProductOutputDTO'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalError'
 
-    put:
-      tags:
-      - Produtos
-      summary: Atualizar dados de um produto
-      description: Permite a atualização parcial ou total dos dados de um produto. Se o nome for alterado, o slug será atualizado.
+    patch:
+      operationId: patchProduct
+      tags: [ Produtos ]
+      summary: Atualizar parcialmente os dados de um produto
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateProductInput'
+              $ref: '#/components/schemas/PatchProductInput'
       responses:
         '200':
           description: Produto atualizado com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductOutput'
-        '400':
-          $ref: '#/components/responses/ErrorResponse'
+                $ref: '#/components/schemas/ProductOutputDTO'
         '404':
           $ref: '#/components/responses/NotFound'
-        '409':
-          description: Tentativa de duplicar nome de produto existente.
-        '500':
-          $ref: '#/components/responses/InternalError'
 
     delete:
-      tags:
-      - Produtos
+      operationId: deleteProduct
+      tags: [ Produtos ]
       summary: Remover um produto do catálogo
-      description: Remove permanentemente um produto através do seu ID.
       responses:
         '204':
-          description: Produto removido com sucesso (sem conteúdo).
+          description: Removido com sucesso.
         '404':
           $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
 
 components:
   responses:
     ErrorResponse:
-      description: Erro de validação ou requisição inválida.
+      description: Erro de validação
       content:
         application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponseDTO'
+          schema: { $ref: '#/components/schemas/ErrorResponseDTO' }
     NotFound:
-      description: O recurso solicitado não foi encontrado.
+      description: Não encontrado
       content:
         application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponseDTO'
+          schema: { $ref: '#/components/schemas/ErrorResponseDTO' }
     InternalError:
-      description: Ocorreu um erro interno inesperado no servidor.
+      description: Erro interno
       content:
         application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponseDTO'
+          schema: { $ref: '#/components/schemas/ErrorResponseDTO' }
 
   schemas:
     ErrorResponseDTO:
       type: object
+      required: [ status, errors ]
       properties:
-        status:
-          type: string
-          example: error
-        errors:
-          type: array
-          items:
-            type: string
-          example: [ "Mensagem de erro detalhada" ]
+        status: { type: string, example: error }
+        errors: { type: array, items: { type: string } }
 
     CreateProductInput:
       type: object
-      required: [ name, description, category_id ]
+      required: [ name, description, category_id, product_type, visibility, has_variants ]
       properties:
-        name: { type: string, minLength: 2, example: "Camiseta Dry Fit" }
-        description: { type: string, minLength: 2, example: "Tecido respirável para treinos" }
-        category_id: { type: string, format: uuid, example: "550e8400-e29b-41d4-a716-446655440000" }
-
-    UpdateProductInput:
-      type: object
-      properties:
-        name: { type: string, example: "Camiseta Dry Fit Pro" }
-        description: { type: string, example: "Nova descrição atualizada" }
+        name: { type: string, minLength: 2 }
+        description: { type: string }
+        short_description: { type: string }
         category_id: { type: string, format: uuid }
+        collection_id: { type: string, format: uuid, nullable: true }
+        brand: { type: string }
+        slug: { type: string }
+        product_type: { type: string, enum: [ simple, variable ] }
+        visibility: { type: string, enum: [ catalog, hidden, search ] }
+        has_variants: { type: boolean }
+        video_url: { type: string, format: uri }
+        meta_description_title: { type: string }
 
-    ProductOutput:
+    PatchProductInput:
       type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        short_description: { type: string }
+        brand: { type: string }
+        category_id: { type: string, format: uuid }
+        visibility: { type: string, enum: [ catalog, hidden, search ] }
+        product_type: { type: string, enum: [ simple, variable ] }
+        video_url: { type: string, format: uri }
+        meta_description_title: { type: string }
+
+    CategoryDTO:
+      type: object
+      required: [ id, name, slug ]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        slug: { type: string }
+        parent_id: { type: string, format: uuid, nullable: true }
+
+    ProductOutputDTO:
+      type: object
+      required: [ id, name, slug, description, category, category_id, images, skus, has_variants, product_type, visibility, created_at ]
       properties:
         id: { type: string, format: uuid }
         name: { type: string }
         slug: { type: string }
         description: { type: string }
-        category_id: { type: string }
+        short_description: { type: string, nullable: true }
+        category_id: { type: string, format: uuid }
+        category: { $ref: '#/components/schemas/CategoryDTO' }
+        brand: { type: string, nullable: true }
+        product_type: { type: string }
+        visibility: { type: string }
+        has_variants: { type: boolean }
+        video_url: { type: string, format: uri, nullable: true }
+        meta_description_title: { type: string, nullable: true }
+        images: { type: array, items: { $ref: '#/components/schemas/ProductImageDTO' } }
+        skus: { type: array, items: { $ref: '#/components/schemas/SkuDTO' } }
         created_at: { type: string, format: date-time }
-
-    PagedProductOutput:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProductOutputDTO'
-        total: { type: integer, example: 50 }
-        page: { type: integer, example: 1 }
-        limit: { type: integer, example: 10 }
-
-    CategoryDTO:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        slug:
-          type: string
-        parent_id:
-          type: string
-          nullable: true
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
 
     SkuDTO:
       type: object
+      required: [ id, product_id, sku_code, price ]
       properties:
-        id:
-          type: string
-          format: uuid
-        product_id:
-          type: string
-          format: uuid
-        sku_code:
-          type: string
-        quantity:
-          type: integer
-          description: Saldo consolidado vindo do serviço de estoque
-        price:
-          type: number
-          format: float
-        currency:
-          type: string
-          example: "BRL"
-        weight:
-          type: number
-        dimensions:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
+        id: { type: string, format: uuid }
+        product_id: { type: string, format: uuid }
+        sku_code: { type: string }
+        price: { type: number }
 
     ProductImageDTO:
       type: object
+      required: [ url, ordem ]
       properties:
-        product_id:
-          type: string
-          format: uuid
-        url:
-          type: string
-          format: uri
-        ordem:
-          type: integer
-          description: Ordem de exibição da imagem
-        created_at:
-          type: string
-          format: date-time
+        url: { type: string, format: uri }
+        ordem: { type: integer }
 
-    ProductOutputDTO:
+    PagedProductOutput:
       type: object
+      required: [ items, total, page, limit ]
       properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        slug:
-          type: string
-        description:
-          type: string
-        images:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProductImageDTO'
-        category:
-          $ref: '#/components/schemas/CategoryDTO'
-        skus:
-          type: array
-          items:
-            $ref: '#/components/schemas/SkuDTO'
+        items: { type: array, items: { $ref: '#/components/schemas/ProductOutputDTO' } }
+        total: { type: integer }
+        page: { type: integer }
+        limit: { type: integer }

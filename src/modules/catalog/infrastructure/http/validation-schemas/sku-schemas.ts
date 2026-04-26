@@ -4,6 +4,7 @@ export const createSkuSchema = z.object({
   body: z.object({
      product_id: z.uuid('uuid inválido'),
      sku_code: z.string('sku code inválido').min(1),
+     is_default: z.string('defaut flag inválida 0 ou 1'),
      warehouse_id: z.uuid('warehouse Id obrigatório'),
      initial_quantity: z.number('quantidade inicial inválido').nonnegative().default(0),
      price: z.number('preco inválido').nonnegative(),
@@ -17,6 +18,13 @@ export type CreateSkuSchema = z.infer<typeof createSkuSchema>['body'];
 export const paramUuidSchema = z.object({
   params: z.object({
      id: z.uuid('uuid inválido'),
+  })
+});
+
+export const serDefaultSkuSchema = z.object({
+  params: z.object({
+     product_id: z.uuid('uuid inválido [product_id]'),
+     sku_id: z.uuid('uuid inválido [sku_id]'),
   })
 });
 

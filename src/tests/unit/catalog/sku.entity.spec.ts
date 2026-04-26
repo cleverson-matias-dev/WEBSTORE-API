@@ -7,7 +7,8 @@ describe('SkuDomain (Entity)', () => {
     skuCode: new SkuCode('TSHIRT-BLUE-P'),
     price: new Price(99.9, 'BRL'),
     weight: new Weight(200),
-    dimensions: '10x20x30'
+    dimensions: '10x20x30',
+    is_default: true
   });
 
   describe('Sucesso', () => {
