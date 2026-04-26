@@ -1,9 +1,10 @@
 import { CreateProductInputDTO, ProductOutputDTO, UpdateProductInputDTO } from "../dtos/product-dtos";
-import { Product } from "../../domain/entities/product.entity";
+import { Product, type ProductType, type Visibility } from "../../domain/entities/product.entity";
 import { IProductRepository, PagedProductOutput, ProductFilter } from "../interfaces/repository/IProductRepository";
 import { ProductMapper } from "../dtos/product-mappers";
 import { AppError } from "@shared/errors/AppError";
 import { ICategoryRepository } from "../interfaces/repository/ICategoryRepository";
+import type { IStockService } from "../interfaces/repository/stock-service.port";
 
 export class CreateProductUseCase {
   constructor(private productRepository: IProductRepository, private categoryRepository: ICategoryRepository) {}
@@ -16,11 +17,21 @@ export class CreateProductUseCase {
     const category_exists = await this.categoryRepository.findBy(input.category_id);
     if(!category_exists) throw new AppError('Categoria não existe', 404);
 
+    
+    
     const product = Product.create({
       name: input.name,
       description: input.description,
       category_id: input.category_id,
-      slug: "" 
+      slug: "",
+      has_variants: Boolean(input.has_variants),
+      product_type: input.product_type as ProductType,
+      visibility: input.visibility as Visibility,
+      brand: input.brand,
+      collection_id: input.collection_id,
+      meta_description_title: input.meta_description_title,
+      short_description: input.short_description,
+      video_url: input.video_url
     });
 
     try {
@@ -49,14 +60,39 @@ export class GetProductUseCase {
 }
 
 export class ListProductsUseCase {
-  constructor(private productRepository: IProductRepository) {}
+  constructor(private productRepository: IProductRepository, private stockService: IStockService) {}
 
   async execute(
     page?: number, 
     limit?: number, 
     filter?: ProductFilter
   ): Promise<PagedProductOutput> {
-    return await this.productRepository.allPaginated(page, limit, filter);
+    const products = await this.productRepository.allPaginated(page, limit, filter);
+    const skus = products.items?.flatMap(item => 
+      item.skus?.map(sku => sku.id) ?? []
+    ) ?? [];
+
+    const stockData = await this.stockService.getStocksBySkus(skus);
+    const stockMap = new Map(stockData.map(s=>[s.sku, s.quantity]));
+
+    const updatedProducts = products.items.map(product => {
+      return {
+        ...product,
+        skus: (product.skus || []).map(sku => {
+          return {
+            ...sku,
+            quantity: stockMap.get(sku.id) ?? 0
+          }
+        })
+      }
+    });
+
+    return {
+      items: updatedProducts,
+      page: products.page,
+      limit: products.limit,
+      total: products.total,
+    }
   }
 }
 

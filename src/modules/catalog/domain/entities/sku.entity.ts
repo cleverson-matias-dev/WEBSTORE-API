@@ -3,6 +3,7 @@ import { Price, SkuCode, Weight } from "../value-objects/sku.vo";
 export interface SkuProps {
   productId: string;
   skuCode: SkuCode;
+  is_default: boolean;
   price: Price;
   weight: Weight;
   dimensions: string;
@@ -26,6 +27,10 @@ export class SkuDomain {
     this.touch();
   }
 
+  public setDefault(flag: boolean): void {
+    this.props.is_default = flag
+  }
+
   public updateLogistics(weight: Weight, dimensions: string): void {
     this.props.weight = weight;
     this.props.dimensions = dimensions;
@@ -40,6 +45,7 @@ export class SkuDomain {
     return {
       id: this._id,
       skuCode: this.props.skuCode.val,
+      is_default: this.props.is_default,
       productId: this.props.productId,
       price: this.props.price.val,
       currency: this.props.price.curr,
@@ -54,6 +60,7 @@ export class SkuDomain {
   get id() { return this._id; }
   get productId() { return this.props.productId; }
   get skuCode() { return this.props.skuCode.val; }
+  get is_default() { return String(this.props.is_default) }
   get price() { return this.props.price.val; }
   get weight() { return this.props.weight.val; }
   get dimensions() { return this.props.dimensions; }

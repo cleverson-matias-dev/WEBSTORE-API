@@ -6,6 +6,9 @@ describe("Product Domain Entity", () => {
     description: "Descrição do produto teste",
     category_id: "782f0d9c-1234-4321-8888-1234567890ab",
     slug: "",
+    has_variants: false,
+    product_type: "digital",
+    visibility: "catalog",
     ...overrides,
   });
 
@@ -32,6 +35,7 @@ describe("Product Domain Entity", () => {
     
     product.update({
       name: "Novo Nome do Produto",
+      slug: "novo-nome-do-produto",
       description: "Nova descrição"
     });
 

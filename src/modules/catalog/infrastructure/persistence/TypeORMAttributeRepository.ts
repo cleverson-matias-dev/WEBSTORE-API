@@ -15,47 +15,46 @@ export class TypeORMAttributeRepository
     protected readonly CACHE_TAG = "attributes";
 
     private toDomain(val: AttributeEntity): Attribute {
-        return new Attribute({
-            id: val.id,
+        return Attribute.restore(val.id, {
             name: new AttributeName(val.name),
-            created_at: val.created_at,
-            updated_at: val.updated_at
+            createdAt: val.created_at,
+            updatedAt: val.updated_at
         });
     }
 
     async save(attribute: Attribute): Promise<Attribute> {
-        const { name } = attribute.getProps();
-        const data = this.repository.create({ name: name.val() });
+        const data = this.repository.create({ name: attribute.name });
         const saved = await this.repository.save(data);
         await this.invalidateCache();
         return this.toDomain(saved);
     }
 
     async allPaginated(options: AttributeFilterOptions): Promise<[Attribute[], number]> {
-        const { limit, offset, name } = options;
+    const { limit, offset, name } = options;
 
-        const cacheKey = await this.getCacheKey(`p:${offset}:l:${limit}:n:${name || 'all'}`); 
-        
-        const cachedResult = await redisClient.get(cacheKey);
+    const cacheKey = `attributes:p:${offset}:l:${limit}:n:${name ?? 'all'}`;
+    
+    const cachedRaw = await redisClient.get(cacheKey);
+    if (cachedRaw) {
+        const [rawEntities, total] = JSON.parse(cachedRaw);
+        return [rawEntities.map((e: AttributeEntity) => this.toDomain(e)), total as number];
+    }
 
-        if (cachedResult) {
-            const [rawEntities, total] = JSON.parse(cachedResult);
-            const domainAttributes = rawEntities.map((e: AttributeEntity) => this.toDomain(e));
-            return [domainAttributes, total];
-        }
+    const [entities, total] = await this.repository.findAndCount({
+        where: name ? { name: Like(`%${name}%`) } : {},
+        take: limit,
+        skip: offset,
+        order: { name: 'ASC' }
+    });
 
-        const [entities, total] = await this.repository.findAndCount({
-            where: name ? { name: Like(`%${name}%`) } : {},
-            take: limit,
-            skip: offset,
-            order: { name: 'ASC' }
-        });
+    const domainEntities = entities.map(entity => this.toDomain(entity));
+    const result: [Attribute[], number] = [domainEntities, total];
 
-        await redisClient.set(cacheKey, JSON.stringify([entities, total]), {
-            EX: this.TTL
-        });
+    redisClient.set(cacheKey, JSON.stringify([entities, total]), {
+        EX: this.TTL
+    });
 
-        return [entities.map(entity => this.toDomain(entity)), total];
+    return result;
     }
 
 

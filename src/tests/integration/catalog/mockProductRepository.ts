@@ -53,14 +53,23 @@ export class MockProductRepository implements IProductRepository {
     const itemsDTO: ProductOutputDTO[] = paginatedItems.map((p) => ({
       id: p.id,
       name: p.props.name,
-      slug: p.props.slug,
+      slug: p.slug,
       description: p.props.description,
       category_id: p.props.category_id,
       created_at: p.props.created_at || new Date(),
       // Mapeia imagens se existirem
       images: p.props.images ? p.props.images?.map(img => ImageMapper.toDTO(img)) : undefined,
       // Mapeia categoria se existir
-      category: p.props.category ? CategoryMapper.toDTO(p.props.category) : undefined
+      category: p.props.category ? CategoryMapper.toDTO(p.props.category) : undefined,
+      has_variants: p.has_variants,
+      product_type: p.product_type,
+      short_description: p.short_description,
+      visibility: p.props.visibility,
+      brand: p.props.brand,
+      collection_id: p.props.collection_id,
+      meta_description_title: p.props.meta_description_title,
+      published_at: p.props.published_at,
+      video_url: p.props.video_url
     }));
 
     return {

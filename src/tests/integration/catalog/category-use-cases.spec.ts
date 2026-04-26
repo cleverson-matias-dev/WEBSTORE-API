@@ -88,7 +88,10 @@ describe('Category Integration Tests (Use Cases + InMemoryRepo)', () => {
         category_id: category.id,
         name: 'Produto A',
         description: 'Descrição',
-        slug: ''
+        slug: '',
+        has_variants: true,
+        product_type: "digital",
+        visibility: "catalog"
       }))
 
       const categoryId = category.id;

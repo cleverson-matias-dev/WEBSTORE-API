@@ -17,6 +17,10 @@ describe("Product Use Cases", () => {
     let deleteProductUseCase: DeleteProductUseCase;
     let categoryId = '';
 
+    const mockStockService = {
+        getStocksBySkus: jest.fn().mockResolvedValue([{sku:'', quantity: 0}])
+    }
+
     beforeEach(async () => {
         productRepo = new MockProductRepository();
         categoryRepo = new InMemoryCategoryRepository();
@@ -30,7 +34,7 @@ describe("Product Use Cases", () => {
 
         createProductUseCase = new CreateProductUseCase(productRepo, categoryRepo);
         getProductUseCase = new GetProductUseCase(productRepo);
-        listProductsUseCase = new ListProductsUseCase(productRepo);
+        listProductsUseCase = new ListProductsUseCase(productRepo, mockStockService);
         updateProductUseCase = new UpdateProductUseCase(productRepo, categoryRepo);
         deleteProductUseCase = new DeleteProductUseCase(productRepo);
     });
@@ -67,7 +71,7 @@ describe("Product Use Cases", () => {
     });
 
     describe("UpdateProductUseCase", () => {
-        it("deve atualizar o nome e o slug do produto", async () => {
+        it("deve atualizar o nome sem alterar slug do produto", async () => {
             // Primeiro cria um produto
             const created = await createProductUseCase.execute({
                 name: "Nome Antigo",
@@ -77,18 +81,19 @@ describe("Product Use Cases", () => {
 
             const updateInput = {
                 id: created.id,
-                name: "Nome Novo"
+                name: "Nome Novo",
+                slug: "nome-novo"
             };
 
             const result = await updateProductUseCase.execute(updateInput);
 
             expect(result.name).toBe("Nome Novo");
-            expect(result.slug).toBe("nome-novo");
+            expect(result.slug).toBe("nome-antigo");
         });
 
         it("deve lançar erro ao tentar atualizar produto inexistente", async () => {
             await expect(updateProductUseCase.execute({ id: "non-existent", name: "Novo" }))
-                .rejects.toThrow("Produto não encontrado"); // Baseado na sua AppError de 'Produto não encontrado'
+                .rejects.toThrow("Produto não encontrado");
         });
     });
 

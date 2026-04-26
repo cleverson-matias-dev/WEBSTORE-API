@@ -2,7 +2,7 @@ import { SkuUseCases } from "@modules/catalog/application/use-cases/sku-use-case
 import { Request, Response, Router } from "express";
 import { SkuController } from "../contrrollers/SkuController";
 import { validate } from "@shared/middlewares/validator";
-import { createSkuSchema, paramProductUuidSchema, paramUuidSchema, skuPriceUpdateSchema } from "../validation-schemas/sku-schemas";
+import { createSkuSchema, paramProductUuidSchema, paramUuidSchema, serDefaultSkuSchema, skuPriceUpdateSchema } from "../validation-schemas/sku-schemas";
 import { TypeOrmSkuRepository } from "../../persistence/TypeORMSkuRepository";
 import { TypeormProductRepository } from "../../persistence/TypeORMProductRepository";
 import { authorize, UserRole } from "@shared/middlewares/authorization-middleware";
@@ -41,6 +41,13 @@ skuRoutes.patch(
   authorize([UserRole.ADMIN]),
   validate(skuPriceUpdateSchema),
   (req: Request, res: Response) => skuController.updatePrice(req, res)
+);
+
+skuRoutes.patch(
+  '/product/:product_id/sku/:sku_id/set-default',
+  authorize([UserRole.ADMIN]),
+  validate(serDefaultSkuSchema),
+  (req: Request, res: Response) => skuController.setDefaultSku(req, res)
 );
 
 skuRoutes.patch(

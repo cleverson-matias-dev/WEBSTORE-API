@@ -74,7 +74,8 @@ implements IProductRepository {
         images: true,
         category: {
           parent: true
-        }
+        },
+        skus: true
       }
     });
 

@@ -1,11 +1,13 @@
 paths:
   /catalog/api/v1/attributes:
     get:
+      operationId: listAttributes
       summary: Listar atributos com paginação e filtro
       tags: [ Atributos ]
       parameters:
       - name: name
         in: query
+        required: false # Query params geralmente são opcionais
         schema:
           type: string
         description: Filtro parcial pelo nome do atributo
@@ -32,6 +34,7 @@ paths:
           $ref: '#/components/responses/Error500'
 
     post:
+      operationId: createAttribute
       summary: Criar um novo atributo
       tags: [ Atributos ]
       requestBody:
@@ -73,6 +76,7 @@ paths:
         type: string
         format: uuid
     get:
+      operationId: getAttributeById
       summary: Buscar atributo por ID
       tags: [ Atributos ]
       responses:
@@ -88,6 +92,7 @@ paths:
           $ref: '#/components/responses/Error400'
 
     patch:
+      operationId: updateAttribute
       summary: Atualizar nome do atributo
       tags: [ Atributos ]
       requestBody:
@@ -110,6 +115,7 @@ paths:
           $ref: '#/components/responses/Error400'
 
     delete:
+      operationId: deleteAttribute
       summary: Remover um atributo
       tags: [ Atributos ]
       responses:
@@ -123,7 +129,7 @@ paths:
 components:
   responses:
     Error400:
-      description: Requisição inválida (Erro de validação ou sintaxe)
+      description: Requisição inválida
       content:
         application/json:
           schema:
@@ -135,7 +141,7 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponseDTO'
     Error500:
-      description: Erro interno do servidor
+      description: Erro interno
       content:
         application/json:
           schema:
@@ -144,6 +150,7 @@ components:
   schemas:
     AttributeDTO:
       type: object
+      required: [ id, name, created_at, updated_at ] # Garante que nada seja undefined no Orval
       properties:
         id:
           type: string
@@ -159,6 +166,7 @@ components:
 
     PaginatedAttributesDTO:
       type: object
+      required: [ items, total, page, limit ] # Essencial para o Front não precisar de '?' em paginação
       properties:
         items:
           type: array
@@ -173,6 +181,7 @@ components:
 
     ErrorResponseDTO:
       type: object
+      required: [ status, errors ]
       properties:
         status:
           type: string

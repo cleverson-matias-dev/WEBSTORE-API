@@ -4,8 +4,35 @@ _transform: true
 services:
 - name: node-api
   url: http://api:3000
+  # Adicionando o CORS no nível do serviço para cobrir todas as rotas abaixo
+  plugins:
+  - name: cors
+    config:
+      origins:
+      - "*" # Mude para seu domínio em produção (ex: https://meusite.com)
+      methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - OPTIONS
+      headers:
+      - Accept
+      - Accept-Version
+      - Content-Length
+      - Content-MD5
+      - Content-Type
+      - Date
+      - Authorization
+      exposed_headers:
+      - X-Status-Code
+      credentials: true
+      max_age: 3600
+      preflight_continue: false
+
   routes:
-  # 1. Rota PÚBLICA (Register, Login, Docs e Health) - Limite por IP para evitar Brute Force
+  # 1. Rota PÚBLICA
   - name: auth-route
     paths:
     - /health
@@ -13,16 +40,15 @@ services:
     - /identity/api/v1/users/auth/register
     - /identity/api/v1/users/auth/login
     - /identity/api/v1/users/auth/refresh
-
     strip_path: false
     plugins:
     - name: rate-limiting
       config:
-        minute: 20 # Máximo de 5 tentativas por minuto
-        policy: local # Armazena os contadores na memória do Kong (use 'redis' para produção/cluster)
-        limit_by: ip # Identifica o usuário pelo endereço IP (já que não há JWT ainda)
+        minute: 20
+        policy: local
+        limit_by: ip
 
-  # 2. Rota PROTEGIDA - Limite por Credencial (Consumer)
+  # 2. Rota PROTEGIDA
   - name: protected-api-route
     paths:
     - /
@@ -38,13 +64,12 @@ services:
         add:
           headers:
           - "X-Authenticated-Scope: verified"
-    # Adicionando Rate Limit na rota protegida
     - name: rate-limiting
       config:
-        minute: 100 # 100 requisições por minuto
-        hour: 5000 # 5000 requisições por hora
+        minute: 100
+        hour: 5000
         policy: local
-        limit_by: consumer # Como o JWT já identificou o usuário, o limite é por 'Consumer'
+        limit_by: consumer
 
 consumers:
 - username: api-modular-user
