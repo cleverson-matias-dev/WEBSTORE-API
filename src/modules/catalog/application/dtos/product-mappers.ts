@@ -67,8 +67,8 @@ import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
           dimensoes: sku.dimensions,
           attributes: sku.sku_attributes.map(attr => ({
             sku_id: sku.id,
-            attribute_id: attr.attribute_id,
-            value: attr.value
+            value: attr.value,
+            attribute: attr.attribute_id ? { id: attr.attribute_id } : { name: attr.name }
           }))
         })),
         // Mapeamento das Imagens

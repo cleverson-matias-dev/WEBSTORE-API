@@ -15,6 +15,7 @@ implements IProductRepository {
   protected CACHE_TAG: string = "product";
 
   async save(product: Product): Promise<Product> {
+    console.log('produto antes do banco', product.skus[0].sku_attributes)
     const raw = ProductMapper.toPersistence(product);
     const saved = await this.ormRepository.save(raw);
     this.invalidateCache();

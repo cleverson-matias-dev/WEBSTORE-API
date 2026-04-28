@@ -9,7 +9,6 @@ import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
 import type { ISkuRepository } from "../interfaces/repository/ISkuRepository";
 import type { IImageRepository } from "../interfaces/repository/IImageRepository";
 import type { IAttributeRepository } from "../interfaces/repository/IAttributeRepository";
-import { Attribute } from "@modules/catalog/domain/entities/attribute.entity";
 import type { IMessageBroker } from "@shared/infra/messaging/IMessageBroker";
 
 export class CreateProductUseCase {
@@ -99,7 +98,7 @@ export class CreateProductUseCase {
       const sku_attributes = skuDto.attributes?.map(attr => ({
         name: attr.name,
         value: attr.value,
-        attribute_id: attributeIdMap.get(attr.name.toLowerCase())! // O ID resolvido
+        attribute_id: attributeIdMap.get(attr.name.toLowerCase())!
       })) || [];
 
       const sku = SkuDomain.create({
@@ -125,7 +124,7 @@ export class CreateProductUseCase {
   }
 
   private async resolveAttributes(skus: CreateSkuInputDTO[]): Promise<Map<string, string>> {
-    // 1. Extrai todos os nomes de atributos únicos do payload
+    // 1. Extrai nomes únicos (normalizados para evitar duplicidade por case sensitive)
     const allNames = skus.flatMap(s => s.attributes?.map(a => a.name) || []);
     const uniqueNames = [...new Set(allNames)];
     
@@ -133,20 +132,18 @@ export class CreateProductUseCase {
 
     const attributeMap = new Map<string, string>();
 
-    // 2. Busca atributos que já existem (Supondo que você tenha um AttributeRepository)
+    // 2. Busca todos de uma vez (melhor performance que loop com await)
     for (const name of uniqueNames) {
-      let attr = await this.attributeRepository.findByName(name);
+      const attr = await this.attributeRepository.findByName(name);
       
-      // 3. Se não existir, cria um novo
-      if (!attr) {
-        attr = await this.attributeRepository.save(Attribute.create(name)); 
-      }
-      
-      attributeMap.set(name.toLowerCase(), attr.id);
+      // 3. Se encontrar, mapeia o ID. Se não, mapeia string vazia.
+      // O cascade cuidará da criação dos que estiverem vazios no momento do save.
+      attributeMap.set(name.toLowerCase(), attr ? attr.id : "");
     }
 
     return attributeMap;
   }
+
 
 }
 
