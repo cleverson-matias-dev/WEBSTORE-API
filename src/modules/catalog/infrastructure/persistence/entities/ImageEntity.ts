@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, CreateDateColumn, ManyToOne, UpdateDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, CreateDateColumn, ManyToOne, UpdateDateColumn, Unique } from "typeorm"
 import { Produto } from "./ProductEntity"
 
-
-@Entity({name: 'images', database: 'webstore_catalogo'})
+@Entity({ name: 'images', database: 'webstore_catalogo' })
+// Define a chave única combinada aqui
+@Unique("UQ_PRODUCT_IMAGE_URL", ["product_id", "url"]) 
 export class ImageEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string
@@ -13,13 +14,13 @@ export class ImageEntity {
     })
     product_id: string
 
-    @ManyToOne(()=>Produto, (produto) => produto.images, {onDelete: 'CASCADE'})
-    @JoinColumn({name:'product_id'})
+    @ManyToOne(() => Produto, (produto) => produto.images, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'product_id' })
     produto: Produto
 
     @Column({
         type: 'varchar',
-        unique: true
+        // Removi o unique: true daqui, pois agora a unicidade é combinada acima
     })
     url: string
 
@@ -33,5 +34,4 @@ export class ImageEntity {
 
     @UpdateDateColumn()
     updated_at: Date
-    
 }

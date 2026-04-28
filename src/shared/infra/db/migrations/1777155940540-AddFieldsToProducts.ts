@@ -8,7 +8,7 @@ export class AddFieldsToProducts1777155940540 implements MigrationInterface {
             name: 'collection_id',
             type: "varchar",
             length: "36",
-            isNullable: false,
+            isNullable: true,
         }),
         new TableColumn({
             name: 'product_type',

@@ -3,11 +3,19 @@ import { InMemoryCategoryRepository } from "./mockCategoryRepository";
 import { MockProductRepository } from "./mockProductRepository";
 import { Category } from "@modules/catalog/domain/entities/category.entity";
 import { CategoryName } from "@modules/catalog/domain/value-objects/category.name.vo";
+import { InMemorySkuRepository } from "./mockSkuRepository";
+import { InMemoryImageRepository } from "./mockImageRepository";
+import { InMemoryAttributeRepository } from "./mockAtributoRepository";
+import RabbitMQServer from "@shared/infra/messaging/RabbitMQServer";
 
 
 describe("Product Use Cases", () => {
     let productRepo: MockProductRepository;
     let categoryRepo: InMemoryCategoryRepository;
+    let skuRepository: InMemorySkuRepository;
+    let imageRepository: InMemoryImageRepository;
+    let attibutesRepository: InMemoryAttributeRepository;
+    let messageBroker: RabbitMQServer;
     
     // SUTs (System Under Test)
     let createProductUseCase: CreateProductUseCase;
@@ -21,9 +29,24 @@ describe("Product Use Cases", () => {
         getStocksBySkus: jest.fn().mockResolvedValue([{sku:'', quantity: 0}])
     }
 
+    jest.mock('@shared/infra/messaging/RabbitMQServer', () => {
+        return {
+            __esModule: true,
+            default: {
+            getInstance: jest.fn().mockReturnValue({
+                publishInExchange: jest.fn().mockResolvedValue(true)
+            })
+            }
+        };
+    });
+
     beforeEach(async () => {
         productRepo = new MockProductRepository();
         categoryRepo = new InMemoryCategoryRepository();
+        skuRepository = new InMemorySkuRepository();
+        imageRepository = new InMemoryImageRepository();
+        attibutesRepository = new InMemoryAttributeRepository();
+        messageBroker = RabbitMQServer.getInstance();
 
         // Setup inicial: criar uma categoria para os produtos
         const category = new Category({
@@ -32,7 +55,14 @@ describe("Product Use Cases", () => {
         });
         categoryId = (await categoryRepo.save(category)).id;
 
-        createProductUseCase = new CreateProductUseCase(productRepo, categoryRepo);
+        createProductUseCase = new CreateProductUseCase(
+            productRepo, 
+            categoryRepo, 
+            skuRepository, 
+            imageRepository, 
+            attibutesRepository,
+            messageBroker
+        );
         getProductUseCase = new GetProductUseCase(productRepo);
         listProductsUseCase = new ListProductsUseCase(productRepo, mockStockService);
         updateProductUseCase = new UpdateProductUseCase(productRepo, categoryRepo);

@@ -1,4 +1,4 @@
-import type { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
+import type { SkuAttribute, SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
 
 export interface CreateSkuInputDto {
   product_id: string;
@@ -58,6 +58,7 @@ export interface SkuDetailsOutputDto {
   currency: string;
   weight: number;
   dimensions: string;
+  attributes?: SkuAttribute[]
   created_at: Date;
   updated_at: Date;
 }

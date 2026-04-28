@@ -1,33 +1,27 @@
 import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
-import { Price, SkuCode, Weight } from "@modules/catalog/domain/value-objects/sku.vo";
 import { Sku } from "@modules/catalog/infrastructure/persistence/entities/Sku";
 import { SkuDetailsOutputDto, type DomainWithStock } from "./sku-dtos";
 
 export class SkuMapper {
   static toDomain(raw: Sku): SkuDomain {
-    const skuCode = new SkuCode(raw.codigo_sku);
-    const price = new Price(Number(raw.preco), raw.currency || 'BRL');
-    const weight = new Weight(Number(raw.peso));
 
-    return new SkuDomain(
-      {
-        productId: raw.product_id,
-        skuCode: skuCode,
-        is_default: Boolean(raw.is_default),
-        price: price,
-        weight: weight,
-        dimensions: raw.dimensoes,
-      },
-      raw.id
-    );
+    return SkuDomain.create({
+      currency: raw.currency,
+      is_default: raw.is_default,
+      price: raw.preco,
+      product_id: raw.product_id,
+      sku_code: raw.codigo_sku,
+      dimensions: raw.dimensoes,
+      weight: raw.peso
+    })
   }
 
   static toOutputWithStock(sku: DomainWithStock): SkuDetailsOutputDto {
       return {
         id: sku.id,
-        product_id: sku.productId,
-        sku_code: sku.skuCode,
-        is_default: sku.is_default,
+        product_id: sku.product_id,
+        sku_code: sku.sku_code,
+        is_default: String(sku.is_default),
         quantity: sku.quantity,
         price: sku.price,
         currency: sku.currency,
@@ -41,8 +35,8 @@ export class SkuMapper {
   static toPersistence(domain: SkuDomain): Partial<Sku> {
     return {
       id: domain.id,
-      product_id: domain.productId,
-      codigo_sku: domain.skuCode,
+      product_id: domain.product_id,
+      codigo_sku: domain.sku_code,
       is_default: Boolean(domain.is_default),
       preco: domain.price,
       currency: domain.currency,
@@ -54,14 +48,15 @@ export class SkuMapper {
   static toOutput(sku: SkuDomain, quantity: number = 0): SkuDetailsOutputDto {
     return {
       id: sku.id,
-      product_id: sku.productId,
-      sku_code: sku.skuCode,
-      is_default: sku.is_default,
+      product_id: sku.product_id,
+      sku_code: sku.sku_code,
+      is_default: String(sku.is_default),
       quantity,
       price: sku.price,
       currency: sku.currency,
       weight: sku.weight,
       dimensions: sku.dimensions,
+      attributes: sku.sku_attributes.map(attr => ({attribute_id: attr.attribute_id, name: attr.name, value: attr.value})),
       created_at: sku.created_at,
       updated_at: sku.updated_at,
     };

@@ -30,6 +30,8 @@ export interface ISkuRepository {
 
   markAsDefault(sku_id: string, product_id: string): Promise<void>;
 
+  countAllByCodes(codes: string[]): Promise<number>;
+
   /**
    * Remove um SKU do sistema.
    */

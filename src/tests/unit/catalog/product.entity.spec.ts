@@ -35,7 +35,6 @@ describe("Product Domain Entity", () => {
     
     product.update({
       name: "Novo Nome do Produto",
-      slug: "novo-nome-do-produto",
       description: "Nova descrição"
     });
 

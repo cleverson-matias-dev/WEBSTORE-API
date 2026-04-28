@@ -1,6 +1,6 @@
 import { AppDataSource } from "@shared/infra/db/data-source";
 import { Sku } from "./entities/Sku";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { ISkuRepository } from "@modules/catalog/application/interfaces/repository/ISkuRepository";
 import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
 import { SkuMapper } from "@modules/catalog/application/dtos/sku-mapper";
@@ -18,6 +18,19 @@ implements ISkuRepository {
     const entity = this.repository.create(raw);
     await this.repository.save(entity);
     this.invalidateCache();
+  }
+
+  async countAllByCodes(codes: string[]): Promise<number> {
+    if (!codes || codes.length === 0) return 0;
+
+    // Filtra apenas códigos únicos para evitar contagem inflada por lixo no payload
+    const uniqueCodes = [...new Set(codes)];
+
+    return await this.repository.count({
+      where: {
+        codigo_sku: In(uniqueCodes)
+      }
+    });
   }
 
   async markAsDefault(sku_id: string, product_id: string): Promise<void> {

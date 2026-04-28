@@ -32,7 +32,7 @@ export class Sku {
   @Column({ type: 'varchar', length: 50 })
   dimensoes: string;
 
-  @OneToMany(() => SkuAttributeValue, (skuAtributoValor) => skuAtributoValor.sku)
+  @OneToMany(() => SkuAttributeValue, (skuAtributoValor) => skuAtributoValor.sku, { cascade: true })
   attributes: SkuAttributeValue[];
 
   @CreateDateColumn()
