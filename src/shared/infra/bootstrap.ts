@@ -1,6 +1,7 @@
 import { StockModule } from "@modules/stock/stock.module";
 import { AppDataSource } from "./db/data-source";
 import RabbitMQServer from "./messaging/RabbitMQServer";
+import { CatalogModule } from "@modules/catalog/catalog.module";
 
 export async function bootstrapInfrastructure() {
   await AppDataSource.initialize();
@@ -11,5 +12,5 @@ export async function bootstrapInfrastructure() {
   
   // Inicializa os módulos
   await StockModule.setup();
-  // await CatalogModule.setup();
+  await CatalogModule.setup();
 }
