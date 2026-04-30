@@ -70,8 +70,6 @@ export const createProductSchema = z.object({
   })
 });
 
-
-
 // Inferência de tipo para uso em controllers/use-cases
 export type CreateProductInput = z.infer<typeof createProductSchema>['body'];
 

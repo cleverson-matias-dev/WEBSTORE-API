@@ -123,7 +123,7 @@ import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
               dimensions: skuRaw.dimensoes,
               sku_attributes: skuRaw.attributes.map(attribute => ({
                 attribute_id: attribute.attribute_id,
-                name: "",
+                name: attribute.attribute.name,
                 value: attribute.value
               }))
             }, skuRaw.id);

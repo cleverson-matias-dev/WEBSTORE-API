@@ -52,6 +52,7 @@ export class SkuMapper {
       sku_code: sku.sku_code,
       is_default: String(sku.is_default),
       quantity,
+      warehouse_id: sku.warehouse_id,
       price: sku.price,
       currency: sku.currency,
       weight: sku.weight,

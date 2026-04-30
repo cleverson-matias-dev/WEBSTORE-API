@@ -54,6 +54,7 @@ export interface SkuDetailsOutputDto {
   sku_code: string;
   is_default: string;
   quantity?: number;
+  warehouse_id?: string;
   price: number;
   currency: string;
   weight: number;

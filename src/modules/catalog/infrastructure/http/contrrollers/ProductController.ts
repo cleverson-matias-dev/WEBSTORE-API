@@ -12,8 +12,8 @@ export class ProductController {
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
-    const output = await this.createProductUseCase.execute(req.body);
-    res.status(201).json(output);
+    const id = await this.createProductUseCase.execute(req.body);
+    res.status(201).location(`/products/${id}`).json({id});
   }
 
   async list(req: Request, res: Response): Promise<void> {

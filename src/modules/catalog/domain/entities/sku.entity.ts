@@ -9,6 +9,8 @@ export interface SkuAttribute {
 export interface SkuProps {
   product_id: string;
   sku_code: SkuCode;
+  initial_quantity?: number;
+  warehouse_id?: string;
   is_default: boolean;
   price: Price;
   weight: Weight;
@@ -25,6 +27,8 @@ export class SkuDomain {
   constructor(props: SkuProps, id?: string) {
     this._id = id ?? crypto.randomUUID();
     this.props = props;
+    this.props.initial_quantity = props.initial_quantity;
+    this.props.warehouse_id = props.warehouse_id;
     this._created_at = new Date();
     this._updated_at = new Date();
   }
@@ -32,6 +36,8 @@ export class SkuDomain {
   public static create(props: {
     product_id: string;
     sku_code: string; 
+    initial_quantity?: number;
+    warehouse_id?: string;
     is_default: boolean;
     price: number;
     currency: string;
@@ -47,7 +53,9 @@ export class SkuDomain {
       price: Price.create(props.price, props.currency),
       weight: Weight.create(props.weight ?? 0),
       dimensions: props.dimensions ?? "",
-      sku_attributes: props.sku_attributes ?? []
+      sku_attributes: props.sku_attributes ?? [],
+      initial_quantity: props.initial_quantity,
+      warehouse_id: props.warehouse_id
     };
 
     return new SkuDomain(skuProps, id);
@@ -75,6 +83,8 @@ export class SkuDomain {
       product_id: this.props.product_id,
       sku_code: this.props.sku_code.val,
       is_default: this.props.is_default,
+      inittial_quantity: this.initial_quantity,
+      warehouse_id: this.warehouse_id,
       price: this.props.price.val,
       currency: this.props.price.curr,
       weight: this.props.weight.val,
@@ -96,4 +106,6 @@ export class SkuDomain {
   get created_at() { return this._created_at; }
   get updated_at() { return this._updated_at; }
   get currency() { return this.props.price.curr; }
+  get initial_quantity() { return this.props.initial_quantity; }
+  get warehouse_id() { return this.props.warehouse_id; }
 }

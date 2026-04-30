@@ -1,7 +1,7 @@
 import { Attribute } from "@modules/catalog/domain/entities/attribute.entity";
 import { AttributeEntity } from "./entities/AttributeEntity";
 import { AppDataSource } from "@shared/infra/db/data-source";
-import { Like, Repository } from "typeorm";
+import { In, Like, Repository } from "typeorm";
 import { AttributeFilterOptions, IAttributeRepository } from "@modules/catalog/application/interfaces/repository/IAttributeRepository";
 import { AttributeName } from "@modules/catalog/domain/value-objects/attribute.name.vo";
 import { AppError } from "@shared/errors/AppError";
@@ -66,6 +66,11 @@ export class TypeORMAttributeRepository
     async findByName(name: string): Promise<Attribute | null> {
         const result = await this.repository.findOneBy({name});
         return result ? this.toDomain(result) : null;
+    }
+
+    async findAllByName(names: string[]): Promise<Attribute[]> {
+        const results = await this.repository.find({where: {name: In(names)}})
+        return results.map(result => this.toDomain(result))
     }
 
     async update(id: string, name: string): Promise<void> {
