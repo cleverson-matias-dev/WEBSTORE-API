@@ -9,8 +9,8 @@ import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
 import type { ISkuRepository } from "../interfaces/repository/ISkuRepository";
 import type { IAttributeRepository } from "../interfaces/repository/IAttributeRepository";
 import type { IMessageBroker } from "@shared/infra/messaging/IMessageBroker";
-import type { SkuDetailsOutputDto } from "../dtos/sku-dtos";
 import type { IUnitOfWork } from "../interfaces/repository/IUnitOfWork";
+import type { IOutBoxRepository, TEvent } from "../interfaces/repository/IOutboxRepository";
 
 export class CreateProductUseCase {
   constructor(
@@ -19,12 +19,13 @@ export class CreateProductUseCase {
     private skuRepository: ISkuRepository,
     private attributeRepository: IAttributeRepository,
     private messageBroker: IMessageBroker,
-    private unitOfWork: IUnitOfWork
+    private unitOfWork: IUnitOfWork,
+    private outboxRepository: IOutBoxRepository,
   ) {}
 
   async execute(input: CreateProductInputDTO): Promise<string> {
     // Variáveis para transportar os dados para fora do contexto da transação
-    let createdProduct: Product;
+    let domainProduct: Product;
 
     // O Unit of Work gerencia a abertura, commit e rollback
     await this.unitOfWork.run(async () => {
@@ -80,19 +81,37 @@ export class CreateProductUseCase {
         product.addSku(sku);
       });
 
-      // 4. Persistência
-      // O retorno é atribuído à variável de escopo superior
       await this.productRepository.save(product);
-      createdProduct = product;
+
+      const domainEvents: TEvent[] = [];
+      product.skus.forEach(skuDomain => {
+        domainEvents.push({
+          exchange:'catalog.sku',
+          routing_key:'sku.created',
+          payload: JSON.stringify({
+            sku: skuDomain.id, 
+            warehouse_id: skuDomain.warehouse_id, 
+            initial_quantity: skuDomain.initial_quantity 
+          }),
+          published: false
+        })
+
+      })
+      
+      domainProduct = product;
+
+      domainEvents.push({
+      exchange: 'catalog.products',
+        routing_key: 'product.created',
+        payload: JSON.stringify(ProductMapper.toOutput(product)),
+        published: false
+      })
+
+      await this.outboxRepository.save(domainEvents)
+
     });
 
-    // 5. Lógica Pós-Commit (Executa apenas se o unitOfWork.run terminar sem erros)
-    // Agora temos a garantia de que o produto está no banco de dados
-    const mappedToOutput = ProductMapper.toOutput(createdProduct!);
-    
-    this.publishProductEvents(createdProduct!, mappedToOutput);
-    createdProduct!.clearEvents();
-
+    const mappedToOutput = ProductMapper.toOutput(domainProduct!);
     return mappedToOutput.id;
   }
 
@@ -125,24 +144,6 @@ export class CreateProductUseCase {
     return attributeMap;
   }
 
-  private publishProductEvents(product: Product, output: ProductOutputDTO) {
-    const originalSkusMap = new Map(product.skus.map(sku => [sku.id, sku]));
-
-    output.skus?.forEach((skuOut: SkuDetailsOutputDto) => {
-      const original = originalSkusMap.get(skuOut.id);
-      if (original) {
-        this.messageBroker.publishInExchange('catalog.sku', 'sku.created', { 
-          sku: skuOut.id, 
-          warehouse_id: original.warehouse_id, 
-          initial_quantity: original.initial_quantity 
-        });
-        skuOut.quantity = original.initial_quantity
-        skuOut.warehouse_id = original.warehouse_id
-      }
-    });
-
-    this.messageBroker.publishInExchange('catalog.products', 'product.created', output);
-  }
 
 }
 
