@@ -36,6 +36,7 @@ export class ProductCreatedConsumer {
         sku_code: sku.sku_code,
         price: sku.price,
         quantity: sku.quantity ?? 0,
+        warehouse_id: sku.warehouse_id,
         is_default: sku.is_default,
         // Concatenamos os atributos no SKU para busca textual se necessário
         attributes: sku.attributes?.map(a => `${a.name}: ${a.value}`) || []

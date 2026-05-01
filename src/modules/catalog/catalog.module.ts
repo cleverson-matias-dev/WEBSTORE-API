@@ -15,6 +15,8 @@ import { TypeORMAttributeRepository } from "./infrastructure/persistence/TypeORM
 import { StockServiceAdapter } from "./infrastructure/external-services/stock-adapter-service";
 import { CategoryController } from "./infrastructure/http/contrrollers/CategoryController";
 import { DeleteCategoryUC, FindCategoryByIdUC, GetAllCategoriesUC, SaveCategoryUC, UpdateCategoryUC } from "./application/use-cases/category-use-cases";
+import { TypeormUnitOfWork } from "./infrastructure/persistence/TypeOrmUnitOfWork";
+import { AppDataSource } from "@shared/infra/db/data-source";
 
 export class CatalogModule {
   private static _productController: ProductController;
@@ -28,10 +30,11 @@ export class CatalogModule {
     const attrRepo = new TypeORMAttributeRepository();
     const stockService = new StockServiceAdapter(StockModule.getFacade());
     const messageBroker = RabbitMQServer.getInstance();
+    const unitOfWork = new TypeormUnitOfWork(AppDataSource);
 
     // 2. Injeção de Dependências no Controller
     this._productController = new ProductController(
-      new CreateProductUseCase(productRepository, categoryRepo, skuRepo, attrRepo, messageBroker),
+      new CreateProductUseCase(productRepository, categoryRepo, skuRepo, attrRepo, messageBroker, unitOfWork),
       new ListProductsUseCase(productRepository, stockService),
       new GetProductUseCase(productRepository),
       new UpdateProductUseCase(productRepository, categoryRepo),

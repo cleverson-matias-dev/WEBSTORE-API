@@ -1,13 +1,5 @@
-import type { ICategoryRepository } from "./ICategoryRepository";
-import type { IProductRepository } from "./IProductRepository";
-import type { ISkuRepository } from "./ISkuRepository";
-
-export interface IWorkManager {
-  getProductRepository(): IProductRepository;
-  getCategoryRepository(): ICategoryRepository;
-  getSkuRepository(): ISkuRepository;
-}
-
+// @modules/catalog/application/interfaces/repository/IUnitOfWork
 export interface IUnitOfWork {
-  runInTransaction<T>(work: (manager: IWorkManager) => Promise<T>): Promise<T>;
+  // T é o retorno do que for executado dentro da transação
+  run<T>(work: () => Promise<T>): Promise<T>;
 }

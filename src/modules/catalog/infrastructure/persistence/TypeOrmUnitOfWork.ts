@@ -1,29 +1,26 @@
-import { AppDataSource } from "@shared/infra/db/data-source";
-import { QueryRunner, EntityManager } from "typeorm";
+import type { IUnitOfWork } from "@modules/catalog/application/interfaces/repository/IUnitOfWork";
+import type { DataSource } from "typeorm";
+import { transactionStorage } from "./TransactionContext";
 
-export class TypeormUnitOfWork {
-  private queryRunner: QueryRunner;
+export class TypeormUnitOfWork implements IUnitOfWork {
+  constructor(private dataSource: DataSource) {}
 
-  constructor() {
-    this.queryRunner = AppDataSource.createQueryRunner();
-  }
+  async run<T>(work: () => Promise<T>): Promise<T> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-  async start(): Promise<void> {
-    await this.queryRunner.connect();
-    await this.queryRunner.startTransaction();
-  }
-
-  async commit(): Promise<void> {
-    await this.queryRunner.commitTransaction();
-    await this.queryRunner.release();
-  }
-
-  async rollback(): Promise<void> {
-    await this.queryRunner.rollbackTransaction();
-    await this.queryRunner.release();
-  }
-
-  getManager(): EntityManager {
-    return this.queryRunner.manager;
+    return await transactionStorage.run(queryRunner.manager, async () => {
+      try {
+        const result = await work();
+        await queryRunner.commitTransaction();
+        return result;
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        throw error;
+      } finally {
+        await queryRunner.release();
+      }
+    });
   }
 }

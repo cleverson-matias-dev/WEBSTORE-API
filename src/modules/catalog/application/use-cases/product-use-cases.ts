@@ -9,9 +9,8 @@ import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
 import type { ISkuRepository } from "../interfaces/repository/ISkuRepository";
 import type { IAttributeRepository } from "../interfaces/repository/IAttributeRepository";
 import type { IMessageBroker } from "@shared/infra/messaging/IMessageBroker";
-import { AppDataSource } from "@shared/infra/db/data-source";
-import { transactionStorage } from "@modules/catalog/infrastructure/persistence/TransactionContext";
 import type { SkuDetailsOutputDto } from "../dtos/sku-dtos";
+import type { IUnitOfWork } from "../interfaces/repository/IUnitOfWork";
 
 export class CreateProductUseCase {
   constructor(
@@ -20,92 +19,81 @@ export class CreateProductUseCase {
     private skuRepository: ISkuRepository,
     private attributeRepository: IAttributeRepository,
     private messageBroker: IMessageBroker,
+    private unitOfWork: IUnitOfWork
   ) {}
 
   async execute(input: CreateProductInputDTO): Promise<string> {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    // Variáveis para transportar os dados para fora do contexto da transação
+    let createdProduct: Product;
 
-    // O transactionStorage.run faz o manager ficar disponível globalmente para os repositórios
-    return await transactionStorage.run(queryRunner.manager, async () => {
-      try {
-        const { skus, images, ...rest } = input;
+    // O Unit of Work gerencia a abertura, commit e rollback
+    await this.unitOfWork.run(async () => {
+      const { skus, images, ...rest } = input;
 
-        // 1. Validações de existência (Dentro da transação para consistência)
-        const already_exists = await this.productRepository.findBy({ name: input.name });
-        if (already_exists) throw new AppError('Produto já existe', 409);
+      // 1. Validações de existência
+      const already_exists = await this.productRepository.findBy({ name: input.name });
+      if (already_exists) throw new AppError('Produto já existe', 409);
 
-        const category_exists = await this.categoryRepository.findBy(input.category_id);
-        if (!category_exists) throw new AppError('Categoria não existe', 404);
+      const category_exists = await this.categoryRepository.findBy(input.category_id);
+      if (!category_exists) throw new AppError('Categoria não existe', 404);
 
-        // 2. Validações de integridade de entrada
-        this.validateInputData(images, skus);
+      // 2. Validações de integridade
+      this.validateInputData(images, skus);
 
-        if (skus && skus.length > 0) {
-          const skuCodes = skus.map(s => s.sku_code);
-          const existingCount = await this.skuRepository.countAllByCodes(skuCodes);
-          if (existingCount > 0) {
-            throw new AppError('Um ou mais SKU Codes informados já estão em uso', 409);
-          }
+      if (skus && skus.length > 0) {
+        const skuCodes = skus.map(s => s.sku_code);
+        const existingCount = await this.skuRepository.countAllByCodes(skuCodes);
+        if (existingCount > 0) {
+          throw new AppError('Um ou mais SKU Codes informados já estão em uso', 409);
         }
-
-        // 3. Resolução de Atributos e Criação do Agregado
-        const attributeIdMap = await this.resolveAttributes(skus || []);
-
-        const product = Product.create({
-          ...rest,
-          name: input.name,
-          description: input.description,
-          category_id: input.category_id,
-          product_type: (input.product_type ?? 'simple') as ProductType,
-          visibility: (input.visibility ?? 'catalog') as Visibility,
-          has_variants: input.has_variants ?? false,
-        });
-
-        images?.forEach(img => product.addImage(img.url, img.ordem));
-
-        skus?.forEach(skuDto => {
-          const sku_attributes = skuDto.attributes?.map(attr => ({
-            name: attr.name,
-            value: attr.value,
-            attribute_id: attributeIdMap.get(attr.name.toLowerCase())!
-          })) || [];
-
-          const sku = SkuDomain.create({
-            ...skuDto,
-            product_id: product.id,
-            sku_attributes,
-            initial_quantity: skuDto.initial_quantity,
-            warehouse_id: skuDto.warehouse_id
-          });
-          product.addSku(sku);
-        });
-
-        // 4. Persistência
-        const savedProduct = await this.productRepository.save(product);
-        const mappedToOutput = ProductMapper.toOutput(savedProduct);
-
-        // 5. COMMIT (Efetiva no Banco de Dados)
-        await queryRunner.commitTransaction();
-
-        // 6. EVENTOS (Só dispara após o commit do banco)
-        this.publishProductEvents(product, mappedToOutput);
-
-        product.clearEvents();
-        return mappedToOutput.id;
-
-      } catch (error) {
-        if (queryRunner.isTransactionActive) {
-          await queryRunner.rollbackTransaction();
-        }
-        console.error("[CreateProductUseCase]", error);
-        if (error instanceof AppError) throw error;
-        throw new AppError('Erro interno ao processar o produto', 500);
-      } finally {
-        await queryRunner.release();
       }
+
+      // 3. Resolução de Atributos e Criação do Agregado
+      const attributeIdMap = await this.resolveAttributes(skus || []);
+
+      const product = Product.create({
+        ...rest,
+        name: input.name,
+        description: input.description,
+        category_id: input.category_id,
+        product_type: (input.product_type ?? 'simple') as ProductType,
+        visibility: (input.visibility ?? 'catalog') as Visibility,
+        has_variants: input.has_variants ?? false,
+      });
+
+      images?.forEach(img => product.addImage(img.url, img.ordem));
+
+      skus?.forEach(skuDto => {
+        const sku_attributes = skuDto.attributes?.map(attr => ({
+          name: attr.name,
+          value: attr.value,
+          attribute_id: attributeIdMap.get(attr.name.toLowerCase())!
+        })) || [];
+
+        const sku = SkuDomain.create({
+          ...skuDto,
+          product_id: product.id,
+          sku_attributes,
+          initial_quantity: skuDto.initial_quantity,
+          warehouse_id: skuDto.warehouse_id
+        });
+        product.addSku(sku);
+      });
+
+      // 4. Persistência
+      // O retorno é atribuído à variável de escopo superior
+      await this.productRepository.save(product);
+      createdProduct = product;
     });
+
+    // 5. Lógica Pós-Commit (Executa apenas se o unitOfWork.run terminar sem erros)
+    // Agora temos a garantia de que o produto está no banco de dados
+    const mappedToOutput = ProductMapper.toOutput(createdProduct!);
+    
+    this.publishProductEvents(createdProduct!, mappedToOutput);
+    createdProduct!.clearEvents();
+
+    return mappedToOutput.id;
   }
 
   private validateInputData(images?: CreateProductImageInputDTO[], skus?: CreateSkuInputDTO[]) {
@@ -148,6 +136,8 @@ export class CreateProductUseCase {
           warehouse_id: original.warehouse_id, 
           initial_quantity: original.initial_quantity 
         });
+        skuOut.quantity = original.initial_quantity
+        skuOut.warehouse_id = original.warehouse_id
       }
     });
 

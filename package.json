@@ -11,7 +11,11 @@
     "start": "npm run build && node -r tsconfig-paths/register build/shared/infra/http/server.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/shared/infra/db/data-source.ts",
     "typeorm:prod": "node ./node_modules/typeorm/cli.js -d build/shared/infra/db/data-source.js",
-    "tests": "jest"
+    "tests": "jest",
+    "migration:generate": "npm run typeorm -- migration:generate",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert",
+    "migration:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create"
   },
   "keywords": [],
   "author": "Cleverson Matias",

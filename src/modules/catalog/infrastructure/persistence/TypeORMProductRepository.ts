@@ -43,8 +43,6 @@ implements IProductRepository {
       }
   });
 
-  console.log(completeProduct)
-
   this.invalidateCache();
   
   if (!completeProduct) throw new Error('Erro ao recuperar produto salvo');
