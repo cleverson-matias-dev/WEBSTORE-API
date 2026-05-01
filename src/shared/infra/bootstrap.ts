@@ -2,6 +2,8 @@ import { StockModule } from "@modules/stock/stock.module";
 import { AppDataSource } from "./db/data-source";
 import RabbitMQServer from "./messaging/RabbitMQServer";
 import { CatalogModule } from "@modules/catalog/catalog.module";
+import { OutboxRelayWorker } from "./messaging/OutboxRelayWorker";
+import { OutboxEntity } from "@modules/catalog/infrastructure/persistence/entities/OutboxEntity";
 
 export async function bootstrapInfrastructure() {
   await AppDataSource.initialize();
@@ -13,4 +15,12 @@ export async function bootstrapInfrastructure() {
   // Inicializa os módulos
   await StockModule.setup();
   await CatalogModule.setup();
+
+  // Workers
+  const catalogOutbox = new OutboxRelayWorker(
+    AppDataSource.getRepository(OutboxEntity),
+    rabbit
+  )
+
+  catalogOutbox.start();
 }
