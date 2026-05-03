@@ -1,9 +1,7 @@
-// src/modules/inventory/adapter/messaging/rabbitmq/product-created-subscriber.ts
-
 import type { StockCreateItemUC } from "@modules/stock/application/use-cases/stock-create-use-case";
 import RabbitMQServer from "@shared/infra/messaging/RabbitMQServer";
 
-export class ProductCreatedSubscriber {
+export class SkuSubscriber {
   constructor(
     private createInventoryItem: StockCreateItemUC
   ) {}
@@ -15,14 +13,14 @@ export class ProductCreatedSubscriber {
     const queueName = '_sku_creation_queue';
 
   await rabbit.consumeFromExchange(
-    exchangeName,    // Exchange
+    exchangeName,
     routingKey,
     queueName,
         async (msg) => {
             const data = JSON.parse(msg.content.toString());
             
             await this.createInventoryItem.execute(data)
-            // await useCase.execute(data);
+            
         }
     )
 

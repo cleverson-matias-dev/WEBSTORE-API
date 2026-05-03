@@ -4,13 +4,18 @@
   "description": "Arquitetura Hexagonal",
   "main": "build/shared/infra/http/server.js",
   "scripts": {
+    "worker": "tsx src/shared/infra/messaging/worker.ts",
     "dev": "nodemon --exec tsx src/shared/infra/http/server.ts --legacy-watch",
     "lint": "eslint .",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && copyfiles -u 1 \"src/modules/**/*.yaml\" build/",
     "start": "npm run build && node -r tsconfig-paths/register build/shared/infra/http/server.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/shared/infra/db/data-source.ts",
     "typeorm:prod": "node ./node_modules/typeorm/cli.js -d build/shared/infra/db/data-source.js",
-    "tests": "jest"
+    "tests": "jest",
+    "migration:generate": "npm run typeorm -- migration:generate",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert",
+    "migration:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create"
   },
   "keywords": [],
   "author": "Cleverson Matias",
@@ -51,6 +56,7 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "meilisearch": "^0.58.0",
     "mysql2": "^3.19.1",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",

@@ -26,7 +26,7 @@ export class Produto {
     })
     description: string
 
-    @OneToMany(()=>Sku, (sku) => sku.produto)
+    @OneToMany(()=>Sku, (sku) => sku.produto, { cascade: true })
     skus: Sku[]
 
     @Column({type:'text', unique: false})

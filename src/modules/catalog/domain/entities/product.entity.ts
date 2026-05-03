@@ -1,12 +1,15 @@
 import { Slug } from '../value-objects/slug.vo';
 import { v4 as uuidv4 } from 'uuid';
-import type { Image } from './image.entity';
 import type { Category } from './category.entity';
 import type { SkuDomain } from './sku.entity';
+import { Entity } from './base-entity';
 
 export type ProductType = 'simple' | 'variable' | 'digital' | 'service';
 export type Visibility = 'catalog' | 'search' | 'hidden';
-
+export type ProductImage = { id?: string; url: string; ordem: number; product_id: string }
+type UpdateProductInput = Partial<Pick<ProductProps, 
+  'name' | 'description' | 'short_description' | 'brand' | 'visibility' | 'category_id'
+>>;
 export interface ProductProps {
   id?: string;
   name: string;
@@ -21,7 +24,7 @@ export interface ProductProps {
   video_url?: string;
   meta_description_title?: string;
   category_id: string;
-  images?: Image[];
+  images?: ProductImage[];
   category?: Category;
   skus?: SkuDomain[];
   published_at?: Date;
@@ -29,18 +32,39 @@ export interface ProductProps {
   deleted_at?: Date;
 }
 
-export class Product {
+type ProductCreatedEvent = {
+  type: "product.created";
+  data: { product_id: string };
+};
+
+type ProductUpdatedEvent = {
+  type: "product.updated";
+  data: { product_id: string };
+};
+
+type ProductDeletedEvent = {
+  type: "product.deleted";
+  data: { product_id: string };
+};
+
+type TEvents = ProductCreatedEvent | ProductUpdatedEvent | ProductDeletedEvent;
+
+
+export class Product extends Entity<TEvents>{
   private _props: ProductProps;
 
   private constructor(props: ProductProps) {
+    super();
     // 1. Resolve o Slug (Garante limpeza mesmo se for passado manualmente)
     const resolvedSlug = props.slug?.trim() 
       ? Slug.create(props.slug).getValue 
       : Slug.create(props.name).getValue;
 
-    // 2. Garante consistência entre ProductType e has_variants
-    // Se o tipo for 'variable', has_variants DEVE ser true.
     const hasVariants = props.product_type === 'variable' ? true : (props.has_variants || false);
+
+    if (props.product_type === 'variable' && props.has_variants === false) {
+      throw new Error("Produtos variáveis devem obrigatoriamente possuir variantes.");
+    }
 
     // 3. Fallback inteligente para short_description
     const shortDesc = props.short_description?.trim() 
@@ -57,6 +81,25 @@ export class Product {
       short_description: shortDesc,
       created_at: props.created_at || new Date()
     };
+
+    if(!props.id) {
+      this.addDomainEvent({ type: "product.created",  data: {product_id: this.id}})
+    }
+  }
+
+  public addImage(url: string, order: number, id?: string) {
+    if (!this._props.images) this._props.images = [];
+
+    const alreadyExists = this._props.images.some(img => img.url === url);
+    if (alreadyExists) return;
+
+    this._props.images.push({ id, ordem: order, product_id: this.id, url })
+
+    this.addDomainEvent({ type: "product.updated", data: { product_id: this.id } });
+  }
+
+  get images() {
+    return this._props.images || [];
   }
 
   public static create(props: ProductProps): Product {
@@ -80,46 +123,69 @@ export class Product {
     return this._props;
   }
 
-  public update(props: Partial<Omit<ProductProps, 'id' | 'created_at'>>): void {
-    if (props.name) this._props.name = props.name;
+  public update(input: UpdateProductInput): void {
+    Object.assign(this._props, input);
     
-    // Atualiza o slug apenas se enviado explicitamente (Protege SEO)
-    if (props.slug) {
-      this._props.slug = Slug.create(props.slug).getValue;
+    if (input.name && !input.short_description) {
+      this._props.short_description = this.generateFallbackDescription(this._props.description);
     }
 
-    if (props.product_type) {
-      this._props.product_type = props.product_type;
-      // Se mudou para 'variable', força has_variants a ser true
-      if (props.product_type === 'variable') this._props.has_variants = true;
+    this.addDomainEvent({ type: "product.updated", data: { product_id: this.id } });
+  }
+
+  get skus() {
+    return this._props.skus || []
+  }
+
+  public addSku(sku: SkuDomain) {
+    if (!this._props.skus) this._props.skus = [];
+
+    if (sku.is_default) {
+      this._props.skus.forEach(s => s.setDefault(false));
     }
 
-    if (props.has_variants !== undefined) {
-      // Se o tipo for 'variable', não permite setar has_variants como false
-      this._props.has_variants = this._props.product_type === 'variable' ? true : props.has_variants;
-    }
+    const index = this._props.skus.findIndex(s => s.id === sku.id);
 
-    // Demais atualizações
-    if (props.description) {
-      this._props.description = props.description;
-      if (!this._props.short_description) {
-        this._props.short_description = this.generateFallbackDescription(props.description);
+    if (index >= 0) {
+      this._props.skus[Number(index)] = sku;
+    } else {
+      if (this._props.skus.length === 0) {
+        sku.setDefault(true);
       }
+      this._props.skus.push(sku);
     }
+
+    this.addDomainEvent({ 
+      type: "product.updated", 
+      data: { product_id: this.id } 
+    });
+  }
+
+  public removeSku(skuId: string): void {
+    if (!this._props.skus) return;
     
-    if (props.short_description) this._props.short_description = props.short_description;
-    if (props.category_id) this._props.category_id = props.category_id;
-    if (props.visibility) this._props.visibility = props.visibility;
-    // ... outros campos
+    this._props.skus = this._props.skus.filter(s => s.id !== skuId);
+    
+    this.addDomainEvent({ 
+      type: "product.updated", 
+      data: { product_id: this.id } 
+    });
+  }
+
+  get minPrice(): number {
+    if (this.skus.length === 0) return 0;
+    return Math.min(...this.skus.map(s => s.price));
   }
 
   public publish(): void {
     this._props.published_at = new Date();
     this._props.visibility = 'catalog';
+    this.addDomainEvent({ type: "product.updated",  data: {product_id: this.id}})
   }
 
   public delete(): void {
     this._props.deleted_at = new Date();
+    this.addDomainEvent({ type: "product.deleted",  data: {product_id: this.id}})
   }
 }
 

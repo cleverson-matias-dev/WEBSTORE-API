@@ -1,4 +1,4 @@
-import { Repository, Like } from "typeorm";
+import { Like } from "typeorm";
 import { Product } from "@modules/catalog/domain/entities/product.entity";
 import { Produto as ProdutoEntity } from "@modules/catalog/infrastructure/persistence/entities/ProductEntity";
 import { IProductRepository, PagedProductOutput, ProductFilter } from "@modules/catalog/application/interfaces/repository/IProductRepository";
@@ -6,23 +6,53 @@ import { ProductMapper } from "@modules/catalog/application/dtos/product-mappers
 import { AppDataSource } from "@shared/infra/db/data-source";
 import { BaseCacheRepository } from "./BaseCacheRepository";
 import redisClient from "@shared/infra/cache/redis";
+import { transactionStorage } from "./TransactionContext";
 
 export class TypeormProductRepository 
 extends BaseCacheRepository
 implements IProductRepository {
   
-  private readonly ormRepository: Repository<ProdutoEntity> = AppDataSource.getRepository(ProdutoEntity);
   protected CACHE_TAG: string = "product";
+
+  private get repository() {
+
+    const manager = transactionStorage.getStore();
+
+    if (manager) {
+      return manager.getRepository(ProdutoEntity);
+    }
+    
+    return AppDataSource.getRepository(ProdutoEntity);
+  }
 
   async save(product: Product): Promise<Product> {
     const raw = ProductMapper.toPersistence(product);
-    const saved = await this.ormRepository.save(raw);
-    this.invalidateCache();
-    return ProductMapper.toDomain(saved);
+    const saved = await this.repository.save(raw);
+    
+    // Busca o produto novamente com os joins necessários
+    const completeProduct = await this.repository.findOne({
+      where: { id: saved.id },
+      relations: {
+        images: true,
+        skus: {
+          attributes: {
+            attribute: true
+          }
+        },
+        category: { parent: true }
+      }
+  });
+
+  this.invalidateCache();
+  
+  if (!completeProduct) throw new Error('Erro ao recuperar produto salvo');
+  
+  return ProductMapper.toDomain(completeProduct);
   }
 
+
   async findBy(prop: object): Promise<Product | null> {
-    const raw = await this.ormRepository.findOne({ 
+    const raw = await this.repository.findOne({ 
       where: {...prop}, 
       relations: {
         images: true,
@@ -65,7 +95,7 @@ implements IProductRepository {
     if (filter?.slug) where.slug = filter.slug;
     if (filter?.description) where.description = Like(`%${filter.description}%`);
 
-    const [items, total] = await this.ormRepository.findAndCount({
+    const [items, total] = await this.repository.findAndCount({
       where,
       take: limit,
       skip,
@@ -75,7 +105,9 @@ implements IProductRepository {
         category: {
           parent: true
         },
-        skus: true
+        skus: {
+          attributes: true
+        }
       }
     });
 
@@ -91,13 +123,13 @@ implements IProductRepository {
 
   async update(product: Product): Promise<boolean> {
     const raw = ProductMapper.toPersistence(product);
-    const result = await this.ormRepository.update(product.props.id!, raw);
+    const result = await this.repository.update(product.props.id!, raw);
     this.invalidateCache();
     return result.affected! > 0;
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = await this.ormRepository.delete(id);
+    const result = await this.repository.delete(id);
     this.invalidateCache();
     return result.affected! > 0;
   }

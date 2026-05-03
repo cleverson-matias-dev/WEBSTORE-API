@@ -3,22 +3,49 @@ import type { CategoryDTO } from "./category-dtos";
 import type { ImageResponseDTO } from "./image-dtos";
 import type { SkuDetailsOutputDto } from "./sku-dtos";
 
+export interface CreateSkuAttributeInputDTO {
+  name: string;
+  value: string;
+}
+
+export interface CreateSkuInputDTO {
+  sku_code: string;
+  warehouse_id: string;
+  is_default: boolean;
+  initial_quantity: number;
+  price: number;
+  currency: string;
+  weight_in_grams?: number;
+  dimensions?: string;
+  attributes?: CreateSkuAttributeInputDTO[];
+}
+
+export interface CreateProductImageInputDTO {
+  url: string;
+  ordem: number;
+}
+
 export interface CreateProductInputDTO {
   name: string;
   description: string;
   category_id: string;
   
-  // Campos opcionais que o domínio aceita
+  // Campos opcionais
   slug?: string;
   short_description?: string;
   brand?: string;
   collection_id?: string;
-  product_type?: ProductType;
+  product_type?: ProductType; // 'simple' | 'variable' | etc
   visibility?: Visibility;
   has_variants?: boolean;
   video_url?: string;
   meta_description_title?: string;
+
+  // Novos campos adicionados
+  images?: CreateProductImageInputDTO[];
+  skus?: CreateSkuInputDTO[];
 }
+
 
 export interface ProductOutputDTO {
   // Identificação e SEO
@@ -42,6 +69,7 @@ export interface ProductOutputDTO {
   product_type: string;
   visibility: string;
   has_variants: boolean;
+  min_price?: number;
   skus?: SkuDetailsOutputDto[];
   images?: ImageResponseDTO[];
 

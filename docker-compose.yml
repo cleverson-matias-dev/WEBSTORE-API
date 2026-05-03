@@ -100,5 +100,48 @@ services:
     depends_on:
       - api
 
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch_dev
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
+      - MEILI_ENV=development
+    volumes:
+      - meili_data:/meili_data
+  
+  worker-search:
+    build:
+      context: .
+      target: development
+    container_name: node_worker_search
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - RABBITMQ_HOST=rabbitmq
+      - MEILI_HOST=http://meilisearch:7700
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
+    # O Worker não roda migrations, ele apenas consome a fila
+    command: >
+      sh -c "
+        until nc -z -v -w30 mysql 3306; do echo 'Aguardando MySQL...'; sleep 2; done
+        until nc -z -v -w30 rabbitmq 5672; do echo 'Aguardando RabbitMQ...'; sleep 2; done
+        npm run worker
+      "
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      meilisearch:
+        condition: service_started
+
 volumes:
   mysql_data:
+  meili_data:

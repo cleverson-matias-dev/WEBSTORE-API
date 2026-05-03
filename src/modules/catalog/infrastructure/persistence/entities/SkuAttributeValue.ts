@@ -29,8 +29,8 @@ export class SkuAttributeValue {
     @JoinColumn({name: 'sku_id'})
     sku: Sku
 
-    @ManyToOne(()=>AttributeEntity)
-    @JoinColumn({name: 'attribute_id'})
+    @ManyToOne(() => AttributeEntity, { cascade: true })
+    @JoinColumn({ name: 'attribute_id' })
     attribute: AttributeEntity
 
     @CreateDateColumn()

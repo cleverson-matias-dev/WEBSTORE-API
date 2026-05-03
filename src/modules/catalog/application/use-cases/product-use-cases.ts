@@ -1,48 +1,150 @@
-import { CreateProductInputDTO, ProductOutputDTO, UpdateProductInputDTO } from "../dtos/product-dtos";
+import { CreateProductInputDTO, ProductOutputDTO, UpdateProductInputDTO, type CreateProductImageInputDTO, type CreateSkuInputDTO } from "../dtos/product-dtos";
 import { Product, type ProductType, type Visibility } from "../../domain/entities/product.entity";
 import { IProductRepository, PagedProductOutput, ProductFilter } from "../interfaces/repository/IProductRepository";
 import { ProductMapper } from "../dtos/product-mappers";
 import { AppError } from "@shared/errors/AppError";
 import { ICategoryRepository } from "../interfaces/repository/ICategoryRepository";
 import type { IStockService } from "../interfaces/repository/stock-service.port";
+import { SkuDomain } from "@modules/catalog/domain/entities/sku.entity";
+import type { ISkuRepository } from "../interfaces/repository/ISkuRepository";
+import type { IAttributeRepository } from "../interfaces/repository/IAttributeRepository";
+import type { IMessageBroker } from "@shared/infra/messaging/IMessageBroker";
+import type { IUnitOfWork } from "../interfaces/repository/IUnitOfWork";
+import type { IOutBoxRepository, TEvent } from "../interfaces/repository/IOutboxRepository";
 
 export class CreateProductUseCase {
-  constructor(private productRepository: IProductRepository, private categoryRepository: ICategoryRepository) {}
+  constructor(
+    private productRepository: IProductRepository, 
+    private categoryRepository: ICategoryRepository,
+    private skuRepository: ISkuRepository,
+    private attributeRepository: IAttributeRepository,
+    private messageBroker: IMessageBroker,
+    private unitOfWork: IUnitOfWork,
+    private outboxRepository: IOutBoxRepository,
+  ) {}
 
-  async execute(input: CreateProductInputDTO): Promise<ProductOutputDTO> {
+  async execute(input: CreateProductInputDTO): Promise<string> {
+    // Variáveis para transportar os dados para fora do contexto da transação
+    let domainProduct: Product;
 
-    const already_exists = await this.productRepository.findBy({name:input.name});
-    if(already_exists) throw new AppError('Produto já existe', 409);
+    // O Unit of Work gerencia a abertura, commit e rollback
+    await this.unitOfWork.run(async () => {
+      const { skus, images, ...rest } = input;
 
-    const category_exists = await this.categoryRepository.findBy(input.category_id);
-    if(!category_exists) throw new AppError('Categoria não existe', 404);
+      // 1. Validações de existência
+      const already_exists = await this.productRepository.findBy({ name: input.name });
+      if (already_exists) throw new AppError('Produto já existe', 409);
 
-    
-    
-    const product = Product.create({
-      name: input.name,
-      description: input.description,
-      category_id: input.category_id,
-      slug: "",
-      has_variants: Boolean(input.has_variants),
-      product_type: input.product_type as ProductType,
-      visibility: input.visibility as Visibility,
-      brand: input.brand,
-      collection_id: input.collection_id,
-      meta_description_title: input.meta_description_title,
-      short_description: input.short_description,
-      video_url: input.video_url
+      const category_exists = await this.categoryRepository.findBy(input.category_id);
+      if (!category_exists) throw new AppError('Categoria não existe', 404);
+
+      // 2. Validações de integridade
+      this.validateInputData(images, skus);
+
+      if (skus && skus.length > 0) {
+        const skuCodes = skus.map(s => s.sku_code);
+        const existingCount = await this.skuRepository.countAllByCodes(skuCodes);
+        if (existingCount > 0) {
+          throw new AppError('Um ou mais SKU Codes informados já estão em uso', 409);
+        }
+      }
+
+      // 3. Resolução de Atributos e Criação do Agregado
+      const attributeIdMap = await this.resolveAttributes(skus || []);
+
+      const product = Product.create({
+        ...rest,
+        name: input.name,
+        description: input.description,
+        category_id: input.category_id,
+        product_type: (input.product_type ?? 'simple') as ProductType,
+        visibility: (input.visibility ?? 'catalog') as Visibility,
+        has_variants: input.has_variants ?? false,
+      });
+
+      images?.forEach(img => product.addImage(img.url, img.ordem));
+
+      skus?.forEach(skuDto => {
+        const sku_attributes = skuDto.attributes?.map(attr => ({
+          name: attr.name,
+          value: attr.value,
+          attribute_id: attributeIdMap.get(attr.name.toLowerCase())!
+        })) || [];
+
+        const sku = SkuDomain.create({
+          ...skuDto,
+          product_id: product.id,
+          sku_attributes,
+          initial_quantity: skuDto.initial_quantity,
+          warehouse_id: skuDto.warehouse_id
+        });
+        product.addSku(sku);
+      });
+
+      await this.productRepository.save(product);
+
+      const domainEvents: TEvent[] = [];
+      product.skus.forEach(skuDomain => {
+        domainEvents.push({
+          exchange:'catalog.sku',
+          routing_key:'sku.created',
+          payload: JSON.stringify({
+            sku: skuDomain.id, 
+            warehouse_id: skuDomain.warehouse_id, 
+            initial_quantity: skuDomain.initial_quantity 
+          }),
+          published: false
+        })
+
+      })
+      
+      domainProduct = product;
+
+      domainEvents.push({
+      exchange: 'catalog.products',
+        routing_key: 'product.created',
+        payload: JSON.stringify(ProductMapper.toOutput(product)),
+        published: false
+      })
+
+      await this.outboxRepository.save(domainEvents)
+
     });
 
-    try {
-        const savedProduct = await this.productRepository.save(product);
-        return ProductMapper.toOutput(savedProduct);
-    } catch (error) {
-        console.log(error)
-        throw new AppError('Erro interno do servidor', 400)
-    }
-    
+    const mappedToOutput = ProductMapper.toOutput(domainProduct!);
+    return mappedToOutput.id;
   }
+
+  private validateInputData(images?: CreateProductImageInputDTO[], skus?: CreateSkuInputDTO[]) {
+    if (images) {
+      const uniqueUrls = new Set(images.map(img => img.url));
+      if (uniqueUrls.size !== images.length) throw new AppError('URLs de imagens duplicadas', 400);
+    }
+    if (skus) {
+      const skuCodes = skus.map(s => s.sku_code.toUpperCase());
+      if (new Set(skuCodes).size !== skus.length) throw new AppError('SKU Codes duplicados no request', 400);
+    }
+  }
+
+  private async resolveAttributes(skus: CreateSkuInputDTO[]): Promise<Map<string, string>> {
+    const allNames = skus.flatMap(s => s.attributes?.map(a => a.name) || []);
+    const uniqueNames = [...new Set(allNames)];
+    const attributeMap = new Map<string, string>();
+    if (uniqueNames.length === 0) return attributeMap;
+
+    const existingAttributes = await this.attributeRepository.findAllByName(uniqueNames);
+    (existingAttributes || []).forEach(attr => {
+      attributeMap.set(attr.name.toLowerCase(), attr.id);
+    });
+
+    uniqueNames.forEach(name => {
+      if (!attributeMap.has(name.toLowerCase())) attributeMap.set(name.toLowerCase(), "");
+    });
+
+    return attributeMap;
+  }
+
+
 }
 
 export class GetProductUseCase {
